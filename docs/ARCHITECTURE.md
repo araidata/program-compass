@@ -21,3 +21,13 @@ Use Node.js 24 LTS. npm run build generates Prisma code and builds Next.js witho
 ## Tooling compatibility
 
 Prisma CLI and client use stable 7.10.1 rather than the release candidate currently advertised by the CLI's latest tag. ESLint stays on 9.39.5 because the Next.js configuration's React, accessibility, and import plugins declare support through major 9; npm marks this ESLint line deprecated. Upgrade the lint stack together when those plugins support the current major. Targeted overrides select Effect 3.22.5 for Prisma configuration and minimatch 11.0.9 for shadcn's code-generation tooling to resolve published audit findings. Revalidate schema generation, linting, and production builds when changing these overrides.
+
+## Shared requirements and interface boundary
+
+PROJECT_SCOPE.md owns scope, FUNCTIONAL_REQUIREMENTS.md owns functional requirements, and this file owns technical architecture. PROJECT_STATUS.md records state; DECISION_LOG.md records rationale. The initial phase is Phase 0 here. UI/UX review precedes separately authorized persistence work. Use the application name alone: no logo, tagline, welcome banner or promotional copy. Keep the interface compact, accessible and operational; placeholders collect no data.
+
+Future calculation logic belongs in domain modules separate from React with versioned inputs, provenance and independently tested formulas. AI assistance is a later separately authorized enhancement; do not select or integrate a provider in the foundation.
+
+## Future security controls
+
+Use secure password hashing, revocable server-managed sessions, server-side role authorization and input validation, least-privilege database access and attributable change history. Administrative, editing and read-only permissions require a reviewed matrix. Do not implement public registration or select external identity providers. Prevent sensitive organizational data in logs. No CJI, PHI, credentials, restricted incident evidence or real assessments in development; hosting, handling and application security need approval before actual organizational data. Initial public deployment contains only static placeholders. AI must reference supporting application data, separate facts from assumptions and never invent regulatory requirements, pricing or benchmark claims.

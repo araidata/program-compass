@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Compass, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { useState } from "react";
 import { navigation } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
@@ -15,22 +15,14 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-function Brand() {
+function ApplicationName() {
   return (
     <Link
       href="/"
       aria-label="Program Compass home"
-      className="flex items-center gap-3"
+      className="text-lg font-semibold"
     >
-      <span className="rounded-xl bg-teal-300/10 p-2 text-teal-200">
-        <Compass className="size-7" aria-hidden="true" />
-      </span>
-      <span className="text-lg font-semibold tracking-tight">
-        Program Compass
-        <span className="mt-0.5 block text-[10px] font-normal uppercase tracking-[0.2em] text-slate-400">
-          Strategy into direction
-        </span>
-      </span>
+      Program Compass
     </Link>
   );
 }
@@ -45,7 +37,7 @@ function Navigation({ onNavigate }: { onNavigate?: () => void }) {
           onClick={onNavigate}
           aria-current={pathname === href ? "page" : undefined}
           className={cn(
-            "flex items-center gap-3 rounded-lg px-3 py-3 text-sm transition-colors hover:bg-white/10 hover:text-white",
+            "flex items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-white/10 hover:text-white",
             pathname === href
               ? "bg-teal-300/10 text-teal-200"
               : "text-slate-300",
@@ -72,24 +64,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         Skip to content
       </a>
       <aside className="fixed inset-y-0 left-0 hidden w-72 flex-col overflow-y-auto bg-sidebar px-5 py-7 text-sidebar-foreground lg:flex">
-        <Brand />
+        <ApplicationName />
         <p className="mb-4 mt-10 px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
           Workspace
         </p>
         <Navigation />
         <div className="mt-auto border-t border-white/10 px-3 pt-6">
-          <p className="text-xs text-slate-300">
-            Cybersecurity strategy
-            <br />
-            and resource planning
-          </p>
           <p className="mt-3 text-[10px] uppercase tracking-widest text-slate-400">
             Application foundation · v0.1
           </p>
         </div>
       </aside>
       <div className="lg:pl-72">
-        <header className="flex min-h-20 items-center justify-between gap-4 border-b bg-card px-5 sm:px-10">
+        <header className="flex min-h-16 items-center justify-between gap-4 border-b bg-card px-5 sm:px-10">
           <div className="flex items-center gap-3">
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger
@@ -115,7 +102,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   Choose a Program Compass module.
                 </SheetDescription>
                 <div className="mb-4 mt-8">
-                  <Brand />
+                  <ApplicationName />
                 </div>
                 <Navigation onNavigate={() => setOpen(false)} />
               </SheetContent>
@@ -135,12 +122,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <main
           id="main-content"
           tabIndex={-1}
-          className="mx-auto max-w-7xl px-5 py-9 outline-none sm:px-10 sm:py-12"
+          className="mx-auto max-w-7xl px-5 py-6 outline-none sm:px-8"
         >
           {children}
         </main>
         <footer className="px-5 pb-6 text-xs text-muted-foreground sm:px-10">
-          Program Compass · Cybersecurity strategy and resource planning
+          Program Compass
         </footer>
       </div>
     </div>

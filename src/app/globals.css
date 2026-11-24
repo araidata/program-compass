@@ -140,7 +140,7 @@
 
 @layer base {
   h1 {
-    @apply text-3xl font-semibold tracking-tight sm:text-4xl;
+    @apply text-2xl font-semibold tracking-tight;
   }
   a:focus-visible {
     @apply rounded outline-2 outline-offset-4 outline-teal-600;

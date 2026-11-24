@@ -36,7 +36,8 @@ export const navigation = [
     title: "Compliance",
     href: "/compliance",
     icon: ClipboardCheck,
-    description: "Connect requirements, controls, and assessment evidence.",
+    description:
+      "Review framework alignment, requirement coverage, and assessment status.",
   },
   {
     title: "People & Resources",

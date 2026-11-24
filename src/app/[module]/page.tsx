@@ -29,9 +29,8 @@ export default async function ModulePage({
   const { module } = await params;
   const item = navigation.find((entry) => entry.href === `/${module}`);
   if (!item) notFound();
-  const Icon = item.icon;
   return (
-    <div className="space-y-8">
+    <div className="space-y-5">
       <div>
         <p className="eyebrow">Program workspace</p>
         <h1>{item.title}</h1>
@@ -40,14 +39,9 @@ export default async function ModulePage({
         </p>
       </div>
       <Card>
-        <CardContent className="flex min-h-80 flex-col items-center justify-center px-6 py-12 text-center">
-          <div className="mb-5 rounded-2xl bg-teal-50 p-4">
-            <Icon className="size-8 text-teal-700" aria-hidden="true" />
-          </div>
+        <CardContent className="px-4 py-4">
           <p className="eyebrow">Planned module</p>
-          <h2 className="mt-2 text-2xl font-semibold">
-            The foundation is in place.
-          </h2>
+          <h2 className="mt-2 text-base font-semibold">Not implemented</h2>
           <p className="mt-3 max-w-md text-sm leading-6 text-muted-foreground">
             {item.title} functionality will be introduced in a future phase. No
             organizational data is collected on this page.
