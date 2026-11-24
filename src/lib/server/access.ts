@@ -1,4 +1,5 @@
 import "server-only";
+import { authenticationDisabled } from "@/lib/auth-mode";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "./auth";
@@ -15,6 +16,14 @@ export class HttpError extends Error {
 }
 
 export async function currentUser(requestHeaders: Headers) {
+  if (authenticationDisabled)
+    return {
+      id: null,
+      name: "Unauthenticated visitor",
+      email: "",
+      role: "admin" as const,
+      active: true,
+    };
   const session = await auth().api.getSession({
     headers: requestHeaders,
     query: { disableCookieCache: true },

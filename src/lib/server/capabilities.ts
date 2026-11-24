@@ -117,7 +117,7 @@ const ratingFields = [
 ] as const;
 
 export async function updateCapability(
-  actorId: string,
+  actorId: string | null,
   id: string,
   input: z.infer<typeof capabilityUpdateSchema>,
 ): Promise<CapabilityView> {
@@ -203,7 +203,7 @@ async function indicatorWrite<T>(
 }
 
 export async function createIndicator(
-  actorId: string,
+  actorId: string | null,
   capabilityId: string,
   input: z.infer<typeof indicatorSchema>,
 ): Promise<IndicatorView> {
@@ -241,7 +241,7 @@ export async function createIndicator(
 }
 
 export async function updateIndicator(
-  actorId: string,
+  actorId: string | null,
   id: string,
   input: z.infer<typeof indicatorUpdateSchema>,
 ): Promise<IndicatorView> {
@@ -270,7 +270,7 @@ export async function updateIndicator(
   });
 }
 
-export async function deleteIndicator(actorId: string, id: string) {
+export async function deleteIndicator(actorId: string | null, id: string) {
   return indicatorWrite(async (tx) => {
     const before = await tx.capabilityIndicator.findUnique({ where: { id } });
     if (!before) throw new HttpError(404, "Indicator not found");

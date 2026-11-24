@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+import { authenticationDisabled } from "@/lib/auth-mode";
 import { LoginForm } from "@/components/login-form";
 
 export const metadata = { title: "Sign in" };
@@ -6,6 +8,7 @@ export default async function LoginPage({
 }: {
   searchParams: Promise<{ reason?: string }>;
 }) {
+  if (authenticationDisabled) redirect("/");
   const { reason } = await searchParams;
   return (
     <main className="mx-auto max-w-sm space-y-5 px-5 py-16">

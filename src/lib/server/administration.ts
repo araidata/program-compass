@@ -1,4 +1,5 @@
 import "server-only";
+import { authenticationDisabled } from "@/lib/auth-mode";
 import { randomUUID } from "node:crypto";
 import { hashPassword } from "better-auth/crypto";
 import { db } from "./db";
@@ -18,20 +19,23 @@ export const publicUser = {
 
 // Serialize administrative mutations, then recheck the actor inside the transaction.
 export async function administrativeTransaction<T>(
-  actorId: string,
+  actorId: string | null,
   action: (tx: Prisma.TransactionClient) => Promise<T>,
 ) {
   return db().$transaction(async (tx) => {
     await tx.$executeRaw`SELECT pg_advisory_xact_lock(87341602)`;
-    const actor = await tx.user.findUnique({ where: { id: actorId } });
-    if (!actor?.active || actor.role !== "admin")
-      throw new HttpError(403, "Access denied");
+    if (!authenticationDisabled) {
+      if (!actorId) throw new HttpError(403, "Access denied");
+      const actor = await tx.user.findUnique({ where: { id: actorId } });
+      if (!actor?.active || actor.role !== "admin")
+        throw new HttpError(403, "Access denied");
+    }
     return action(tx);
   });
 }
 
 export async function createUser(
-  actorId: string,
+  actorId: string | null,
   data: z.infer<typeof createUserSchema>,
 ) {
   const password = await hashPassword(data.password);
@@ -65,7 +69,7 @@ export async function createUser(
 }
 
 export async function updateUser(
-  actorId: string,
+  actorId: string | null,
   id: string,
   data: z.infer<typeof updateUserSchema>,
 ) {

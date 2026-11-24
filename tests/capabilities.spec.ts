@@ -1,8 +1,14 @@
 import { expect, test } from "@playwright/test";
 import { fixture, loginPage, signIn } from "./helpers";
 import { database } from "../scripts/database";
+import { authenticationDisabled } from "../src/lib/auth-mode";
+
+const login = async (page: Parameters<typeof loginPage>[0]) => {
+  if (!authenticationDisabled) await login(page);
+};
 
 const origin = { Origin: "http://127.0.0.1:3100" };
+const startedAt = new Date();
 
 async function topic(code: string) {
   const client = database();
@@ -39,7 +45,14 @@ async function restore(
     // Synthetic fixture actors are deleted after the run; keep history clean.
     const { users } = fixture();
     await client.changeEvent.deleteMany({
-      where: { actorId: { in: Object.values(users).map((user) => user.id) } },
+      where: {
+        entityType: "Capability",
+        createdAt: { gte: startedAt },
+        OR: [
+          { actorId: { in: Object.values(users).map((user) => user.id) } },
+          { actorId: null, action: { not: "catalogue.seeded" } },
+        ],
+      },
     });
   } finally {
     await client.$disconnect();
@@ -47,7 +60,7 @@ async function restore(
 }
 
 test("catalogue is loaded with 30 topics and 60 KPIs", async ({ page }) => {
-  await loginPage(page);
+  await login(page);
   await page.goto("/capabilities?view=gaps");
   await expect(
     page.getByRole("heading", { name: "Capabilities", exact: true }),
@@ -70,7 +83,7 @@ test("keyboard rating autosaves, survives reload and records history", async ({
   const before = await topic("GV.02");
   const next = before.currentLevel === 2 ? 3 : 2;
   try {
-    await loginPage(page);
+    await login(page);
     await page.goto("/capabilities?group=GV");
     const rating = page.getByRole("radiogroup", {
       name: /Current maturity for GV\.02/,
@@ -89,17 +102,15 @@ test("keyboard rating autosaves, survives reload and records history", async ({
       .first()
       .click();
     const panel = page.getByRole("dialog");
-    await expect(
-      panel
-        .getByRole("heading", { name: "History" })
-        .or(panel.getByText("History")),
-    ).toBeVisible();
+    await expect(panel.getByRole("heading", { name: "History" })).toBeVisible();
     await expect(
       panel.getByText(new RegExp(`current → ${next}`)),
     ).toBeVisible();
     const after = await topic("GV.02");
     expect(after.currentLevel).toBe(next);
-    expect(after.assessedById).toBe(fixture().users.admin.id);
+    expect(after.assessedById).toBe(
+      authenticationDisabled ? null : fixture().users.admin.id,
+    );
   } finally {
     await restore("GV.02", before);
   }
@@ -111,33 +122,35 @@ test("assessment API enforces roles, validation and KPI rules", async ({
 }) => {
   const target = await topic("ID.01");
   const kpi = target.indicators[0];
-  const anonymous = await playwright.request.newContext({
-    baseURL: "http://127.0.0.1:3100",
-  });
-  expect(
-    (
-      await anonymous.patch(`/api/capabilities/${target.id}`, {
-        headers: origin,
-        data: { currentLevel: 3 },
-      })
-    ).status(),
-  ).toBe(401);
-  await anonymous.dispose();
+  // Role checks only apply while authentication is enforced.
+  if (!authenticationDisabled) {
+    const anonymous = await playwright.request.newContext({
+      baseURL: "http://127.0.0.1:3100",
+    });
+    expect(
+      (
+        await anonymous.patch(`/api/capabilities/${target.id}`, {
+          headers: origin,
+          data: { currentLevel: 3 },
+        })
+      ).status(),
+    ).toBe(401);
+    await anonymous.dispose();
 
-  await signIn(request, "viewer");
-  expect(
-    (
-      await request.patch(`/api/capabilities/${target.id}`, {
-        headers: origin,
-        data: { currentLevel: 3 },
-      })
-    ).status(),
-  ).toBe(403);
-  expect(
-    (await request.get(`/api/capabilities/${target.id}/history`)).status(),
-  ).toBe(200);
-
-  await signIn(request, "editor");
+    await signIn(request, "viewer");
+    expect(
+      (
+        await request.patch(`/api/capabilities/${target.id}`, {
+          headers: origin,
+          data: { currentLevel: 3 },
+        })
+      ).status(),
+    ).toBe(403);
+    expect(
+      (await request.get(`/api/capabilities/${target.id}/history`)).status(),
+    ).toBe(200);
+    await signIn(request, "editor");
+  }
   for (const data of [
     { currentLevel: 6 },
     { currentLevel: 0 },

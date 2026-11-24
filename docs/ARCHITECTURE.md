@@ -72,3 +72,7 @@ The proposed IA relabels Compliance as a dedicated Framework Alignment section, 
 - Capability rows hold the current assessment; every write records a ChangeEvent in the same transaction. Unknown values are null, never zero. The scale version is stored with each row.
 - Framework references are separate versioned tables mapped to capabilities; organizational maturity is never stored on a requirement mapping.
 - Analytical components (`src/components/analytics`) take a `TopicLink` so the same charts render in server pages (links) and client views (side panel). Maturity levels use a dedicated sequential token ramp; status colours stay reserved for status.
+
+## Temporary authentication suspension � 2026-11-23
+
+Explicit owner instruction supersedes the earlier preservation requirement for authentication only. `src/lib/auth-mode.ts` disables page/API login and role gates until the owner requests restoration. Login redirects to `/`, sign-out is hidden, and auth endpoints return 404. All visitors have administrative access; administrative changes retain validation, origin checks, transaction serialization and last-administrator protection, with null actor IDs rather than impersonating an account. Account/session/schema infrastructure is preserved; no migration is required. Restore by changing the shared constant to false and verifying the security suite. Business slices remain unauthorized.

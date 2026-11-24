@@ -1,8 +1,9 @@
 import { expect, test } from "@playwright/test";
 import { loginPage } from "./helpers";
+import { authenticationDisabled } from "../src/lib/auth-mode";
 
 test.beforeEach(async ({ page }) => {
-  await loginPage(page);
+  if (!authenticationDisabled) await loginPage(page);
 });
 
 const modules = [
@@ -76,7 +77,12 @@ test("pillar scope is held in the URL and kept across modules", async ({
 }, testInfo) => {
   await page.goto("/capabilities");
   if (testInfo.project.name === "mobile") {
-    await page.getByRole("combobox", { name: "Scope" }).selectOption("grc");
+    await expect(async () => {
+      await page.getByRole("combobox", { name: "Scope" }).selectOption("grc");
+      await expect(page).toHaveURL("/capabilities?pillar=grc", {
+        timeout: 1000,
+      });
+    }).toPass();
   } else {
     await page
       .getByRole("navigation", { name: "Scope" })
@@ -99,4 +105,18 @@ test("pillar scope is held in the URL and kept across modules", async ({
 test("unknown modules return 404", async ({ page }) => {
   const response = await page.goto("/unknown-module");
   expect(response?.status()).toBe(404);
+});
+
+test("suspended authentication redirects login and hides sign-out", async ({
+  page,
+  request,
+}) => {
+  test.skip(!authenticationDisabled, "Authentication has been restored");
+  await page.goto("/login?reason=expired");
+  await expect(page).toHaveURL("/");
+  await expect(page.getByRole("button", { name: "Sign out" })).toHaveCount(0);
+  const response = await request.get("/api/auth/get-session");
+  expect(response.status()).toBe(404);
+  const settings = await request.get("/api/settings");
+  expect(settings.status()).toBe(200);
 });
