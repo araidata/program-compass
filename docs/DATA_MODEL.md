@@ -12,6 +12,10 @@ Organization and ApplicationSettings are constrained singletons. Organization ha
 
 UUID string identifiers, createdAt/updatedAt on mutable records, indexes for sessions and chronological history, explicit role enum and migration SQL check constraints. Migration: 202611230001_foundation. No organization metrics/personnel or real assessments seeded.
 
+## Implemented capability slice (2026-11-24, migration 202611240001)
+
+Capability (unique code, catalogue version, display group, applicability, nullable current/target level 1–5, scale version, confidence, rationale, review state, target date, optional accountable OrganizationalFunction, assessor and time) has many CapabilityPillar joins (composite key, no exclusive pillar), many CapabilityIndicator rows (optional unique catalogue key, direction, decimal pass/fail boundaries with an order check, nullable value and measured date, unique name per capability) and many CapabilityRequirementMapping rows. Framework (unique key and version) has hierarchical FrameworkRequirement rows (unique identifier per framework). Mappings use a composite key and never hold maturity. Deleting a referenced framework requirement is restricted; deleting a user sets assessor/updater to null.
+
 ## Future relationship design (not implemented)
 
 | Entities                                                                              | Proposed relationships                                                                                                                                                                                                                                          |

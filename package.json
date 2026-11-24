@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "tsx scripts/build.mts",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
@@ -18,7 +18,9 @@
     "db:seed": "tsx scripts/seed.mts",
     "db:admin": "tsx scripts/provision-admin.mts",
     "test": "tsx --test tests/unit/*.test.ts",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "db:seed:synthetic": "tsx scripts/seed-synthetic.mts",
+    "db:demo:clear": "tsx scripts/clear-demo.mts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

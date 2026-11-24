@@ -1,4 +1,8 @@
 import type { PrismaClient } from "../src/generated/prisma/client";
+import {
+  CATALOGUE_VERSION,
+  catalogueTopics,
+} from "../src/lib/domain/catalogue";
 
 export async function seedFoundation(client: PrismaClient) {
   await client.$transaction(async (tx) => {
@@ -41,5 +45,64 @@ export async function seedFoundation(client: PrismaClient) {
         },
       });
     }
+    await seedCapabilityCatalogue(tx);
   });
+}
+
+type Transaction = Parameters<Parameters<PrismaClient["$transaction"]>[0]>[0];
+
+/**
+ * Adds missing reference-baseline topics and KPIs. Existing records and any
+ * organizational edits are kept, so the seed is idempotent.
+ */
+async function seedCapabilityCatalogue(tx: Transaction) {
+  const pillars = await tx.pillar.findMany({ select: { id: true, key: true } });
+  const pillarId = new Map(pillars.map((pillar) => [pillar.key, pillar.id]));
+  for (const [index, topic] of catalogueTopics.entries()) {
+    let capability = await tx.capability.findUnique({
+      where: { code: topic.code },
+    });
+    if (!capability) {
+      capability = await tx.capability.create({
+        data: {
+          code: topic.code,
+          groupCode: topic.code.slice(0, 2),
+          name: topic.name,
+          catalogue: CATALOGUE_VERSION,
+          sortOrder: index,
+          pillars: {
+            create: topic.pillars
+              .filter((key) => pillarId.has(key))
+              .map((key) => ({ pillarId: pillarId.get(key)! })),
+          },
+        },
+      });
+      await tx.changeEvent.create({
+        data: {
+          action: "catalogue.seeded",
+          entityType: "Capability",
+          entityId: capability.id,
+          details: { code: topic.code, catalogue: CATALOGUE_VERSION },
+        },
+      });
+    }
+    for (const [position, kpi] of topic.kpis.entries()) {
+      const catalogueKey = `${topic.code}-${position + 1}`;
+      if (await tx.capabilityIndicator.findUnique({ where: { catalogueKey } }))
+        continue;
+      const [name, pass, fail, direction] = kpi;
+      await tx.capabilityIndicator.create({
+        data: {
+          capabilityId: capability.id,
+          catalogueKey,
+          sortOrder: position,
+          name,
+          unit: "%",
+          direction: direction ?? "higher",
+          passThreshold: pass,
+          failThreshold: fail,
+        },
+      });
+    }
+  }
 }

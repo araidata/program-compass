@@ -6,9 +6,12 @@ import { requirePage } from "@/lib/server/access";
 
 export const dynamicParams = false;
 
+/** Modules with their own route; everything else renders a placeholder. */
+const implemented = new Set(["/", "/capabilities", "/settings"]);
+
 export function generateStaticParams() {
   return navigation
-    .filter((item) => item.href !== "/")
+    .filter((item) => !implemented.has(item.href))
     .map((item) => ({ module: item.href.slice(1) }));
 }
 
