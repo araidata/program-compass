@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/sheet";
 import { ScopeSwitcher } from "@/components/scope-switcher";
 import { useScope } from "@/components/use-scope";
+import { authenticationDisabled } from "@/lib/auth-mode";
 import { LogoutButton } from "@/components/auth-controls";
 
 // Per-viewer layout preference only; never application data.
@@ -259,7 +260,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
           <div className="flex min-w-0 items-center gap-1">
             <ScopeSwitcher />
-            <LogoutButton />
+            {!authenticationDisabled && <LogoutButton />}
           </div>
         </header>
         <main

@@ -1,3 +1,4 @@
+import { authenticationDisabled } from "@/lib/auth-mode";
 import { auth } from "@/lib/server/auth";
 import { failure } from "@/lib/server/api";
 
@@ -13,6 +14,11 @@ async function handler(
   request: Request,
   context: { params: Promise<{ all: string[] }> },
 ) {
+  if (authenticationDisabled)
+    return Response.json(
+      { error: { message: "Authentication is disabled" } },
+      { status: 404, headers: { "Cache-Control": "no-store" } },
+    );
   const path = (await context.params).all.join("/");
   if (allowed[path] !== request.method)
     return Response.json({ error: { message: "Not found" } }, { status: 404 });

@@ -59,3 +59,7 @@ Details and rationale for each are in [UX_REVIEW.md](UX_REVIEW.md). Aaron approv
 - **Proposed — S-06:** R1–R3 deliver connected capability/context/direction/reporting baseline before R4–R5 resource/multiyear extensions. Methods, domain schema and each slice require approval. Retain useful analytical presentations alongside tables; no shell rewrite.
 
 P-10 covers indicative alignment, extended by the latest explicit framework assessment requirements; it does not authorize verified compliance claims or GRC lifecycle management. P-04 is a consistent layout default, not a prohibition on capability cards, org charts or timelines. Historical 2026-11-24 approval dates above are preserved as recorded; this review uses the client date 2026-11-23 and does not infer new approvals from those dates.
+
+## 2026-11-23 � Authentication suspension (accepted)
+
+The owner explicitly requested removal of authentication after account lockout until further instruction. Suspend page and API identity/role enforcement through one shared switch, retain accounts and auth implementation for restoration, and record anonymous administrative writes with null actor IDs. This narrow authorization supersedes the prior documentation-only/auth-preservation gate; it does not authorize business slices.
