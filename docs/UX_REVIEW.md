@@ -160,7 +160,7 @@ Goal: looks fast, precise, and expensive through restraint and alignment, not de
 - **Charts:** Recharts with the same tokens, direct labels where possible, every chart paired with an accessible table and a drill-down.
 - **Motion:** none beyond 150 ms state transitions; side panel slides in.
 - **Dark mode:** supported by tokens from the start, shipped later if wanted.
-- **Responsive:** full functionality from 1280 px; tablet keeps tables with fewer default columns; phone is optimized for reading (overview, registers as lists, detail panels full-screen) rather than bulk entry.
+- **Desktop-only (owner correction 2026-11-24):** full functionality from 1280 px. Mobile/phone layouts, navigation and QA are out of scope; this supersedes the original tablet/phone proposal.
 
 ## 7. Usability risks to watch during implementation
 

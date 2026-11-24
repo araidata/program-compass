@@ -1,6 +1,8 @@
 # Architecture — authoritative requirements
 
-> Governing update: the 2026-11-23 strategic scope correction and latest Framework Alignment requirements below supersede conflicting historical proposals. Dedicated framework assessment and implementation tracking are core; enterprise GRC workflows remain excluded. Current authorization: documentation review only.
+> Governing update: the 2026-11-23 strategic scope correction and latest Framework Alignment requirements below supersede conflicting historical proposals. Dedicated framework assessment and implementation tracking are core; enterprise GRC workflows remain excluded. Current implementation authorization and state are recorded below.
+
+> Current authorization (owner instruction 2026-11-24): complete the remaining strategic-planning site and tools, preserving existing infrastructure and scope exclusions. Earlier documentation-only and slice-approval gates are historical and superseded by this instruction. Desktop-only support: 1280 px and above; no mobile work. See CONTINUATION.md and PROJECT_STATUS.md for actual completion state.
 
 This file is the single architectural source of truth for both Codex and Claude Code. Read it together with PROJECT_SCOPE.md before changes; update this file when an approved architectural decision changes.
 
@@ -21,7 +23,7 @@ Approved 2026-11-24 (DECISION_LOG P-01 to P-08, P-12, P-13); rationale in UX_REV
 - A planning cycle selector sits beside the scope control once cycles exist in the Phase 1 schema.
 - Every module uses one layout: one-line page header with at most one primary action; summary strip; view tabs; filters held in the URL; dense table; side panel for detail and editing. Modals are for confirmations only. Owners are chosen from person records, never typed.
 - Visual system: light collapsible sidebar, 48 px header, Inter via next/font with tabular numerals for figures, neutral palette with a single accent, status colours used only for status and always labelled, a separate reserved colour per pillar. All colours are design tokens in src/app/globals.css; components do not hard-code palette utilities. Borders over shadows, compact spacing, full-width content. No taglines, logos, hero banners, decorative graphics, or promotional copy.
-- Full functionality from 1280 px wide; smaller screens prioritize reading. Text contrast meets WCAG AA, every grid has a keyboard path, and colour never carries meaning alone.
+- Desktop-only support at viewport widths of 1280 px and above. Mobile/phone layouts, mobile navigation and mobile QA are out of scope by permanent owner instruction (2026-11-24), superseding P-08 phone reading support. Existing mobile accommodations may remain without maintenance or acceptance obligations. Reintroduce mobile only on explicit owner request. Text contrast meets WCAG AA, every grid has a keyboard path, and colour never carries meaning alone.
 
 ## Code boundaries
 
@@ -92,3 +94,32 @@ The owner authorized review, corrective changes and production delivery of the m
 ## Open access until owner restoration - 2026-11-24
 
 The owner explicitly requested removal of all access requirements while preparing the site. Application login/role gates remain disabled; the shared save guard now also skips Origin restrictions while authenticationDisabled is true. JSON/content-type, strict field validation and transaction integrity remain. The original canonical-origin check remains for restoration when requested. Vercel project SSO deployment protection is disabled (ssoProtection null); password protection and trusted-IP restrictions are absent. Existing deployment-specific URLs remain immutable old builds; use the stable production URL for updated behavior. No organizational values or accounts are changed by this fix.
+
+## Personnel and cycle continuation — 2026-11-24
+
+Strategic objectives: responsibility alignment, workforce planning and maturity improvement. Supported decisions: who is accountable for each capability, which authorized positions are vacant, which staffing proposals need justification, and how a captured assessment differs from current facts.
+
+- Personnel (`Person`) are independent of login accounts. `Position` has a pillar, optional incumbent, proposed/authorized/retired state, explicit FTE, nullable annual cost/currency, implementation year and rationale. A person can fill multiple authorized positions up to 1 FTE total; vacancies have no incumbent. A reporting forest can have multiple roots but no cycles. Archive with inactive/retired states; preserve identity and links.
+- `src/lib/domain/workforce.ts` owns strict input contracts and pure reporting traversal. `src/lib/server/workforce.ts` owns database access. Personnel/position writes serialize through a transaction advisory lock, check a revision timestamp and record allowlisted field names in ChangeEvent in the same transaction. New API routes reuse the existing permission and suspended-authentication behavior.
+- Capability accountability now supports a Person foreign key alongside the existing accountable organizational function. Person name is preferred in views and CSV; an existing function remains an explicit fallback, preserving entered work. Ownership changes do not refresh assessment age. Workforce links to assigned capabilities; descendant rollups deduplicate capability records and never imply workload hours/FTE.
+- `PlanningCycle` captures immutable `CapabilitySnapshot` JSON projections in a repeatable-read transaction. Payload format `capability-snapshot-1` includes catalogue/scale version, scope, score/targets, owners and operational KPIs. Snapshot values are read-only through the UI/API; no endpoint edits them. The current capability remains authoritative. Capability cycle selector is module-local at this stage; historical detail history is explicitly the live-record history. Historical review age uses capture time. Full cycle comparison/global selection and context/resource/plan snapshots remain future work.
+- Additive migration `202611240002_people_cycles` has foreign keys and FTE/cost/currency/incumbent/self-manager checks. Development applied successfully; production is untouched by this chat. Existing build migration policy remains.
+
+## Business context continuation — 2026-11-24
+
+Strategic objectives: program development, prioritization and resource justification. Supported decisions: which business services/objectives need capability improvement and which business consequences explain the priority.
+
+- `OrganizationProfile` is an explicit singleton with mission, sector, critical services/dependencies, public-safety consequences, drivers and sourced complexity/growth notes. No organization metrics or assumptions are generated automatically.
+- `BusinessObjective` has priority, rationale, optional Person owner, active state and unique capability joins. `BusinessThreat` is a high-level scenario with optional ordinal likelihood/impact, mandatory estimate basis/planning consequence, active state and explicit objective/capability joins. It is not an enterprise risk register. Unlinked threats are rejected. Archived records retain relationships.
+- Server-only context persistence uses strict discriminated Zod inputs, referential checks, serialized transactional writes/history and stale-revision 409 responses. Additive migration `202611240003_business_context` preserves existing tables and adds foreign keys, singleton and ordinal-range constraints.
+- `src/lib/domain/context.ts` contains provisional `reference-readiness-1`: unique applicable mapped capability scores, weakest/mean, unmapped/nonapplicable/incomplete states. Any missing mapped assessment prevents a defended label. Objective views union direct capability links and active defending-threat links. No likelihood×impact enterprise scoring subsystem is introduced.
+- Organization profile, objective cards, threat table and threat/objective matrix support URL search/pillar scope, explicit save/error/empty states, safe CSV and print controls. Reciprocal context links appear in capability details. Exports disclose readiness method/scope/date and synthetic-assessment provenance. Shared RecordEditor supports accessible labeled fields and relationship pickers for later modules.
+- New URL controls use optimistic query updates for immediate input feedback, with SSR controls disabled until hydration. These changes are limited to the new planning workspaces. Print styles remove navigation/actions, retain data and repeat table headers; final print fidelity is still subject to visual QA.
+
+## Seed reliability follow-up — 2026-11-24
+
+The idempotent foundation/catalogue seed preloads existing capability rows and KPI keys in two bulk reads rather than ninety serial lookups. Its transaction has a bounded 30-second timeout and 10-second max wait, accommodating initial inserts/Neon latency without the observed five-second expiry. Existing records and organizational edits remain untouched; the established seed lock still serializes runs. This is an operational reliability correction, not new organizational/demo data or a build-policy change.
+
+## Editable provisional assumptions — owner approval 2026-11-24
+
+Where planning methods are undecided, continue implementation with clearly labelled organization-editable provisional assumptions. Store units, basis/source, effective date and method/version with quantitative inputs; distinguish estimates, measured facts and authoritative reference requirements. Deterministic domain calculations remain separate from UI. Preserve the assumption versions/inputs used by captured cycles, scenarios and reported results rather than silently rewriting history when settings change. Missing required inputs produce incomplete results. Approval of this approach does not approve individual numeric defaults or authorize invented standards/benchmarks. Existing fixed provisional constants must become editable through validated persistent settings as their calculation tools are completed.

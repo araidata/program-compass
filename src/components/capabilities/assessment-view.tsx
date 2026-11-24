@@ -193,12 +193,14 @@ export function AssessmentView({
                       <span
                         className={cn(
                           "block truncate text-xs",
-                          item.accountableFunctionName
+                          (item.ownerPersonName ?? item.accountableFunctionName)
                             ? "text-foreground"
                             : "text-muted-foreground italic",
                         )}
                       >
-                        {item.accountableFunctionName ?? "No owner"}
+                        {item.ownerPersonName ??
+                          item.accountableFunctionName ??
+                          "No owner"}
                       </span>
                       <ReviewBadge capability={item} now={now} />
                     </td>

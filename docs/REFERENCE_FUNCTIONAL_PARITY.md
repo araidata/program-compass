@@ -2,6 +2,21 @@
 
 Reviewed 2026-11-23 against [the interactive reference](https://spm.threat-modeling.com/) and repository main `35465f6`. Latest Framework Alignment requirements govern where they supersede the strategic scope correction. Evidence, full original 30-topic/60-KPI inventory, tested interactions and verification limitations are in REFERENCE_APPLICATION_REVIEW.md. No business implementation is authorized by this assessment.
 
+## Live implementation overlay — 2026-11-24
+
+The matrix below preserves the original corrective review baseline; its historical repository-status column must not be mistaken for current completion. PROJECT_STATUS.md and CONTINUATION.md are the current delivery ledger.
+
+| Area                                 | Current implementation                                                                                                                                   | Remaining parity/requirements                                                                                |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Capabilities/Overview                | Original 30/60 catalogue, current/target assessment, KPI bands, URL filters, analysis/CSV, history, person plus function accountability                  | Cards/expanded subject inventory, full cross-module relationships, approved methodology                      |
+| Workforce                            | Personnel/reporting lines, authorized/vacant/proposed positions, allocation validation, direct/descendant capability ownership, CSV                      | NICE/skills, sourced workload/productive capacity/FTE, coverage constraints, position/resource justification |
+| Capability cycles                    | Immutable score/KPI/owner/scope/catalogue/scale snapshots and read-only selector                                                                         | Global selection, explicit comparisons, context/resource/plan snapshots                                      |
+| Business Context                     | Organization profile, objective/threat editors and typed joins, indicative readiness, dependency matrix, reciprocal capability links, CSV/print controls | Responsibilities and linked planning issue/investment workflows; provisional method review                   |
+| Framework Alignment                  | Existing empty reference/mapping tables only                                                                                                             | Authoritative NIST/CJIS content, requirement-specific assessments, mapping editor, history and all analytics |
+| Roadmap/Technology/Reports/multiyear | Placeholders                                                                                                                                             | All substantive connected planning functionality                                                             |
+
+Current implementation is under desktop-only acceptance (1280 px and above), superseding historical mobile requirements. New browser workflows and final print QA are tracked in PROJECT_STATUS; do not infer completed validation from this inventory.
+
 ## Classification and acceptance contract
 
 Statuses: **Implemented**, **Partially implemented**, **Placeholder only**, **Missing**, **Intentionally excluded with documented approval**, **Unable to verify**. A placeholder/navigation item/model/basic form/dashboard card is not implementation. Infrastructure marked Implemented does not establish business parity. All current business routes are placeholders; no assessment/KPI/people/initiative/framework business models exist in Prisma.

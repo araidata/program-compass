@@ -1,10 +1,12 @@
-# Corrective implementation plan — proposal for review
+# Corrective implementation plan — active continuation
 
-Updated 2026-11-23. Completed foundation (Phase 0) and secure persistence (Phase 1, merged main `35465f6`) remain intact. Current authorization: review/documentation only. Stop here pending approval of the plan and the first implementation slice. R1–R5 are proposed slices, not authorization or a relabeling of completed work. Earlier sequencing that deferred all relationships/reporting until late phases is superseded as a proposal.
+> Current authorization (owner instruction 2026-11-24): complete the remaining strategic-planning site and tools, preserving existing infrastructure and scope exclusions. Earlier documentation-only and slice-approval gates are historical and superseded by this instruction. Desktop-only support: 1280 px and above; no mobile work. See CONTINUATION.md and PROJECT_STATUS.md for actual completion state.
+
+Updated 2026-11-23. Completed foundation (Phase 0) and secure persistence (Phase 1, merged main `35465f6`) remain intact. The owner authorized completion of remaining strategic-planning site/tools on 2026-11-24. R1–R5 now organize the authorized remaining work; their original review-only gates below are historical, not a claim of completion. See PROJECT_STATUS.md and CONTINUATION.md for delivered/partial work and unresolved methods. Earlier sequencing that deferred all relationships/reporting until late phases is superseded as a proposal.
 
 ## Preserve and modify
 
-Retain Next.js, npm lockfile, Prisma/PostgreSQL, native authentication/roles, validated server API boundaries, transactional administrative history, existing migration/operator tooling, GitHub/Vercel/Neon configuration, responsive shell, URL pillar scope, page header, tokens, UI primitives and tests. No substantial infrastructure redesign or rewrite is indicated. The absent domain model needs additive design, not replacement of the auth/configuration foundation.
+Retain Next.js, npm lockfile, Prisma/PostgreSQL, native authentication/roles, validated server API boundaries, transactional administrative history, existing migration/operator tooling, GitHub/Vercel/Neon configuration, desktop shell, URL pillar scope, page header, tokens, UI primitives and tests. No substantial infrastructure redesign or rewrite is indicated. The absent domain model needs additive design, not replacement of the auth/configuration foundation.
 
 Replace placeholder content incrementally with domain views. Extend authorization/history to each business API, typed person ownership, URL filters and calculation selectors. Add accessible capability cards/minimap, keyboard rating grid, KPI bands, contextual relationship panels, timeline/list, org chart, safe exports and print layouts. Navigation changes relabel Compliance as dedicated Framework Alignment and remove standalone Risks & Findings with a scoped legacy redirect, as described in INFORMATION_ARCHITECTURE.md. Existing placeholder phase labels remain unchanged in code until implementation is approved.
 
@@ -27,7 +29,7 @@ Core planning baseline R1–R3, including full framework assessment/analytics: *
 
 ## Delivery gates and next action
 
-Each slice needs persistent authorized behavior, reciprocal relationships, documented calculations, empty/error/save states, representative synthetic end-to-end fixtures, keyboard/accessibility and responsive navigation checks, safe exports and updated status. A placeholder, table, form or chart is not functional completion. Domain migrations are additive/reviewed, builds never query or migrate, and real organizational data still requires the existing hosting/handling review and runtime least-privilege hardening.
+Each slice needs persistent authorized behavior, reciprocal relationships, documented calculations, empty/error/save states, representative synthetic end-to-end fixtures, keyboard/accessibility and desktop navigation checks, safe exports and updated status. A placeholder, table, form or chart is not functional completion. Domain migrations are additive/reviewed, builds never query or migrate, and real organizational data still requires the existing hosting/handling review and runtime least-privilege hardening.
 
 Outstanding decisions: approve first slice; maturity scale/aggregation/applicability, review cadence, concurrency policy, responsibility granularity; catalog reuse rights/provenance; authoritative CJIS/NICE versions and mapping review; fiscal year/currency/productive-hour assumptions; the minimum fields for external planning issue references. Do not block documentation on these or invent answers. Reference print fidelity, exhaustive edit/delete validation and Saved-mode recovery remain unverified; they do not authorize browser-storage adoption. Next task after review is R0 decision closure and explicit R1 authorization, not a rewrite or production rollout.
 

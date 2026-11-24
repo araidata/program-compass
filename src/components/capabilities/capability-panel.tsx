@@ -23,6 +23,7 @@ import {
   type CapabilityView,
   type IndicatorView,
 } from "@/lib/domain/capabilities";
+import { ContextLinks } from "./context-links";
 import { RatingInput } from "./rating-input";
 import {
   GapValue,
@@ -57,6 +58,7 @@ const fieldLabels: Record<string, string> = {
   description: "description",
   reviewState: "review state",
   targetDate: "target date",
+  ownerPersonId: "accountable person",
   accountableFunctionId: "accountable function",
   pillarKeys: "pillars",
 };
@@ -164,6 +166,7 @@ const selectClass = "form-input h-8 py-0 text-[13px] disabled:bg-muted/40";
 export function CapabilityPanel({
   capability,
   functions,
+  people,
   canEdit,
   now,
   onClose,
@@ -174,6 +177,7 @@ export function CapabilityPanel({
 }: {
   capability: CapabilityView | null;
   functions: FunctionGroup[];
+  people: { id: string; name: string }[];
   canEdit: boolean;
   now: Date;
   onClose: () => void;
@@ -203,6 +207,7 @@ export function CapabilityPanel({
             key={capability.id}
             capability={capability}
             functions={functions}
+            people={people}
             canEdit={canEdit}
             now={now}
             onUpdate={(patch) => onUpdate(capability.id, patch)}
@@ -221,6 +226,7 @@ export function CapabilityPanel({
 function PanelBody({
   capability: item,
   functions,
+  people,
   canEdit,
   now,
   onUpdate,
@@ -230,6 +236,7 @@ function PanelBody({
 }: {
   capability: CapabilityView;
   functions: FunctionGroup[];
+  people: { id: string; name: string }[];
   canEdit: boolean;
   now: Date;
   onUpdate: (patch: CapabilityPatch) => void;
@@ -247,6 +254,7 @@ function PanelBody({
     item.reviewState,
     item.rationale,
     item.pillarKeys,
+    item.ownerPersonId,
     item.accountableFunctionId,
     item.targetDate,
     item.applicable,
@@ -414,8 +422,26 @@ function PanelBody({
         </div>
       </Section>
 
+      <ContextLinks capabilityId={item.id} />
       <Section title="Direction and ownership">
         <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+          <Field label="Accountable person">
+            <select
+              className={selectClass}
+              disabled={disabled}
+              value={item.ownerPersonId ?? ""}
+              onChange={(e) =>
+                onUpdate({ ownerPersonId: e.target.value || null })
+              }
+            >
+              <option value="">Unassigned</option>
+              {people.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+          </Field>
           <Field label="Accountable function">
             <select
               value={item.accountableFunctionId ?? ""}
@@ -523,7 +549,7 @@ function PanelBody({
         </p>
       </Section>
 
-      <Section title="History">
+      <Section title="Live record history">
         {history == null ? (
           <p className="text-xs text-muted-foreground">Loading history…</p>
         ) : history.length === 0 ? (

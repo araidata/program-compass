@@ -1,6 +1,8 @@
 # Program Compass scope
 
-> Governing update: the 2026-11-23 strategic scope correction and latest Framework Alignment requirements below supersede conflicting historical proposals. Dedicated framework assessment and implementation tracking are core; enterprise GRC workflows remain excluded. Current authorization: documentation review only.
+> Governing update: the 2026-11-23 strategic scope correction and latest Framework Alignment requirements below supersede conflicting historical proposals. Dedicated framework assessment and implementation tracking are core; enterprise GRC workflows remain excluded. Current implementation authorization and state are recorded below.
+
+> Current authorization (owner instruction 2026-11-24): complete the remaining strategic-planning site and tools, preserving existing infrastructure and scope exclusions. Earlier documentation-only and slice-approval gates are historical and superseded by this instruction. Desktop-only support: 1280 px and above; no mobile work. See CONTINUATION.md and PROJECT_STATUS.md for actual completion state.
 
 Program Compass supports cybersecurity strategic planning, capability assessment, and resource planning.
 
@@ -47,3 +49,7 @@ Retain reference capability/maturity/KPI, business context, ownership, targets, 
 Exclude formal certification/attestation, evidence management platforms, audit lifecycle management, formal control testing, compliance exception approval, compensating control management, formal risk acceptance, continuous compliance monitoring and comprehensive enterprise GRC. Requirement-specific assessments and implementation tracking remain in scope; these are not certification or formal control testing. Lightweight risks/findings/deficiencies may be recorded or referenced only when linked to a capability development, priority, resource or technology decision; no comprehensive risk register or audit finding system. Do not recreate external enterprise systems or integrate them without a defined need.
 
 Current authorization is documentation review, functional gap analysis and a corrective implementation proposal. Stop after presenting it. No business implementation, migrations, navigation changes, production rollout or major architecture changes are authorized by this review. Preserve GitHub, Vercel, Neon, native authentication and existing working components. Completed Phase 1 remains historical; proposed R1–R5 slices do not authorize development.
+
+## Desktop-only support — owner correction 2026-11-24
+
+Supported desktop viewport widths are 1280 px and above. Mobile site development, mobile navigation, mobile QA and phone reading support are excluded permanently unless Aaron explicitly requests reinstatement. This supersedes prior responsive/mobile scope language; historical completion records remain historical. Desktop accessibility remains required.

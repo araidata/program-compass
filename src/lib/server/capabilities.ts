@@ -10,7 +10,8 @@ import type {
 } from "@/lib/validation";
 import type { z } from "zod";
 
-const capabilityInclude = {
+export const capabilityInclude = {
+  ownerPerson: { select: { name: true } },
   accountableFunction: { select: { name: true } },
   assessedBy: { select: { name: true } },
   pillars: { select: { pillar: { select: { key: true, sortOrder: true } } } },
@@ -39,10 +40,12 @@ function toIndicator(record: IndicatorRecord): IndicatorView {
   };
 }
 
-function toView(record: CapabilityRecord): CapabilityView {
+export function toView(record: CapabilityRecord): CapabilityView {
   return {
     id: record.id,
     code: record.code,
+    catalogue: record.catalogue,
+    scaleVersion: record.scaleVersion,
     groupCode: record.groupCode,
     name: record.name,
     description: record.description,
@@ -53,6 +56,8 @@ function toView(record: CapabilityRecord): CapabilityView {
     rationale: record.rationale,
     reviewState: record.reviewState,
     targetDate: day(record.targetDate),
+    ownerPersonId: record.ownerPersonId,
+    ownerPersonName: record.ownerPerson?.name ?? null,
     accountableFunctionId: record.accountableFunctionId,
     accountableFunctionName: record.accountableFunction?.name ?? null,
     assessedAt: record.assessedAt?.toISOString() ?? null,
@@ -69,7 +74,7 @@ function toView(record: CapabilityRecord): CapabilityView {
 export class SchemaPendingError extends Error {}
 
 const isMissingTable = (error: unknown) =>
-  (error as { code?: string })?.code === "P2021";
+  ["P2021", "P2022"].includes((error as { code?: string })?.code ?? "");
 
 export async function listCapabilities(): Promise<CapabilityView[]> {
   try {
@@ -143,6 +148,13 @@ export async function updateCapability(
   return db().$transaction(async (tx) => {
     const before = await tx.capability.findUnique({ where: { id } });
     if (!before) throw new HttpError(404, "Capability not found");
+    if (
+      input.ownerPersonId &&
+      !(await tx.person.findFirst({
+        where: { id: input.ownerPersonId, active: true },
+      }))
+    )
+      throw new HttpError(400, "Choose an active person");
     if (input.accountableFunctionId) {
       const exists = await tx.organizationalFunction.findUnique({
         where: { id: input.accountableFunctionId },

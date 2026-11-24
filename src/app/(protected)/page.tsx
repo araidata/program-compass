@@ -30,7 +30,12 @@ import {
 const planned: NavItem[] = [
   ...navigationGroups.flatMap((group) => group.items),
   settingsItem,
-].filter((item) => !["/", "/capabilities", "/settings"].includes(item.href));
+].filter(
+  (item) =>
+    !["/", "/capabilities", "/settings", "/workforce", "/context"].includes(
+      item.href,
+    ),
+);
 
 type Attention = { item: CapabilityView; reason: string; tone: "bad" | "warn" };
 
@@ -59,7 +64,7 @@ function attention(items: CapabilityView[], now: Date): Attention[] {
       list.push({ item, reason: "Review overdue", tone: "bad" });
     else if (item.currentLevel == null)
       list.push({ item, reason: "Not assessed", tone: "warn" });
-    else if (!item.accountableFunctionId)
+    else if (!item.ownerPersonId && !item.accountableFunctionId)
       list.push({ item, reason: "No accountable owner", tone: "warn" });
   }
   const rank = (entry: Attention) => (entry.tone === "bad" ? 0 : 1);

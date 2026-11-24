@@ -59,6 +59,7 @@ export const capabilityUpdateSchema = z
     description: z.string().trim().max(2000).nullable(),
     reviewState: z.enum(["draft", "submitted", "reviewed"]),
     targetDate: isoDate.nullable(),
+    ownerPersonId: z.string().min(1).max(100).nullable(),
     accountableFunctionId: z.string().min(1).max(100).nullable(),
     pillarKeys: z
       .array(z.enum(["secops", "sae", "grc"]))

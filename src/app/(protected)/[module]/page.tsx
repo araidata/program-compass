@@ -7,7 +7,13 @@ import { requirePage } from "@/lib/server/access";
 export const dynamicParams = false;
 
 /** Modules with their own route; everything else renders a placeholder. */
-const implemented = new Set(["/", "/capabilities", "/settings"]);
+const implemented = new Set([
+  "/",
+  "/capabilities",
+  "/settings",
+  "/workforce",
+  "/context",
+]);
 
 export function generateStaticParams() {
   return navigation

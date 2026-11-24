@@ -221,3 +221,68 @@
   );
   background-color: var(--track);
 }
+
+.print-only {
+  display: none;
+}
+
+/* Leadership working copies use native print, with navigational controls removed. */
+@media print {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+  .print-only {
+    display: block;
+  }
+  .print-hidden {
+    display: none !important;
+  }
+  @page {
+    size: landscape;
+    margin: 12mm;
+  }
+  aside,
+  header.sticky,
+  a[href="#main-content"],
+  button[data-slot="button"],
+  input,
+  select,
+  [role="dialog"] {
+    display: none !important;
+  }
+  aside + div {
+    padding-left: 0 !important;
+  }
+  main {
+    padding: 0 !important;
+  }
+  body {
+    background: var(--background);
+    font-size: 10pt;
+  }
+  body > div,
+  main,
+  fieldset {
+    min-width: 0 !important;
+  }
+  .overflow-x-auto {
+    overflow: visible !important;
+  }
+  table {
+    width: 100%;
+    font-size: 9pt;
+  }
+  thead {
+    display: table-header-group;
+  }
+  tr {
+    break-inside: avoid;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}

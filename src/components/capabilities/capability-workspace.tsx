@@ -58,6 +58,7 @@ export type CapabilityPatch = Partial<
     | "reviewState"
     | "targetDate"
     | "accountableFunctionId"
+    | "ownerPersonId"
     | "pillarKeys"
   >
 >;
@@ -105,12 +106,14 @@ export function CapabilityWorkspace({
   initial,
   synthetic,
   functions,
+  people,
   canEdit,
   now: nowIso,
 }: {
   initial: CapabilityView[];
   synthetic: boolean;
   functions: FunctionGroup[];
+  people: { id: string; name: string }[];
   canEdit: boolean;
   now: string;
 }) {
@@ -377,6 +380,7 @@ export function CapabilityWorkspace({
       "Review state",
       "Last assessed",
       "Target date",
+      "Accountable person",
       "Accountable function",
       "Data source",
       ...Array.from(
@@ -400,9 +404,10 @@ export function CapabilityWorkspace({
       item.reviewState,
       item.assessedAt?.slice(0, 10),
       item.targetDate,
+      item.ownerPersonName,
       item.accountableFunctionName,
       synthetic ? "Contains synthetic demo data" : "Recorded assessments",
-      ...Array.from({ length: (header.length - 15) / 2 }, (_, index) => [
+      ...Array.from({ length: (header.length - 16) / 2 }, (_, index) => [
         item.indicators[index]?.name,
         item.indicators[index]?.value,
       ]).flat(),
@@ -689,6 +694,7 @@ export function CapabilityWorkspace({
       <CapabilityPanel
         capability={selected}
         functions={functions}
+        people={people}
         canEdit={canEdit}
         now={now}
         onClose={() => open(null)}

@@ -104,6 +104,7 @@ model Pillar {
   updatedAt      DateTime                 @updatedAt
   functions      OrganizationalFunction[]
   capabilities   CapabilityPillar[]
+  positions      Position[]
 }
 
 model OrganizationalFunction {
@@ -187,6 +188,11 @@ model Capability {
   pillars               CapabilityPillar[]
   indicators            CapabilityIndicator[]
   requirements          CapabilityRequirementMapping[]
+  ownerPersonId         String?
+  ownerPerson           Person?                        @relation(fields: [ownerPersonId], references: [id], onDelete: SetNull)
+  snapshots             CapabilitySnapshot[]
+  objectives            ObjectiveCapability[]
+  threats               ThreatCapability[]
 
   @@index([groupCode, sortOrder])
 }
@@ -274,4 +280,133 @@ model CapabilityRequirementMapping {
 
   @@id([capabilityId, requirementId])
   @@index([requirementId])
+}
+
+// Personnel are planning records, independent of application login accounts.
+model Person {
+  id           String       @id @default(uuid())
+  name         String
+  title        String
+  managerId    String?
+  manager      Person?      @relation("ReportingLine", fields: [managerId], references: [id], onDelete: Restrict)
+  reports      Person[]     @relation("ReportingLine")
+  active       Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  positions    Position[]
+  capabilities Capability[]
+  objectives   BusinessObjective[]
+
+  @@index([managerId])
+}
+
+enum PositionState {
+  authorized
+  proposed
+  retired
+}
+
+model Position {
+  id             String        @id @default(uuid())
+  title          String
+  pillarId       String
+  pillar         Pillar        @relation(fields: [pillarId], references: [id], onDelete: Restrict)
+  personId       String?
+  person         Person?       @relation(fields: [personId], references: [id], onDelete: Restrict)
+  state          PositionState @default(proposed)
+  fte            Decimal       @db.Decimal(8, 4)
+  annualCost     Decimal?      @db.Decimal(16, 2)
+  currency       String        @default("USD")
+  startYear      Int?
+  justification  String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([pillarId])
+  @@index([personId])
+}
+
+// Immutable assessment snapshots; the live capability remains authoritative.
+model PlanningCycle {
+  id             String               @id @default(uuid())
+  name           String
+  asOf           DateTime             @db.Date
+  notes          String?
+  createdAt      DateTime             @default(now())
+  snapshots      CapabilitySnapshot[]
+}
+
+model CapabilitySnapshot {
+  cycleId        String
+  cycle          PlanningCycle @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+  capabilityId   String
+  capability     Capability    @relation(fields: [capabilityId], references: [id], onDelete: Restrict)
+  // Full serializable assessment, indicators and scope at capture time.
+  assessment     Json
+
+  @@id([cycleId, capabilityId])
+}
+
+model OrganizationProfile {
+  id                   String   @id @default("organization")
+  mission              String?
+  sector               String?
+  criticalServices     String?
+  dependencies         String?
+  publicSafetyImpact   String?
+  regulatoryDrivers    String?
+  complexityNotes      String?
+  updatedAt            DateTime @updatedAt
+}
+
+model BusinessObjective {
+  id           String                @id @default(uuid())
+  title        String
+  rationale    String
+  priority     Int
+  ownerId      String?
+  owner        Person?               @relation(fields: [ownerId], references: [id], onDelete: SetNull)
+  active       Boolean               @default(true)
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+  capabilities ObjectiveCapability[]
+  threats      ThreatObjective[]
+}
+
+model BusinessThreat {
+  id           String             @id @default(uuid())
+  title        String
+  scenario     String
+  likelihood   Int?
+  impact       Int?
+  basis        String
+  active       Boolean            @default(true)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  objectives   ThreatObjective[]
+  capabilities ThreatCapability[]
+}
+
+model ObjectiveCapability {
+  objectiveId  String
+  objective    BusinessObjective @relation(fields: [objectiveId], references: [id], onDelete: Cascade)
+  capabilityId String
+  capability   Capability        @relation(fields: [capabilityId], references: [id], onDelete: Restrict)
+  @@id([objectiveId, capabilityId])
+}
+
+model ThreatObjective {
+  threatId    String
+  threat      BusinessThreat    @relation(fields: [threatId], references: [id], onDelete: Cascade)
+  objectiveId String
+  objective   BusinessObjective @relation(fields: [objectiveId], references: [id], onDelete: Restrict)
+  @@id([threatId, objectiveId])
+}
+
+model ThreatCapability {
+  threatId     String
+  threat       BusinessThreat @relation(fields: [threatId], references: [id], onDelete: Cascade)
+  capabilityId String
+  capability   Capability     @relation(fields: [capabilityId], references: [id], onDelete: Restrict)
+  @@id([threatId, capabilityId])
 }

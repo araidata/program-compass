@@ -15,7 +15,7 @@ const sorts = [
   { id: "gap", label: "Largest gap first" },
   { id: "order", label: "Topic order" },
   { id: "review", label: "Review status" },
-  { id: "owner", label: "Accountable function" },
+  { id: "owner", label: "Accountable owner" },
   { id: "date", label: "Target date" },
 ] as const;
 type SortId = (typeof sorts)[number]["id"];
@@ -44,8 +44,8 @@ function sortItems(items: CapabilityView[], sort: SortId, now: Date) {
     case "owner":
       return list.sort(
         (a, b) =>
-          (a.accountableFunctionName ?? "~").localeCompare(
-            b.accountableFunctionName ?? "~",
+          (a.ownerPersonName ?? a.accountableFunctionName ?? "~").localeCompare(
+            b.ownerPersonName ?? b.accountableFunctionName ?? "~",
           ) || byOrder(a, b),
       );
     case "date":
@@ -200,7 +200,7 @@ export function GapsView({
                     {passing} / {item.indicators.length}
                   </td>
                   <td className="max-w-[160px] truncate px-2 py-2 text-xs">
-                    {item.accountableFunctionName ?? (
+                    {item.ownerPersonName ?? item.accountableFunctionName ?? (
                       <span className="italic text-muted-foreground">
                         No owner
                       </span>

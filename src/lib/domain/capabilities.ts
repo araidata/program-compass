@@ -24,6 +24,8 @@ export type IndicatorView = {
 export type CapabilityView = {
   id: string;
   code: string;
+  catalogue?: string;
+  scaleVersion?: string;
   groupCode: string;
   name: string;
   description: string | null;
@@ -34,6 +36,8 @@ export type CapabilityView = {
   rationale: string | null;
   reviewState: "draft" | "submitted" | "reviewed";
   targetDate: string | null;
+  ownerPersonId?: string | null;
+  ownerPersonName?: string | null;
   accountableFunctionId: string | null;
   accountableFunctionName: string | null;
   assessedAt: string | null;
@@ -162,7 +166,9 @@ export function summarize(
       .reduce((sum, value) => sum + value, 0),
     meetsTarget: gaps.filter((value) => value <= 0).length,
     noTarget: applicable.filter((item) => item.targetLevel == null).length,
-    noOwner: applicable.filter((item) => !item.accountableFunctionId).length,
+    noOwner: applicable.filter(
+      (item) => !item.ownerPersonId && !item.accountableFunctionId,
+    ).length,
     reviewDue: reviews.filter((value) => value === "due").length,
     reviewOverdue: reviews.filter((value) => value === "overdue").length,
     indicators: {
@@ -370,7 +376,11 @@ export function matchesFilter(
       );
     }
     case "no-owner":
-      return capability.applicable && !capability.accountableFunctionId;
+      return (
+        capability.applicable &&
+        !capability.ownerPersonId &&
+        !capability.accountableFunctionId
+      );
   }
 }
 

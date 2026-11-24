@@ -2,6 +2,44 @@
 
 Last updated: 2026-11-24 (America/Chicago).
 
+## Main release authorized — 2026-11-24
+
+Aaron explicitly requested **Push to main** for the completed continuation work and documentation. Release includes the desktop-only rule, personnel/positions/capability ownership, immutable capability snapshots, Business Context, seed reliability correction and provisional-assumption approval record; it does not represent completion of the remaining modules. Remote main was verified at `a205439` with no intervening changes. Native GitHub/Vercel production target confirmed: araidata/program-compass, branch main, project program-compass under araidatas-projects, Node 24/npm ci/npm run build. The connector returned its documented 404; authenticated CLI inspection confirmed the correct existing target.
+
+Pre-push credential-free required checks are running; prior desktop workflow/print validation remains as recorded below. Staged review, commit/push and production verification follow. Authentication and mutation-origin suspension remain unchanged. The reviewed additive migrations will apply through the existing C-07 production build process; existing assessments/configuration are preserved and new domain tables are initially empty. No production test records will be created just to verify deployment.
+
+## Owner method approval — 2026-11-24
+
+Aaron answered the pending question: **Use editable provisional assumptions** for remaining planning tools where methods were undecided. Updated DECISION_LOG, ARCHITECTURE, CALCULATION_METHODOLOGY and CONTINUATION to record the approval and version/source/history requirements. This approves proceeding with the approach; it does not approve individual numeric defaults or change measured facts/reference standards. No application/schema/environment changes in this approval-record update. Existing fixed provisional constants still need persistent editable settings; this is now the next implementation task before extending quantitative tools. Prior validation results remain the latest code checks; changed documentation formatting checked separately.
+
+## Validated desktop planning continuation — 2026-11-24
+
+**Site completion remains in progress.** Implemented additional partial R1/R2: personnel/positions/reporting lines and capability person ownership; immutable capability/KPI snapshots with read-only cycle selection; organization profile, linked objectives/business threats, indicative readiness, dependency matrix and reciprocal capability links; safe CSV and initial print. Scope objectives/decisions and data/method contracts are in ARCHITECTURE, DATA_MODEL and CALCULATION_METHODOLOGY. Permanent desktop-only support is recorded in AGENTS.md; Playwright runs desktop only.
+
+Both additive migrations (`202611240002_people_cycles`, `202611240003_business_context`) applied to isolated Development; db:status is current. No new dependencies/env values, production migrations, commit or deployment from this continuation. Working changes are unstaged on `codex/reference-alignment-review`, based on `a205439`; the independent authentication/save fix is already deployed and must remain intact.
+
+Validation: all five required checks pass without database credentials/local environment files; 19 unit tests pass; full desktop suite 15 passed and six authentication-enforcement cases intentionally skipped. A focused three-workflow rerun with print-media assertions also passed. Desktop screenshots inspected. Final print-transition/metadata and post-save-refresh refinements were followed by another credential-free five-check run (passed); final focused browser rerun passed 3/3 and corrected print screenshots were visually inspected. Print styling is initial support, not multipage PDF/report certification. Credential-pattern scan: zero matches in changed/new files (including the seed follow-up); no staged files or environment files.
+
+Fixed actual URL-checkbox pending-state behavior with optimistic URL updates and hydration gating. Corrected ambiguous test selectors/completion assertions. Removed only five identified orphan synthetic fixtures from initial timed-out tests in Development after checking for external links; successful reruns clean their own records. Existing pg deprecation warnings remain nonfatal. A final setup run exposed the existing seed transaction expiring after five seconds; `scripts/seed-foundation.ts` now uses two bulk catalogue lookups instead of 90 serial reads and a bounded 30-second timeout/10-second max wait, preserving idempotency and existing values. Focused browser setup/workflows pass afterward.
+
+Next: responsibilities/lightweight planning issues → initiatives/roadmap → authoritative Framework Alignment → sourced workforce/technology justification → multiyear scenarios/costs/reports/import-export/release. Framework Alignment, Roadmap, Technology and Reports remain placeholders; workforce capacity/NICE/skills and full cycle comparison/global scope are unfinished. See CONTINUATION.md for exact files, constraints and step-by-step Claude handoff. Do not describe this checkpoint as the completed site.
+
+## Personnel/cycle implementation checkpoint — 2026-11-24
+
+Completed code: independent people/positions; manager hierarchy with cycle rejection; authorized/proposed/retired positions and explicit vacancies; aggregate incumbent position allocation capped at 1 FTE; revision conflict rejection; transactional field-name history; capability Person ownership alongside preserved function ownership; linked assigned-capability worklists with unique descendant rollups; filtered CSV; immutable capability/KPI cycle capture and read-only cycle selection. Strategic objectives/decisions are recorded in ARCHITECTURE.md. This is additional partial R1, not site completion or the full workforce/cycle tool.
+
+Affected: schema/migration `202611240002_people_cycles`; new workforce domain/server/components/page/API, cycle API/control, CSV helper; capability domain/server/validation/panel/views/workspace/page; Overview and navigation test expectations; new unit and browser tests; architecture/model/decision/handoff docs. Additive migration applied successfully to isolated Development. No credentials, environment files, infrastructure replacements, production migrations or production deployment changes. Personnel remain planning data, separate from auth User.
+
+Checks so far: typecheck, lint and 16 unit tests pass after implementation. The required five checks passed without database credentials for the earlier permanent desktop-only correction. Final credential-free build and desktop browser/database suite are pending for the implementation. Next: run/fix those tests and inspect desktop results, then continue remaining planning work. CONTINUATION.md lists unimplemented modules and known limits; authentication-removal chat has completed its independent save-fix deployment.
+
+## Active continuation and desktop-only correction — 2026-11-24
+
+Aaron requested completion of the remaining strategic-planning site/tools, superseding the earlier documentation-only implementation gate. Implementation remains bounded by the strategic scope correction and existing exclusions. See CONTINUATION.md for the durable Claude handoff and honest per-slice completion ledger. No new business functionality has been implemented by this checkpoint.
+
+Permanent owner instruction: desktop only at 1280 px and above; no mobile layout/navigation development or QA. Updated AGENTS.md, ARCHITECTURE, PROJECT_SCOPE, DECISION_LOG, IMPLEMENTATION_PLAN, INFORMATION_ARCHITECTURE, UX_REVIEW, TESTING and playwright.config.ts. Existing mobile code/history is retained; Playwright now runs Desktop Chrome only. Desktop accessibility remains required. Validation is pending. No database/schema/environment changes are needed for this correction.
+
+Concurrent authentication chat owns its save-guard fix and release. Its last snapshot reported passing checks and production publication underway. This chat has not changed authentication or organizational values. Next: finish validation for the rule change, then implement the remaining connected planning slices with incremental handoff updates.
+
 ## Open access until owner restoration - 2026-11-24
 
 Owner explicitly requested removal of all access requirements before a later live launch. Fixed the shared save gate: mutation Origin restrictions are skipped with authentication; strict field/JSON validation remains. Vercel project SSO protection was set to null and verified; password/IP restrictions were already absent. Reported deployment URL reproduced 403 Access denied before this correction. Existing user values/accounts/schema are preserved. Use the stable production URL: deployment-specific URLs retain immutable old code.

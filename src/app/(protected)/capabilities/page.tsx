@@ -9,17 +9,49 @@ import {
   hasDemoData,
 } from "@/lib/server/capabilities";
 import { SchemaPending } from "@/components/schema-pending";
+import { db } from "@/lib/server/db";
+import { loadWorkforce } from "@/lib/server/workforce";
+import { CycleControl } from "@/components/capabilities/cycle-control";
+import type { CapabilityView } from "@/lib/domain/capabilities";
+import { notFound } from "next/navigation";
 import { permits } from "@/lib/permissions";
 
 export const metadata = { title: "Capabilities" };
 
-export default async function CapabilitiesPage() {
+export default async function CapabilitiesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ cycle?: string }>;
+}) {
+  const { cycle: cycleId } = await searchParams;
   const user = await requirePage();
-  const [capabilities, functions] = await Promise.all([
+  const [live, functions, workforce] = await Promise.all([
     loadCapabilities(),
     listFunctionOptions(),
+    loadWorkforce(),
   ]);
-  const synthetic = capabilities != null && (await hasDemoData());
+  const cycles = workforce
+    ? await db().planningCycle.findMany({
+        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+        take: 100,
+      })
+    : [];
+  const cycle =
+    cycleId && workforce
+      ? await db().planningCycle.findUnique({
+          where: { id: cycleId },
+          include: { snapshots: true },
+        })
+      : null;
+  if (cycleId && !cycle) notFound();
+  const capabilities = cycle
+    ? cycle.snapshots.map((s) => s.assessment as unknown as CapabilityView)
+    : live;
+  const synthetic = cycle
+    ? (capabilities?.some(
+        (c) => c.rationale === "Synthetic development rating.",
+      ) ?? false)
+    : capabilities != null && (await hasDemoData());
   return (
     <div className="space-y-4">
       <PageHeader
@@ -27,6 +59,19 @@ export default async function CapabilitiesPage() {
         description="Current and target maturity, operational KPIs and gaps for each security topic."
       />
       {synthetic ? <DemoNotice /> : null}
+      {workforce && (
+        <Suspense>
+          <CycleControl
+            cycles={cycles.map((c) => ({
+              id: c.id,
+              name: c.name,
+              asOf: c.asOf.toISOString().slice(0, 10),
+            }))}
+            current={cycleId ?? ""}
+            canEdit={permits(user.role, "write")}
+          />
+        </Suspense>
+      )}
       {capabilities == null ? (
         <SchemaPending />
       ) : capabilities.length === 0 ? (
@@ -40,11 +85,13 @@ export default async function CapabilitiesPage() {
       ) : (
         <Suspense>
           <CapabilityWorkspace
+            key={cycleId ?? "live"}
             initial={capabilities}
             synthetic={synthetic}
             functions={functions}
-            canEdit={permits(user.role, "write")}
-            now={new Date().toISOString()}
+            people={workforce?.people ?? []}
+            canEdit={!cycleId && permits(user.role, "write")}
+            now={cycle?.createdAt.toISOString() ?? new Date().toISOString()}
           />
         </Suspense>
       )}

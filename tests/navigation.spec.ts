@@ -49,7 +49,12 @@ test("overview and all protected navigation modules work", async ({
     await expect(
       page.getByRole("heading", { name: title, exact: true }),
     ).toBeVisible();
-    if (path !== "/settings" && path !== "/capabilities")
+    if (
+      path !== "/settings" &&
+      path !== "/capabilities" &&
+      path !== "/workforce" &&
+      path !== "/context"
+    )
       await expect(
         page.getByRole("heading", { name: "Not available yet" }),
       ).toBeVisible();
