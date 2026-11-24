@@ -3,9 +3,10 @@ import { PageHeader } from "@/components/page-header";
 import { CapabilityWorkspace } from "@/components/capabilities/capability-workspace";
 import { requirePage } from "@/lib/server/access";
 import {
-  listCapabilities,
   listFunctionOptions,
+  loadCapabilities,
 } from "@/lib/server/capabilities";
+import { SchemaPending } from "@/components/schema-pending";
 import { permits } from "@/lib/permissions";
 
 export const metadata = { title: "Capabilities" };
@@ -13,7 +14,7 @@ export const metadata = { title: "Capabilities" };
 export default async function CapabilitiesPage() {
   const user = await requirePage();
   const [capabilities, functions] = await Promise.all([
-    listCapabilities(),
+    loadCapabilities(),
     listFunctionOptions(),
   ]);
   return (
@@ -22,7 +23,9 @@ export default async function CapabilitiesPage() {
         title="Capabilities"
         description="Current and target maturity, operational KPIs and gaps for each security topic."
       />
-      {capabilities.length === 0 ? (
+      {capabilities == null ? (
+        <SchemaPending />
+      ) : capabilities.length === 0 ? (
         <section className="rounded-md border bg-card px-4 py-8">
           <h2>The topic catalogue is not loaded</h2>
           <p className="mt-1 max-w-2xl text-muted-foreground">

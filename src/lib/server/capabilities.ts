@@ -65,12 +65,36 @@ function toView(record: CapabilityRecord): CapabilityView {
   };
 }
 
+/** Thrown when the capability migration has not been applied to this database. */
+export class SchemaPendingError extends Error {}
+
+const isMissingTable = (error: unknown) =>
+  (error as { code?: string })?.code === "P2021";
+
 export async function listCapabilities(): Promise<CapabilityView[]> {
-  const records = await db().capability.findMany({
-    include: capabilityInclude,
-    orderBy: [{ sortOrder: "asc" }, { code: "asc" }],
-  });
-  return records.map(toView);
+  try {
+    const records = await db().capability.findMany({
+      include: capabilityInclude,
+      orderBy: [{ sortOrder: "asc" }, { code: "asc" }],
+    });
+    return records.map(toView);
+  } catch (error) {
+    if (isMissingTable(error)) throw new SchemaPendingError();
+    throw error;
+  }
+}
+
+/**
+ * Capabilities, or null when the database has not been migrated yet, so
+ * pages can explain the pending update instead of failing.
+ */
+export async function loadCapabilities(): Promise<CapabilityView[] | null> {
+  try {
+    return await listCapabilities();
+  } catch (error) {
+    if (error instanceof SchemaPendingError) return null;
+    throw error;
+  }
 }
 
 export async function listFunctionOptions() {

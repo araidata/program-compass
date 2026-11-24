@@ -10,7 +10,8 @@ import {
 } from "@/components/analytics/capability-charts";
 import { StatusBadge } from "@/components/analytics/stat";
 import { requirePage } from "@/lib/server/access";
-import { listCapabilities } from "@/lib/server/capabilities";
+import { loadCapabilities } from "@/lib/server/capabilities";
+import { SchemaPending } from "@/components/schema-pending";
 import {
   byGroup,
   byPillar,
@@ -71,7 +72,8 @@ export default async function Overview({
   const raw = (await searchParams)[PILLAR_PARAM];
   const scope = parsePillar(typeof raw === "string" ? raw : null);
   const now = new Date();
-  const all = await listCapabilities();
+  const loaded = await loadCapabilities();
+  const all = loaded ?? [];
   const items = scope
     ? all.filter((item) => item.pillarKeys.includes(scope.id))
     : all;
@@ -90,7 +92,9 @@ export default async function Overview({
         description="Program position for the selected scope, built from recorded assessments and KPI measurements."
       />
 
-      {summary.assessed === 0 ? (
+      {loaded == null ? (
+        <SchemaPending />
+      ) : summary.assessed === 0 ? (
         <section className="rounded-md border bg-card px-4 py-6">
           <h2>No assessments recorded yet</h2>
           <p className="mt-1 max-w-2xl text-muted-foreground">
