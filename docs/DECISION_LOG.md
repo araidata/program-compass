@@ -68,7 +68,7 @@ P-10 covers indicative alignment, extended by the latest explicit framework asse
 - **Provisional — C-04:** 1 to 5 scale (Initial, Developing, Defined, Managed, Optimized; only the end names are evidenced by the reference review), unweighted means over assessed applicable topics, six/twelve month review cadence, deficiency at level 1 or 2, default pillar involvement per topic. Implemented as isolated, labelled constants pending approval.
 - **Accepted — C-05:** Accountable owner is an OrganizationalFunction until person records exist (P-07). History uses ChangeEvent until planning cycles exist (P-03).
 
-## 2026-11-23 � Authentication suspension (accepted)
+## 2026-11-23 - Authentication suspension (accepted)
 
 The owner explicitly requested removal of authentication after account lockout until further instruction. Suspend page and API identity/role enforcement through one shared switch, retain accounts and auth implementation for restoration, and record anonymous administrative writes with null actor IDs. This narrow authorization supersedes the prior documentation-only/auth-preservation gate; it does not authorize business slices.
 
