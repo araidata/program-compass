@@ -1,5 +1,7 @@
 # Functional requirements
 
+> Governing update: the 2026-11-23 strategic scope correction and latest Framework Alignment requirements below supersede conflicting historical proposals. Dedicated framework assessment and implementation tracking are core; enterprise GRC workflows remain excluded. Current authorization: documentation review only.
+
 The following user-supplied requirements define future business functionality. None is implemented in Phase 0. Scope classifications are in PROJECT_SCOPE.md; technical decisions are in ARCHITECTURE.md.
 
 ## 4. Security Operating Framework
@@ -198,7 +200,7 @@ Clearly distinguish unassessed capabilities from capabilities assessed at a low 
 
 Avoid double-counting capabilities shared across organizational pillars or mapped to multiple frameworks.
 
-### 5.5 Compliance Alignment
+### 5.5 Framework Alignment (extended by section 7)
 
 Initially support:
 
@@ -227,7 +229,7 @@ CJIS requirements must be based on the actual CJIS Security Policy Version 6.0, 
 Distinguish between:
 
 - Maturity-based requirement coverage.
-- Verified compliance assessment status.
+- Requirement implementation status (distinct from verified regulatory compliance, which the application does not establish).
 - Unassessed requirements.
 - Non-applicable requirements.
 - Unmapped requirements.
@@ -537,3 +539,49 @@ Support practical reporting outputs, including:
 Reports should be suitable for leadership discussions, strategic planning, and budget justification.
 
 Prioritize practical tabular exports and print-ready reporting before implementing sophisticated report designers.
+
+## 6. Governing strategic planning correction — 2026-11-23
+
+This section, reconciled with section 7 below, supersedes conflicting requirements above, especially any comprehensive enterprise risk/finding interpretation. Each feature must satisfy the scope test in PROJECT_SCOPE.md. Reference baseline evidence and feature dispositions are in REFERENCE_APPLICATION_REVIEW.md and REFERENCE_FUNCTIONAL_PARITY.md.
+
+### 6.1 Reference baseline supporting planning
+
+Preserve the original 30 topics and 60 operational KPIs as an inventoried baseline before modifying the catalog (inventory in the review). Support expandable topic details/subject areas, search/filter, level definitions, current maturity, missing assessment, distribution/aggregate maturity, directional KPI thresholds/status, current/target comparisons, dates, person owners, last review and due/overdue indicators. Extend via versioned catalogs without losing original IDs or silently changing historic calculations. Future scope/cadence/scale decisions require approval.
+
+Business objectives and threats link to capabilities. Present likelihood/impact, readiness, weakest/average maturity and threat-to-objective relationships where they explain strategic priority; keep high-level business threats distinct from a comprehensive enterprise risk register. Connected deficiency and initiative views must show why an investment is needed. Initiatives retain expected uplift, owners, budgets, dates, capability/issue links and timeline/list views; expected uplift never overwrites actual assessed maturity.
+
+### 6.2 Framework reference integration
+
+Support NIST CSF 2.0, actual CJIS Security Policy v6.0 and authoritative NICE for their respective purposes. Framework references answer which capabilities are needed, why, which requirements/deadlines drive them, what responsibilities/workforce/technologies are needed, what gaps remain and which investments to prioritize. Store version, source, mapping rationale, applicability and deadlines. Show references within capability views/strategic justification and provide the dedicated Framework Alignment assessment section defined in section 7.
+
+Indicative mapped-capability maturity, weakest/average maturity and alignment coverage may aid planning. Label them as indicative, disclose unmapped/unassessed/non-applicable items, and never label them verified compliance. Requirement-specific assessment, implementation tracking and framework analytics are in scope under section 7. Exclude certification/attestation, evidence platforms, audit lifecycle management, formal control testing, exception approval, compensating control management, formal risk acceptance, continuous compliance monitoring and comprehensive enterprise GRC. A verified-status/certification workflow is not authorized.
+
+### 6.3 Planning issues and ownership
+
+Support a lightweight issue/deficiency or external risk/finding reference only with documented effect on capability development, priorities, resources or technology investment. Keep source/reference, description, planning consequence, owner, relevant dates, simple planning state and capability/initiative/resource links. Do not create an enterprise risk register, audit lifecycle, risk acceptance workflow or evidence repository. Finding ageing/overdue flags may support prioritization; broad risk scoring/heat maps are optional proposals requiring a concrete strategic use and approved methodology.
+
+People/positions, reporting relationships, responsibility ownership and outstanding/overdue planning work support resource justification. Record-count workload is distinct from measured hours/FTE. Preserve three SOF pillars; Architecture and Engineering remain distinct functions. NICE mappings never multiply workload or imply one role equals one position.
+
+### 6.4 End-to-end completion
+
+The required flow is: establish context/complexity; identify applicable capabilities; assess maturity/performance; set targets; identify deficiencies; determine responsibilities; calculate workload/capacity; identify technology requirements/gaps; prioritize initiatives; forecast workforce/technology investments; generate detailed three-year and directional five-year plans; measure progress. Reuse one plan, shared records and deterministic calculations.
+
+Every completed feature requires usable accessible UI, persistent authorized data, meaningful reciprocal relationships, correct approved calculations, error/empty states and validated workflows. Navigation, placeholders, models, CRUD or summary cards alone are not completion. Reports provide executive/management maturity/performance, investment rationale, workforce capacity, initiatives, annual costs, assumptions and remaining deficiencies; safe CSV and print-ready output precede elaborate report designers. No regulatory audit reporting.
+
+## 7. Framework Alignment and Maturity Assessment — latest governing requirements
+
+These latest user requirements supersede prior exclusions of framework-level assessment, requirement implementation tracking or a dedicated framework section. Framework assessment is core strategic planning functionality. Preserve existing infrastructure; this review authorizes documentation and planning, not a rewrite or new business implementation.
+
+Initially support authoritative NIST CSF 2.0, FBI CJIS Security Policy v6.0 and NICE Workforce Framework for their distinct purposes. Keep an extensible versioned model preserving official identifiers, hierarchy, descriptions and source links. NICE work roles/tasks/knowledge/skills support workforce relationships; do not falsely treat NICE as regulatory controls or a prescribed maturity/FTE standard.
+
+Provide dedicated Framework Alignment with framework selection/hierarchy navigation, requirement/control listings, applicability, implementation status, current/target maturity assessments, notes/observations, strengths/weaknesses, capability and responsibility mappings, technology/workforce relationships, initiatives, applicable deadlines, references and assessment history. Users can create/edit/maintain assessments and mappings. Reference versions are separate from organizational assessment records.
+
+Required analytical views: NIST maturity by function/category; CJIS implementation status; coverage summaries and heat maps; current/target comparison and gaps; capability strengths/weaknesses; pillar maturity; unmapped requirements; historic maturity trends; projected future-state maturity. These must provide linked analytical decisions, not just forms/tables. Supply accessible table/text equivalents.
+
+Capabilities are the central link among requirements, authoritative maturity, KPIs, responsibilities, SOF pillars, NICE roles/tasks, workforce capacity, technology coverage, planning issues, initiatives and costs. Assess a shared capability once across framework mappings. Where a requirement needs a specific assessment, store its own applicability/status/notes/maturity separately; never duplicate or silently overwrite capability maturity. Define how these facts appear in analytics before implementing calculations.
+
+Trace each proposed position, technology investment or initiative to its capability deficiencies and applicable requirement drivers. Assessments inform targets, strengths/weaknesses, responsibilities/resources, priorities, detailed three-year plans, directional five-year outlook and annual financial justification.
+
+Keep assessed capability maturity, target maturity, projected maturity, requirement implementation status, framework coverage and verified regulatory compliance distinct. Maturity/coverage never imply compliance; completing initiatives never changes assessed maturity automatically. Deduplicate capabilities, responsibilities, workload and cost across mappings. Document every aggregation/coverage/projection method, unknown handling, denominators and version.
+
+Excluded: formal certification/attestation, evidence platforms, audit lifecycle management, formal control testing, compliance exception approval, formal risk acceptance, continuous compliance monitoring and comprehensive enterprise GRC. These exclusions do not remove framework assessment, implementation tracking, maturity/coverage analysis or gap identification.

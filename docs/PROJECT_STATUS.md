@@ -2,6 +2,37 @@
 
 Last updated: 2026-11-23 (America/Chicago).
 
+## Current authorization and delivery
+
+Documentation-only reference alignment/corrective review incorporating the subsequent Strategic Planning Scope Correction and latest Framework Alignment and Maturity Assessment Requirements. Stop at plan review. No business development, navigation mutation, migration, infrastructure replacement or production rollout authorized by this review. Foundation Phase 1 is merged on main at `35465f6`; historical preview/merge instructions below are superseded by this verified repository state.
+
+## Completed review work
+
+- Interactively reviewed all seven reference views with Example Corp., all 30 topics/60 KPI names/thresholds, six editor types, roadmap/list, both reports, four framework views, representative filters, KPI recalculation, heat-map drilldown, org-chart owner detail, blank/example switching and one downloaded CSV's columns/rows.
+- Created feature-level parity matrix separating implemented foundation, placeholders, missing business features, approved strategic exclusions and unverifiable reference print output. No placeholder is represented as completed functionality.
+- Reconciled governing scope: dedicated Framework Alignment with editable requirement applicability/implementation, current/target maturity, observations/history/mappings and full analytical views is core. Reference versions are separate from organizational assessments; shared capability maturity remains authoritative. Enterprise GRC, evidence platforms, audit lifecycles, formal control testing, formal acceptance and continuous compliance monitoring remain excluded; framework assessment/implementation tracking are included.
+- Proposed preserving shell/auth/database/deployment and additive domain development; lightweight planning issues replace a standalone enterprise risk module. R1–R5 sequence connects capabilities, context, framework assessment, resources and one three/five-year plan. Estimate 25–40 person-weeks including design/review, subject to documented assumptions.
+
+## Affected files
+
+AGENTS.md, CLAUDE.md; docs/ARCHITECTURE.md, PROJECT_SCOPE.md, FUNCTIONAL_REQUIREMENTS.md, REFERENCE_APPLICATION_REVIEW.md, REFERENCE_FUNCTIONAL_PARITY.md, INFORMATION_ARCHITECTURE.md, DATA_MODEL.md, CALCULATION_METHODOLOGY.md, IMPLEMENTATION_PLAN.md, DECISION_LOG.md, PROJECT_STATUS.md. No application/config/schema/lockfile changes.
+
+## Validation and limits
+
+Passed this delivery: npm run lint, npm run typecheck, npm run db:validate and npm run build with local environment file temporarily removed and database credential variables absent; local file restored afterward. All six existing navigation tests passed against synthetic nonproduction fixtures at desktop/mobile widths: all module routes, drawer dismissal, horizontal overflow, pillar scope preservation and unknown-route 404. All 13 changed documentation files pass targeted Prettier. Full npm run format:check failed on 53 untouched baseline files (including source/config/tests and other docs); no repository-wide reformat was performed. No application/schema/config changes or new tests. Staged documentation is reviewed for secret values and credential files before commit; environment files and initial credentials are excluded.
+
+Reference review is broad but not exhaustive workflow certification. Saved retention/recovery, all valid/invalid save/delete/rename paths, all filter combinations, every export and final print pagination remain unverified. See review log for follow-up evidence. Framework source import/licensing/mapping verification and exact formula choices remain next-phase gates; this review does not claim official mapping accuracy.
+
+## Decisions, configuration and next task
+
+Accepted user scope S-01–S-04 and latest framework clarification; proposed navigation/implementation slices S-05–S-06. No new configuration required. Preserve production/nonproduction separation and existing hardening limitations below. Next: user reviews the corrective plan, closes methodology/schema decisions and explicitly authorizes R1. Claude Code should read the governing corrections and parity matrix before implementation. Do not automatically resume the historical rollout instruction.
+
+## Historical secure persistence record (preserved)
+
+# Previous status
+
+Last updated: 2026-11-23 (America/Chicago).
+
 ## Current phase
 
 The user’s Phase 4 request authorizes repository Phase 1 secure persistence only. Claude’s merged IA/UI shell from main at b250020 is preserved; merged into delivery branch codex/foundation-completion before development. No assessment, compliance dataset, workforce calculation, technology or strategy workflows implemented.
