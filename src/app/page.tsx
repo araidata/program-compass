@@ -1,61 +1,116 @@
-import Link from "next/link";
-import { navigation } from "@/lib/navigation";
+import { navigationGroups, settingsItem, type NavItem } from "@/lib/navigation";
+import { pillars } from "@/lib/pillars";
+import { PageHeader } from "@/components/page-header";
+import { PillarTag } from "@/components/pillar-tag";
+import { ScopedLink } from "@/components/scoped-link";
 
-export default function Dashboard() {
+const groups = [
+  ...navigationGroups
+    .filter((group) => group.label)
+    .map((group) => ({ label: group.label as string, items: group.items })),
+  {
+    label: "Other",
+    items: [
+      ...navigationGroups
+        .filter((group) => !group.label)
+        .flatMap((group) => group.items)
+        .filter((item) => item.href !== "/"),
+      settingsItem,
+    ] as NavItem[],
+  },
+];
+
+export default function Overview() {
   return (
-    <div className="space-y-6">
-      <h1>Dashboard</h1>
-      <section
-        aria-labelledby="status-title"
-        className="rounded-lg border bg-card p-4"
-      >
-        <h2 id="status-title" className="text-base font-semibold">
-          Application status
-        </h2>
-        <p className="mt-2 text-sm">
-          Program Compass is initialized. No organizational data is connected.
-        </p>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Assessment, resource planning, and reporting are planned. Program
-          metrics are unavailable until those workflows are implemented.
-        </p>
-      </section>
-      <section aria-labelledby="modules-title">
-        <h2 id="modules-title" className="mb-3 text-base font-semibold">
-          Planned modules
-        </h2>
-        <dl className="divide-y rounded-lg border bg-card">
-          {navigation
-            .filter((item) => item.href !== "/")
-            .map((item) => (
-              <div
-                key={item.href}
-                className="grid gap-1 px-4 py-3 md:grid-cols-[12rem_1fr] md:gap-4"
+    <div className="space-y-5">
+      <PageHeader
+        title="Overview"
+        description="Program position for the selected scope. Figures appear here once assessment, planning, and workforce data exist."
+      />
+
+      <p className="rounded-md border bg-card px-3 py-2 text-muted-foreground">
+        No organizational data is connected. Each module becomes available in
+        the phase shown below.
+      </p>
+
+      <section aria-labelledby="modules-title" className="space-y-2">
+        <h2 id="modules-title">Modules</h2>
+        <div className="overflow-x-auto rounded-md border bg-card">
+          <table className="w-full min-w-[640px] text-left text-[13px]">
+            <thead className="border-b bg-muted/60 text-xs text-muted-foreground">
+              <tr>
+                <th scope="col" className="h-8 px-3 font-medium">
+                  Module
+                </th>
+                <th scope="col" className="h-8 px-3 font-medium">
+                  Purpose
+                </th>
+                <th scope="col" className="h-8 px-3 font-medium">
+                  Planned views
+                </th>
+                <th scope="col" className="h-8 px-3 text-right font-medium">
+                  Phase
+                </th>
+              </tr>
+            </thead>
+            {groups.map((group) => (
+              <tbody
+                key={group.label}
+                className="divide-y border-b last:border-b-0"
               >
-                <dt>
-                  <Link
-                    href={item.href}
-                    className="text-sm font-medium text-teal-800 underline-offset-4 hover:underline"
+                <tr className="bg-muted/30">
+                  <th
+                    scope="rowgroup"
+                    colSpan={4}
+                    className="h-7 px-3 text-xs font-medium text-muted-foreground"
                   >
-                    {item.title}
-                  </Link>
-                </dt>
-                <dd className="text-sm text-muted-foreground">
-                  {item.description}
-                </dd>
-              </div>
+                    {group.label}
+                  </th>
+                </tr>
+                {group.items.map((item) => (
+                  <tr key={item.href} className="hover:bg-muted/40">
+                    <td className="h-9 whitespace-nowrap px-3 font-medium">
+                      <ScopedLink
+                        href={item.href}
+                        className="text-link hover:underline"
+                      >
+                        {item.title}
+                      </ScopedLink>
+                    </td>
+                    <td className="px-3 py-2 text-muted-foreground">
+                      {item.description}
+                    </td>
+                    <td className="px-3 py-2 text-muted-foreground">
+                      {item.views.join(" · ")}
+                    </td>
+                    <td className="tabular px-3 text-right">{item.phase}</td>
+                  </tr>
+                ))}
+              </tbody>
             ))}
-        </dl>
+          </table>
+        </div>
       </section>
-      <section aria-labelledby="pillars-title">
-        <h2 id="pillars-title" className="text-base font-semibold">
-          Three cybersecurity pillars
-        </h2>
-        <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-muted-foreground">
-          <li>Security Operations</li>
-          <li>Security Architecture &amp; Engineering</li>
-          <li>Governance, Risk &amp; Compliance</li>
+
+      <section aria-labelledby="pillars-title" className="space-y-2">
+        <h2 id="pillars-title">Pillars</h2>
+        <ul className="grid gap-2 md:grid-cols-3">
+          {pillars.map((pillar) => (
+            <li
+              key={pillar.id}
+              className="flex items-center justify-between gap-3 rounded-md border bg-card px-3 py-2"
+            >
+              <PillarTag pillar={pillar} label="name" />
+              <span className="text-xs text-muted-foreground">
+                {pillar.short}
+              </span>
+            </li>
+          ))}
         </ul>
+        <p className="text-xs text-muted-foreground">
+          Use the scope control in the header to view every module for one
+          pillar or for the enterprise.
+        </p>
       </section>
     </div>
   );

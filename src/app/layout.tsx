@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
+import "@fontsource-variable/inter";
 import { AppShell } from "@/components/app-shell";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Dashboard | Program Compass",
+    default: "Overview | Program Compass",
     template: "%s | Program Compass",
   },
-  description: "Cybersecurity strategy and resource planning",
   robots: { index: false, follow: false },
 };
 

@@ -1,18 +1,18 @@
 import { expect, test } from "@playwright/test";
 
 const modules = [
-  ["Business Context", "/business-context"],
-  ["Current State", "/current-state"],
+  ["Capabilities", "/capabilities"],
   ["Compliance", "/compliance"],
-  ["People & Resources", "/people-resources"],
-  ["Technology Portfolio", "/technology-portfolio"],
-  ["Strategic Planning", "/strategic-planning"],
-  ["Risks & Findings", "/risks-findings"],
-  ["Reporting", "/reporting"],
+  ["Risks & Findings", "/risks"],
+  ["Business Context", "/context"],
+  ["Roadmap", "/roadmap"],
+  ["Workforce", "/workforce"],
+  ["Technology", "/technology"],
+  ["Reports", "/reports"],
   ["Settings", "/settings"],
 ];
 
-test("dashboard and all navigation modules work without a database", async ({
+test("overview and all navigation modules work without a database", async ({
   page,
 }, testInfo) => {
   const errors: string[] = [];
@@ -22,14 +22,12 @@ test("dashboard and all navigation modules work without a database", async ({
   });
   await page.goto("/");
   await expect(
-    page.getByRole("heading", { name: "Dashboard", exact: true }),
+    page.getByRole("heading", { name: "Overview", exact: true }),
   ).toBeVisible();
   await expect(
-    page.getByText("Program Compass is initialized.", { exact: false }),
+    page.getByText("No organizational data is connected.", { exact: false }),
   ).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: "Three cybersecurity pillars" }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Pillars" })).toBeVisible();
   for (const [title, path] of modules) {
     if (testInfo.project.name === "mobile")
       await page.getByRole("button", { name: "Open navigation" }).click();
@@ -42,7 +40,7 @@ test("dashboard and all navigation modules work without a database", async ({
       page.getByRole("heading", { name: title, exact: true }),
     ).toBeVisible();
     await expect(
-      page.getByText("Planned module", { exact: true }),
+      page.getByRole("heading", { name: "Not available yet" }),
     ).toBeVisible();
     if (testInfo.project.name === "mobile")
       await expect(page.getByRole("dialog")).not.toBeVisible();
@@ -52,15 +50,40 @@ test("dashboard and all navigation modules work without a database", async ({
       ),
     ).toBe(true);
   }
-  await page.getByRole("link", { name: "Return to Dashboard" }).click();
+  await page.getByRole("link", { name: "Back to Overview" }).click();
   await expect(
-    page.getByRole("heading", { name: "Dashboard", exact: true }),
+    page.getByRole("heading", { name: "Overview", exact: true }),
   ).toBeVisible();
   await page.screenshot({
-    path: testInfo.outputPath("dashboard.png"),
+    path: testInfo.outputPath("overview.png"),
     fullPage: true,
   });
   expect(errors).toEqual([]);
+});
+
+test("pillar scope is held in the URL and kept across modules", async ({
+  page,
+}, testInfo) => {
+  await page.goto("/capabilities");
+  if (testInfo.project.name === "mobile") {
+    await page.getByRole("combobox", { name: "Scope" }).selectOption("grc");
+  } else {
+    await page
+      .getByRole("navigation", { name: "Scope" })
+      .getByRole("link", { name: "GRC" })
+      .click();
+  }
+  await expect(page).toHaveURL("/capabilities?pillar=grc");
+  await expect(
+    page.getByRole("main").getByText("Governance, Risk & Compliance"),
+  ).toBeVisible();
+  if (testInfo.project.name === "mobile")
+    await page.getByRole("button", { name: "Open navigation" }).click();
+  await page
+    .getByRole("navigation", { name: "Main navigation" })
+    .getByRole("link", { name: "Workforce", exact: true })
+    .click();
+  await expect(page).toHaveURL("/workforce?pillar=grc");
 });
 
 test("unknown modules return 404", async ({ page }) => {

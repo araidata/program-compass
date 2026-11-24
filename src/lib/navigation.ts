@@ -1,81 +1,169 @@
 import {
-  LayoutDashboard,
-  Building2,
-  ScanLine,
-  ClipboardCheck,
+  LayoutGrid,
+  Gauge,
+  ListChecks,
+  TriangleAlert,
+  Target,
+  GanttChart,
   Users,
-  Layers3,
-  Compass,
-  Flag,
-  ChartNoAxesCombined,
+  Server,
+  FileText,
   Settings,
+  type LucideIcon,
 } from "lucide-react";
 
-export const navigation = [
+export type NavItem = {
+  title: string;
+  href: string;
+  icon: LucideIcon;
+  description: string;
+  /** Implementation phase in which the module's first workflows arrive. */
+  phase: number;
+  /** Planned views, shown as the module's tabs once implemented. */
+  views: readonly string[];
+};
+
+export type NavGroup = {
+  label: string | null;
+  items: readonly NavItem[];
+};
+
+export const navigationGroups: readonly NavGroup[] = [
   {
-    title: "Dashboard",
-    href: "/",
-    icon: LayoutDashboard,
-    description: "Your cybersecurity program at a glance.",
+    label: null,
+    items: [
+      {
+        title: "Overview",
+        href: "/",
+        icon: LayoutGrid,
+        description:
+          "Program position for the selected scope: gaps, coverage, capacity, and items needing attention.",
+        phase: 2,
+        views: ["Summary", "Attention"],
+      },
+    ],
   },
   {
-    title: "Business Context",
-    href: "/business-context",
-    icon: Building2,
-    description:
-      "Align cybersecurity priorities with organizational objectives and operating context.",
+    label: "Assess",
+    items: [
+      {
+        title: "Capabilities",
+        href: "/capabilities",
+        icon: Gauge,
+        description:
+          "Capability catalogue by pillar with current and target maturity and assessment cycles.",
+        phase: 2,
+        views: ["Matrix", "Targets", "Assessment history"],
+      },
+      {
+        title: "Compliance",
+        href: "/compliance",
+        icon: ListChecks,
+        description:
+          "Framework requirements, their mapping to capabilities, and coverage status.",
+        phase: 2,
+        views: ["Coverage", "Requirements", "Mappings"],
+      },
+      {
+        title: "Risks & Findings",
+        href: "/risks",
+        icon: TriangleAlert,
+        description:
+          "Risk and finding registers with inherent and residual views and ageing.",
+        phase: 4,
+        views: ["Heat map", "Register", "Ageing"],
+      },
+    ],
   },
   {
-    title: "Current State",
-    href: "/current-state",
-    icon: ScanLine,
-    description:
-      "Assess capabilities and understand the program’s current maturity.",
+    label: "Plan",
+    items: [
+      {
+        title: "Business Context",
+        href: "/context",
+        icon: Target,
+        description:
+          "Business objectives, the threat landscape, and the capabilities they depend on.",
+        phase: 2,
+        views: ["Objectives", "Threats", "Dependencies"],
+      },
+      {
+        title: "Roadmap",
+        href: "/roadmap",
+        icon: GanttChart,
+        description:
+          "Initiatives, timing, expected uplift, and the gaps and risks they address.",
+        phase: 4,
+        views: ["Timeline", "List", "Coverage"],
+      },
+    ],
   },
   {
-    title: "Compliance",
-    href: "/compliance",
-    icon: ClipboardCheck,
-    description:
-      "Review framework alignment, requirement coverage, and assessment status.",
+    label: "Resources",
+    items: [
+      {
+        title: "Workforce",
+        href: "/workforce",
+        icon: Users,
+        description:
+          "People and positions, FTE allocation, supply versus demand by pillar, and skills.",
+        phase: 3,
+        views: ["Roster", "Allocation", "Supply and demand", "Skills"],
+      },
+      {
+        title: "Technology",
+        href: "/technology",
+        icon: Server,
+        description:
+          "Security tools, cost, lifecycle, and the capabilities they support.",
+        phase: 3,
+        views: ["Portfolio", "Coverage", "Lifecycle"],
+      },
+    ],
   },
   {
-    title: "People & Resources",
-    href: "/people-resources",
-    icon: Users,
-    description: "Plan the people, skills, and capacity behind the program.",
+    label: null,
+    items: [
+      {
+        title: "Reports",
+        href: "/reports",
+        icon: FileText,
+        description:
+          "Board, management, and pillar review packs for a chosen scope.",
+        phase: 5,
+        views: ["Packs", "Exports"],
+      },
+    ],
   },
-  {
-    title: "Technology Portfolio",
-    href: "/technology-portfolio",
-    icon: Layers3,
-    description:
-      "Understand security technologies and their contribution to program capabilities.",
-  },
-  {
-    title: "Strategic Planning",
-    href: "/strategic-planning",
-    icon: Compass,
-    description:
-      "Translate program priorities into a sequenced strategic roadmap.",
-  },
-  {
-    title: "Risks & Findings",
-    href: "/risks-findings",
-    icon: Flag,
-    description: "Bring risks, gaps, and assessment findings into focus.",
-  },
-  {
-    title: "Reporting",
-    href: "/reporting",
-    icon: ChartNoAxesCombined,
-    description: "Communicate program direction and progress with clarity.",
-  },
-  {
-    title: "Settings",
-    href: "/settings",
-    icon: Settings,
-    description:
-      "Manage application and workspace configuration in a future phase.",
-  },
-] as const;
+];
+
+/** Pinned to the bottom of the sidebar. */
+export const settingsItem: NavItem = {
+  title: "Settings",
+  href: "/settings",
+  icon: Settings,
+  description:
+    "Reference data (pillars, capability catalogue, frameworks, scales), users and roles.",
+  phase: 1,
+  views: ["Reference data", "Users and roles", "Glossary"],
+};
+
+export const navigation: readonly NavItem[] = [
+  ...navigationGroups.flatMap((group) => group.items),
+  settingsItem,
+];
+
+export function findNavItem(pathname: string): NavItem | undefined {
+  if (pathname === "/") return navigation[0];
+  return navigation.find(
+    (item) =>
+      item.href !== "/" &&
+      (pathname === item.href || pathname.startsWith(`${item.href}/`)),
+  );
+}
+
+export function findNavGroupLabel(item: NavItem): string | null {
+  return (
+    navigationGroups.find((group) => group.items.includes(item))?.label ?? null
+  );
+}

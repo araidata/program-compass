@@ -2,89 +2,227 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu } from "lucide-react";
-import { useState } from "react";
-import { navigation } from "@/lib/navigation";
+import { Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { Suspense, useState, useSyncExternalStore } from "react";
+import {
+  findNavGroupLabel,
+  findNavItem,
+  navigationGroups,
+  settingsItem,
+  type NavItem,
+} from "@/lib/navigation";
+import { withScope, type Pillar } from "@/lib/pillars";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
-  SheetTitle,
   SheetDescription,
+  SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { ScopeSwitcher } from "@/components/scope-switcher";
+import { useScope } from "@/components/use-scope";
 
-function ApplicationName() {
+// Per-viewer layout preference only; never application data.
+const COLLAPSE_KEY = "pc.sidebar.collapsed";
+const collapseListeners = new Set<() => void>();
+
+function readCollapsed() {
+  try {
+    return window.localStorage.getItem(COLLAPSE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function writeCollapsed(value: boolean) {
+  try {
+    window.localStorage.setItem(COLLAPSE_KEY, value ? "1" : "0");
+  } catch {
+    /* storage unavailable: preference lasts for this page only */
+  }
+  collapseListeners.forEach((listener) => listener());
+}
+
+function subscribeCollapsed(listener: () => void) {
+  collapseListeners.add(listener);
+  return () => collapseListeners.delete(listener);
+}
+
+function NavLink({
+  item,
+  pillar,
+  active,
+  collapsed,
+  onNavigate,
+}: {
+  item: NavItem;
+  pillar: Pillar | null;
+  active: boolean;
+  collapsed: boolean;
+  onNavigate?: () => void;
+}) {
+  const Icon = item.icon;
   return (
     <Link
-      href="/"
-      aria-label="Program Compass home"
-      className="text-lg font-semibold"
+      href={withScope(item.href, pillar)}
+      onClick={onNavigate}
+      aria-current={active ? "page" : undefined}
+      title={collapsed ? item.title : undefined}
+      className={cn(
+        "flex h-8 items-center gap-2.5 rounded-md px-2 text-[13px] font-medium text-sidebar-foreground transition-colors hover:bg-sidebar-accent/60",
+        active && "bg-sidebar-accent text-sidebar-accent-foreground",
+        collapsed && "justify-center px-0",
+      )}
     >
-      Program Compass
+      <Icon className="size-4 shrink-0" aria-hidden="true" />
+      <span className={cn(collapsed && "sr-only")}>{item.title}</span>
     </Link>
   );
 }
-function Navigation({ onNavigate }: { onNavigate?: () => void }) {
+
+function Navigation({
+  pillar,
+  collapsed = false,
+  onNavigate,
+}: {
+  pillar: Pillar | null;
+  collapsed?: boolean;
+  onNavigate?: () => void;
+}) {
   const pathname = usePathname();
+  const active = findNavItem(pathname);
   return (
-    <nav aria-label="Main navigation" className="space-y-1">
-      {navigation.map(({ title, href, icon: Icon }) => (
-        <Link
-          key={href}
-          href={href}
-          onClick={onNavigate}
-          aria-current={pathname === href ? "page" : undefined}
-          className={cn(
-            "flex items-center gap-3 rounded-lg px-3 py-2 text-sm hover:bg-white/10 hover:text-white",
-            pathname === href
-              ? "bg-teal-300/10 text-teal-200"
-              : "text-slate-300",
-          )}
-        >
-          <Icon className="size-[18px] shrink-0" aria-hidden="true" />
-          {title}
-        </Link>
+    <nav
+      aria-label="Main navigation"
+      className="flex min-h-0 flex-1 flex-col gap-4"
+    >
+      {navigationGroups.map((group, index) => (
+        <div key={group.label ?? `group-${index}`} className="space-y-0.5">
+          {group.label ? (
+            <p
+              className={cn(
+                "px-2 pb-1 text-xs font-medium text-muted-foreground",
+                collapsed && "sr-only",
+              )}
+            >
+              {group.label}
+            </p>
+          ) : null}
+          {group.items.map((item) => (
+            <NavLink
+              key={item.href}
+              item={item}
+              pillar={pillar}
+              active={active === item}
+              collapsed={collapsed}
+              onNavigate={onNavigate}
+            />
+          ))}
+        </div>
       ))}
+      <div className="mt-auto border-t pt-3">
+        <NavLink
+          item={settingsItem}
+          pillar={pillar}
+          active={active === settingsItem}
+          collapsed={collapsed}
+          onNavigate={onNavigate}
+        />
+      </div>
     </nav>
   );
 }
+
+function ScopedNavigation(props: {
+  collapsed?: boolean;
+  onNavigate?: () => void;
+}) {
+  return <Navigation pillar={useScope()} {...props} />;
+}
+
+function MainNavigation(props: {
+  collapsed?: boolean;
+  onNavigate?: () => void;
+}) {
+  return (
+    <Suspense fallback={<Navigation pillar={null} {...props} />}>
+      <ScopedNavigation {...props} />
+    </Suspense>
+  );
+}
+
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const title =
-    navigation.find((item) => item.href === pathname)?.title ?? "Workspace";
+  const [open, setOpen] = useState(false);
+  const collapsed = useSyncExternalStore(
+    subscribeCollapsed,
+    readCollapsed,
+    () => false,
+  );
+
+  const item = findNavItem(pathname);
+  const group = item ? findNavGroupLabel(item) : null;
+
   return (
     <div className="min-h-screen">
       <a
         href="#main-content"
-        className="sr-only z-50 rounded bg-white p-3 text-black focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+        className="sr-only z-50 rounded-md bg-card p-2 text-sm focus:not-sr-only focus:fixed focus:left-3 focus:top-3"
       >
         Skip to content
       </a>
-      <aside className="fixed inset-y-0 left-0 hidden w-72 flex-col overflow-y-auto bg-sidebar px-5 py-7 text-sidebar-foreground lg:flex">
-        <ApplicationName />
-        <p className="mb-4 mt-10 px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-          Workspace
-        </p>
-        <Navigation />
-        <div className="mt-auto border-t border-white/10 px-3 pt-6">
-          <p className="mt-3 text-[10px] uppercase tracking-widest text-slate-400">
-            Application foundation · v0.1
-          </p>
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-30 hidden flex-col border-r bg-sidebar transition-[width] duration-150 lg:flex",
+          collapsed ? "w-14 px-2" : "w-58 px-3",
+        )}
+      >
+        <div
+          className={cn(
+            "flex h-12 shrink-0 items-center",
+            collapsed ? "justify-center" : "justify-between pl-2",
+          )}
+        >
+          {collapsed ? null : (
+            <Link
+              href="/"
+              className="text-sm font-semibold tracking-tight text-foreground"
+            >
+              Program Compass
+            </Link>
+          )}
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => writeCollapsed(!collapsed)}
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-expanded={!collapsed}
+            className="text-muted-foreground"
+          >
+            {collapsed ? <PanelLeftOpen /> : <PanelLeftClose />}
+          </Button>
+        </div>
+        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto pb-3 pt-2">
+          <MainNavigation collapsed={collapsed} />
         </div>
       </aside>
-      <div className="lg:pl-72">
-        <header className="flex min-h-16 items-center justify-between gap-4 border-b bg-card px-5 sm:px-10">
-          <div className="flex items-center gap-3">
+      <div
+        className={cn(
+          "transition-[padding] duration-150",
+          collapsed ? "lg:pl-14" : "lg:pl-58",
+        )}
+      >
+        <header className="sticky top-0 z-20 flex h-12 items-center justify-between gap-3 border-b bg-card/95 px-4 backdrop-blur supports-backdrop-filter:bg-card/80 sm:px-6">
+          <div className="flex min-w-0 items-center gap-2">
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger
                 render={
                   <Button
                     variant="ghost"
-                    size="icon"
-                    className="lg:hidden"
+                    size="icon-sm"
+                    className="-ml-1 lg:hidden"
                     aria-label="Open navigation"
                   />
                 }
@@ -93,42 +231,40 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </SheetTrigger>
               <SheetContent
                 side="left"
-                className="w-72 overflow-y-auto border-0 bg-sidebar p-5 text-sidebar-foreground"
+                className="w-64 gap-0 bg-sidebar px-3 pb-3"
               >
-                <SheetTitle className="sr-only">
-                  Workspace navigation
+                <SheetTitle className="flex h-12 items-center pl-2 text-sm font-semibold">
+                  Program Compass
                 </SheetTitle>
                 <SheetDescription className="sr-only">
                   Choose a Program Compass module.
                 </SheetDescription>
-                <div className="mb-4 mt-8">
-                  <ApplicationName />
+                <div className="flex min-h-0 flex-1 flex-col overflow-y-auto pt-2">
+                  <MainNavigation onNavigate={() => setOpen(false)} />
                 </div>
-                <Navigation onNavigate={() => setOpen(false)} />
               </SheetContent>
             </Sheet>
-            <p className="text-sm">
-              <span className="hidden text-muted-foreground sm:inline">
-                Workspace <span className="px-3 text-slate-300">/</span>
-              </span>
-              <span className="font-medium">{title}</span>
+            <p className="truncate text-[13px]">
+              {group ? (
+                <span className="hidden text-muted-foreground sm:inline">
+                  {group}
+                  <span aria-hidden="true" className="px-1.5">
+                    /
+                  </span>
+                </span>
+              ) : null}
+              <span className="font-medium">{item?.title ?? "Not found"}</span>
             </p>
           </div>
-          <span className="flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs text-muted-foreground">
-            <span className="size-1.5 rounded-full bg-teal-600" />
-            Foundation
-          </span>
+          <ScopeSwitcher />
         </header>
         <main
           id="main-content"
           tabIndex={-1}
-          className="mx-auto max-w-7xl px-5 py-6 outline-none sm:px-8"
+          className="px-4 py-5 outline-none sm:px-6"
         >
           {children}
         </main>
-        <footer className="px-5 pb-6 text-xs text-muted-foreground sm:px-10">
-          Program Compass
-        </footer>
       </div>
     </div>
   );
