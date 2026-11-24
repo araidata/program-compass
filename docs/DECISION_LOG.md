@@ -60,6 +60,6 @@ Details and rationale for each are in [UX_REVIEW.md](UX_REVIEW.md). Aaron approv
 
 P-10 covers indicative alignment, extended by the latest explicit framework assessment requirements; it does not authorize verified compliance claims or GRC lifecycle management. P-04 is a consistent layout default, not a prohibition on capability cards, org charts or timelines. Historical 2026-11-24 approval dates above are preserved as recorded; this review uses the client date 2026-11-23 and does not infer new approvals from those dates.
 
-## 2026-11-23 � Authentication suspension (accepted)
+## 2026-11-23 - Authentication suspension (accepted)
 
 The owner explicitly requested removal of authentication after account lockout until further instruction. Suspend page and API identity/role enforcement through one shared switch, retain accounts and auth implementation for restoration, and record anonymous administrative writes with null actor IDs. This narrow authorization supersedes the prior documentation-only/auth-preservation gate; it does not authorize business slices.

@@ -1,12 +1,12 @@
 import { expect, test } from "@playwright/test";
 import { authenticationDisabled } from "../src/lib/auth-mode";
+import { clearLimits, fixture, loginPage, signIn } from "./helpers";
+import { database } from "../scripts/database";
 
 test.skip(
   authenticationDisabled,
   "Owner has temporarily disabled authentication",
 );
-import { clearLimits, fixture, loginPage, signIn } from "./helpers";
-import { database } from "../scripts/database";
 const origin = { Origin: "http://127.0.0.1:3100" };
 
 test("anonymous pages redirect and APIs reject access; registration is absent", async ({
