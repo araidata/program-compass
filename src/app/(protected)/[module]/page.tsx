@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { navigation } from "@/lib/navigation";
 import { PageHeader } from "@/components/page-header";
 import { ScopedLink } from "@/components/scoped-link";
+import { requirePage } from "@/lib/server/access";
 
 export const dynamicParams = false;
 
@@ -29,6 +30,7 @@ export default async function ModulePage({
 }: {
   params: Promise<{ module: string }>;
 }) {
+  await requirePage();
   const { module } = await params;
   const item = navigation.find((entry) => entry.href === `/${module}`);
   if (!item) notFound();

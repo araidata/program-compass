@@ -21,3 +21,15 @@ The organizational model has three pillars: Security Operations; Security Archit
 The information architecture, layout, and visual direction come from the review in [UX_REVIEW.md](UX_REVIEW.md), approved 2026-11-24 and recorded in [DECISION_LOG.md](DECISION_LOG.md). Current state is in [PROJECT_STATUS.md](PROJECT_STATUS.md).
 
 Architectural requirements are maintained only in [ARCHITECTURE.md](ARCHITECTURE.md).
+
+## Future scope classification
+
+MVP: organization profile/business context; configurable pillars/functions/responsibilities; capabilities and maturity; NIST CSF 2.0 and actual CJIS 6.0 alignment; authoritative NICE roles/tasks; workload/capacity; technology coverage/investment; lightweight risks/findings; unified initiatives and three/five-year scenarios; annual financial projections and practical reports. FUNCTIONAL_REQUIREMENTS.md contains the authoritative details.
+
+Subsequent: richer performance analysis, comparative scenarios and AI-assisted narrative/reporting with human validation. Optional: additional frameworks and advanced analytical views after a defensible core plan.
+
+Excluded: marketing/branding, subscriptions, public registration, external SSO, enterprise GRC/evidence/audit/acceptance platforms, HR/project-management replacements, unsupported benchmark claims and automated compliance claims. No restricted or actual organizational data in development.
+
+## Current authorization — secure persistence
+
+The user’s 2026-11-23 Phase 4 request authorizes database/authentication/backend foundation (repository Phase 1), including login/logout, three roles, administrator-managed accounts, basic organization settings, pillars/functions and change history. The user explicitly authorized new dedicated Neon resources after confirming none of the existing team databases were suitable. No assessment, framework import, workforce calculations, technology inventory or strategic planning is authorized.

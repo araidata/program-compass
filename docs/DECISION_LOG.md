@@ -39,3 +39,12 @@ Details and rationale for each are in [UX_REVIEW.md](UX_REVIEW.md). Aaron approv
 | P-11 | Keep Business Context as its own module under Plan (alternative: a tab within Roadmap).                                                                                                                                                                                                               | Navigation, scope                                  | Accepted |
 | P-12 | Single-module CSV export and print layout in every module; Reports composes multi-module packs.                                                                                                                                                                                                       | Reporting scope                                    | Accepted |
 | P-13 | Capability assessment uses a keyboard-driven rating grid with autosave, level definitions in a legend, review states, and a staleness cadence (cadence value to be set by Aaron).                                                                                                                     | Assessment workflow, **business rule** for cadence | Accepted |
+
+## 2026-11-23 — Secure persistence (accepted implementation decisions)
+
+- Reconcile the request’s Phase 4 label to repository Phase 1 secure persistence. Preserve main’s merged Claude shell by merging origin/main before development.
+- Use Better Auth with Prisma and fixed admin/editor/viewer roles; no hosted identity provider or public registration. Use transactional administrative history and guard the last active administrator.
+- The user explicitly requested new Neon databases after the dashboard showed no database connected and rejected reuse of unrelated team resources. Use one production resource and one shared nonproduction resource on the Free plan, with no production credentials in previews.
+- Vercel connector returned empty resources/404 despite the correct account, team, exact project ID and renewed consent. Authenticated Vercel CLI 66.6.0 resolved access and successfully provisioned resources. Prefer it for this handoff until the connector discrepancy is resolved.
+- Align Vercel from Node 26 to repository Node 24, npm ci and npm run build. No migrations in builds.
+- Defer cycles/snapshots and person ownership tables until their actual modules; retain P-03/P-07 as relationship constraints in DATA_MODEL.

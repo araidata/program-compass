@@ -3,6 +3,7 @@ import { pillars } from "@/lib/pillars";
 import { PageHeader } from "@/components/page-header";
 import { PillarTag } from "@/components/pillar-tag";
 import { ScopedLink } from "@/components/scoped-link";
+import { requirePage } from "@/lib/server/access";
 
 const groups = [
   ...navigationGroups
@@ -20,7 +21,8 @@ const groups = [
   },
 ];
 
-export default function Overview() {
+export default async function Overview() {
+  await requirePage();
   return (
     <div className="space-y-5">
       <PageHeader
