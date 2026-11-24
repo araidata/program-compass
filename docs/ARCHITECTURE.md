@@ -88,3 +88,7 @@ The owner authorized review, corrective changes and production delivery of the m
 - KPI filters and ordering are URL state shared by the table and CSV exporter. Topic CSV exports include every local KPI. Scope changes preserve other URL filters.
 - Synthetic data is identified in Overview, Capabilities and CSV. Automatic demo seeding and cleanup share a transaction lock and persistent lifecycle markers; clearing cannot cause automatic reseeding. Cleanup preserves edited topics and deletes only positively identified demo-created functions.
 - Build and typecheck regenerate installed Prisma code; build tools run through Node rather than OS-specific `npx` launchers. The C-06/C-07 Vercel migration/seed exception remains; local/CI builds do not connect to a database.
+
+## Open access until owner restoration - 2026-11-24
+
+The owner explicitly requested removal of all access requirements while preparing the site. Application login/role gates remain disabled; the shared save guard now also skips Origin restrictions while authenticationDisabled is true. JSON/content-type, strict field validation and transaction integrity remain. The original canonical-origin check remains for restoration when requested. Vercel project SSO deployment protection is disabled (ssoProtection null); password protection and trusted-IP restrictions are absent. Existing deployment-specific URLs remain immutable old builds; use the stable production URL for updated behavior. No organizational values or accounts are changed by this fix.

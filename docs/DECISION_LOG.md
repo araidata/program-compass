@@ -81,3 +81,7 @@ The owner explicitly requested removal of authentication after account lockout u
 - **Accepted - R-02:** Preserve demo lifecycle history when clearing demo values. A cleared dataset must stay cleared on future deployments. Cleanup must use provenance IDs, retain edited topics/unmarked records and retain legacy demo functions whose creation cannot be proven. No production demo cleanup is performed in this release.
 - **Accepted - R-03:** Changing a target is a planning edit, not a new current-state assessment. Preserve assessment age/assessor on target-only changes. Month-based review dates clamp at month end.
 - **Accepted - R-04:** Export the current KPI view with the same URL filters/sort and all applicable local KPIs, and disclose synthetic data. Serialize browser writes to preserve rapid input order without claiming cross-user optimistic concurrency (last write wins remains).
+
+## Open access until owner restoration - 2026-11-24
+
+**Accepted:** The owner explicitly requested removal of all access requirements before a later live launch. Suspend the shared mutation Origin gate along with login/role enforcement, and disable Vercel project SSO protection. This supersedes prior origin/hosting restrictions during preparation; input validation and transactional integrity remain. The reported deployment-URL saves failed with 403 under the former canonical-only check. Restoration requires an explicit owner request; authoritative behavior is in ARCHITECTURE.md and operator steps in DEPLOYMENT.md.

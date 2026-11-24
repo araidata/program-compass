@@ -2,6 +2,12 @@
 
 Last updated: 2026-11-24 (America/Chicago).
 
+## Open access until owner restoration - 2026-11-24
+
+Owner explicitly requested removal of all access requirements before a later live launch. Fixed the shared save gate: mutation Origin restrictions are skipped with authentication; strict field/JSON validation remains. Vercel project SSO protection was set to null and verified; password/IP restrictions were already absent. Reported deployment URL reproduced 403 Access denied before this correction. Existing user values/accounts/schema are preserved. Use the stable production URL: deployment-specific URLs retain immutable old code.
+
+Affected files: server/api.ts, capabilities browser tests, ARCHITECTURE, DECISION_LOG, DEPLOYMENT, TESTING and this status. Passed: lint, typecheck, format:check, db:validate, unit tests (13) and build without database credentials; browser/database suite 22 passed, 14 deliberately skipped (12 authentication-enforcement and two mobile keyboard-entry cases). New checks save and read back values with missing/foreign Origin headers on isolated Development and restore fixtures. Staged scope is reviewed for secrets; no environment files included. Native main deployment and final live checks follow in the delivery response. No new environment values, migration or organizational data edits required. Restore application checks and hosting protection only after an explicit owner instruction; see DEPLOYMENT.md.
+
 ## Current review and production rollup - 2026-11-23
 
 The owner authorized review, fixes, updates and production rollup of the merged application. Synced main through `82a44ce` (capability slice PR #3). Authentication remains disabled until explicitly requested otherwise. This supersedes the older no-production-rollout statement for this release; other business slices and navigation changes remain deferred.

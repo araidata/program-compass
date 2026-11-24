@@ -2,6 +2,7 @@ import "server-only";
 import { z } from "zod";
 import { HttpError, requireUser } from "./access";
 import { authConfig } from "./config";
+import { authenticationDisabled } from "@/lib/auth-mode";
 import type { Permission } from "@/lib/permissions";
 
 export function json(data: unknown, status = 200) {
@@ -31,7 +32,10 @@ export function failure(error: unknown) {
 }
 
 export function sameOrigin(request: Request) {
-  if (request.headers.get("origin") !== authConfig().origin)
+  if (
+    !authenticationDisabled &&
+    request.headers.get("origin") !== authConfig().origin
+  )
     throw new HttpError(403, "Access denied");
   if (!request.headers.get("content-type")?.startsWith("application/json"))
     throw new HttpError(415, "JSON required");

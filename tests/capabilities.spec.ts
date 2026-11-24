@@ -175,10 +175,10 @@ test("assessment API enforces roles, validation and KPI rules", async ({
   expect(
     (
       await request.patch(`/api/capabilities/${target.id}`, {
-        data: { currentLevel: 3 },
+        data: { currentLevel: authenticationDisabled ? 6 : 3 },
       })
     ).status(),
-  ).toBe(403);
+  ).toBe(authenticationDisabled ? 400 : 403);
   expect(
     (
       await request.patch(
@@ -356,4 +356,31 @@ test("KPI filters survive reload and exports match the displayed rows", async ({
   expect(csv.split("\r\n")).toHaveLength(count + 1);
   expect(csv).toContain('"Data source"');
   expect(csv).toContain('"Measured"');
+});
+
+test("open access saves without canonical Origin restrictions", async ({
+  request,
+}) => {
+  test.skip(
+    !authenticationDisabled,
+    "Origin restrictions return when authentication is restored",
+  );
+  const before = await topic("GV.02");
+  const next = before.targetLevel === 3 ? 4 : 3;
+  try {
+    const testOrigins: Record<string, string>[] = [
+      {},
+      { Origin: "https://unrelated.example.invalid" },
+    ];
+    for (const headers of testOrigins) {
+      const response = await request.patch(`/api/capabilities/${before.id}`, {
+        headers,
+        data: { targetLevel: next },
+      });
+      expect(response.status()).toBe(200);
+      expect((await topic("GV.02")).targetLevel).toBe(next);
+    }
+  } finally {
+    await restore("GV.02", before);
+  }
 });

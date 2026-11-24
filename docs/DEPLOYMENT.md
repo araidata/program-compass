@@ -14,7 +14,7 @@ Use the authenticated Vercel CLI if the connector incorrectly returns no project
 
 DATABASE_URL is the pooled Neon URL; DATABASE_URL_UNPOOLED is the integration’s direct URL. DIRECT_URL is explicitly mapped from that direct URL in each environment (Production/Preview are Secrets). DATABASE_ENVIRONMENT is production, preview, or development. BETTER_AUTH_SECRET is a distinct random secret in each environment. BETTER_AUTH_URL is an exact trusted origin. No NEXT_PUBLIC database/auth secrets.
 
-Production origin is https://program-compass.vercel.app. Preview origin is the stable delivery branch alias https://program-compass-git-codex-foundation-60b971-araidatas-projects.vercel.app. Other preview branches must set their own branch-scoped BETTER_AUTH_URL; arbitrary preview hosts are not trusted automatically. Development origin is http://localhost:3000; browser tests explicitly use http://127.0.0.1:3100.
+Production origin is https://program-compass.vercel.app. Preview origin is the stable delivery branch alias https://program-compass-git-codex-foundation-60b971-araidatas-projects.vercel.app. Other preview branches must set their own branch-scoped BETTER_AUTH_URL; when authentication is restored, arbitrary preview hosts are not trusted automatically. Development origin is http://localhost:3000; browser tests explicitly use http://127.0.0.1:3100.
 
 Pull Development variables with npx vercel env pull .env.local --environment development --scope araidatas-projects. Prisma and scripts load .env.local then .env without overwriting process environment. Keep these files ignored. After changing a Neon resource/credentials, refresh DIRECT_URL and local variables. Never copy production credentials into Preview/Development.
 
@@ -37,8 +37,14 @@ Push the delivery branch, review its PR, inspect the native Vercel preview and m
 
 ## Current authentication and demo lifecycle
 
-Authentication remains disabled by explicit owner instruction. `/login` redirects to the overview; all pages and APIs allow anonymous administrative access. Account/session infrastructure remains intact for restoration using `src/lib/auth-mode.ts`. Origin and input validation remain active. Restore login only at the owner's request.
+Authentication remains disabled by explicit owner instruction. `/login` redirects to the overview; all pages and APIs allow anonymous administrative access. Account/session infrastructure remains intact for restoration using `src/lib/auth-mode.ts`. JSON/content-type and strict field validation remain active; mutation Origin restrictions are suspended with authentication. Restore login only at the owner's request.
 
 `scripts/build.mts` invokes installed tools through Node on Windows and Linux. On Vercel it runs migrate deploy, the catalogue seed and synthetic seed with `--if-empty` (production also passes `--allow-production`). A failed preparation/build leaves the previous application deployment serving, although database changes already applied persist. Only additive migrations belong in this sequence.
 
 Automatic demo loading skips databases with recorded assessments, targets, KPI values, user change history or demo lifecycle events. Seeding is transactional and serialized with demo cleanup. To remove demo values, run `npm run db:demo:clear` with the selected database's operator environment; production requires `DATABASE_ENVIRONMENT=production ALLOW_PRODUCTION_MIGRATION=true`. Cleanup preserves edited topics and unmarked records, records `demo.cleared` so deployments do not repopulate the demo, and only deletes unused functions whose IDs were recorded as demo-created. Older demos lack those function IDs: their functions are retained. Never run the cleanup against a database selected only by a copied connection string or reset the database. Existing demo data is preserved by this release.
+
+## Owner-requested unrestricted access - 2026-11-24
+
+Application authentication, role checks and mutation Origin restrictions are disabled until the owner explicitly requests restoration. Vercel project `ssoProtection` is null, and password protection/trusted-IP restrictions are absent. This opens deployment URLs as well as the stable production site. Input validation, JSON requirements and transaction integrity remain; existing accounts are preserved. Changing `src/lib/auth-mode.ts` back to false restores the application login/role/canonical-Origin guards; re-enable Vercel project SSO protection separately only when requested.
+
+Share https://program-compass.vercel.app for normal use. Deployment-specific addresses are pinned to immutable builds: an old deployment retains its old code even when main is updated. The reported all-fields-revert bug was a 403 from the old canonical-only Origin check when editing through a deployment-specific address. Updated builds skip this access restriction while open access is requested.
