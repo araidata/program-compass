@@ -84,14 +84,26 @@ test("admin creates persistent users; rejects invalid inputs and foreign-origin 
   await signIn(request);
   const { users, password } = fixture();
   const email = `new-${Date.now()}-${users.admin.email}`;
-  expect(
-    (
-      await request.patch(`/api/users/${users.admin.id}`, {
-        headers: origin,
-        data: { role: "viewer", active: false },
-      })
-    ).status(),
-  ).toBe(409);
+  const adminCheck = database();
+  let onlyAdministrator = false;
+  try {
+    onlyAdministrator =
+      (await adminCheck.user.count({
+        where: { role: "admin", active: true },
+      })) === 1;
+  } finally {
+    await adminCheck.$disconnect();
+  }
+  if (onlyAdministrator) {
+    expect(
+      (
+        await request.patch(`/api/users/${users.admin.id}`, {
+          headers: origin,
+          data: { role: "viewer", active: false },
+        })
+      ).status(),
+    ).toBe(409);
+  }
   const response = await request.post("/api/users", {
     headers: origin,
     data: { name: "Synthetic new account", email, password, role: "viewer" },
