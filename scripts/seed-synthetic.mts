@@ -33,6 +33,17 @@ const noOwner = new Set(["PR.06"]);
 const client = database();
 try {
   await seedFoundation(client);
+  // --if-empty: only fill a database with no ratings, so automated preview
+  // builds never overwrite assessments someone has entered.
+  if (
+    process.argv.includes("--if-empty") &&
+    (await client.capability.count({
+      where: { currentLevel: { not: null } },
+    })) > 0
+  ) {
+    console.log("Ratings already exist; synthetic data not written.");
+    process.exit(0);
+  }
   const pillars = await client.pillar.findMany({
     include: { functions: true },
   });

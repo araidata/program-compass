@@ -33,8 +33,8 @@ Main gained Aaron's temporary authentication suspension after this slice was wri
 - **Provisional, not approved:** scale level names other than Initial and Optimized (Developing, Defined, Managed); unweighted mean aggregation; six/twelve month review cadence (taken from the reference); deficiency = level 1 or 2; default pillar involvement per topic. Each is isolated in `src/lib/domain` and labelled in the UI.
 - Owner is the accountable organizational function until person records exist (P-07). No planning cycles yet (P-03): one current assessment per topic, with history in ChangeEvent. Concurrent edits are last write wins.
 - Framework tables are empty: no NIST CSF 2.0 or CJIS 6.0 data, mappings or Framework Alignment screens yet.
-- **Preview deployment needs the migration and seed:** builds never migrate. An operator runs `npm run db:migrate:deploy`, `npm run db:seed` and, for the shared synthetic nonproduction database only, `npm run db:seed:synthetic`, with `DATABASE_ENVIRONMENT=preview`. Until then Capabilities shows its catalogue-not-loaded state or fails to query. The preview auth origin is still bound to the Codex delivery branch alias, so this branch's preview may need its own origin.
-- Production: do not migrate until the PR is merged.
+- **Preview database:** preview builds now migrate and seed the nonproduction database automatically (C-06). If tables are ever missing, Overview and Capabilities show "Database update pending" instead of failing.
+- **Production:** production builds do not touch the database. After merge the production database needs `migrate deploy` and `db:seed` (never the synthetic seed), either run once by an operator or by extending the build step to production with Aaron's approval.
 
 ## Next task
 

@@ -71,3 +71,5 @@ P-10 covers indicative alignment, extended by the latest explicit framework asse
 ## 2026-11-23 � Authentication suspension (accepted)
 
 The owner explicitly requested removal of authentication after account lockout until further instruction. Suspend page and API identity/role enforcement through one shared switch, retain accounts and auth implementation for restoration, and record anonymous administrative writes with null actor IDs. This narrow authorization supersedes the prior documentation-only/auth-preservation gate; it does not authorize business slices.
+
+- **Accepted — C-06:** At Aaron's request (2026-11-24, he does not want manual database steps), Vercel **preview** builds run `migrate deploy`, the catalogue seed and the synthetic seed (`--if-empty`, so entered ratings are never overwritten) against the shared synthetic nonproduction database before `next build`. This is a deliberate exception to "never migrate during builds" for previews only. Production and local builds still never touch the database; how production is migrated at merge needs Aaron's decision.

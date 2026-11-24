@@ -76,3 +76,5 @@ The proposed IA relabels Compliance as a dedicated Framework Alignment section, 
 ## Temporary authentication suspension � 2026-11-23
 
 Explicit owner instruction supersedes the earlier preservation requirement for authentication only. `src/lib/auth-mode.ts` disables page/API login and role gates until the owner requests restoration. Login redirects to `/`, sign-out is hidden, and auth endpoints return 404. All visitors have administrative access; administrative changes retain validation, origin checks, transaction serialization and last-administrator protection, with null actor IDs rather than impersonating an account. Account/session/schema infrastructure is preserved; no migration is required. Restore by changing the shared constant to false and verifying the security suite. Business slices remain unauthorized.
+
+- Exception (DECISION_LOG C-06): `npm run build` runs `scripts/build.mts`. When `VERCEL_ENV=preview` it applies migrations and seeds to the nonproduction database before building; it fails the build if that step fails. Production and local builds generate the client and build without any database access.
