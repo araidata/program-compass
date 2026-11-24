@@ -1,7 +1,8 @@
-// Build entry point. Every build generates the Prisma client and builds Next.js
-// without needing a database. Vercel PREVIEW builds additionally apply pending
-// migrations and seeds to the shared synthetic nonproduction database, at the
-// owner's request (DECISION_LOG C-06). Production builds never touch the database.
+// Build entry point. Every build generates the Prisma client and builds Next.js.
+// Local and CI builds never need a database. At the owner's request, Vercel
+// builds also update their database before building (DECISION_LOG C-06, C-07):
+// pending migrations, the idempotent catalogue seed, and demo data only when no
+// topic has a rating yet. Demo data is removed with `npm run db:demo:clear`.
 import { spawnSync } from "node:child_process";
 
 function run(command: string, args: string[], env = process.env) {
@@ -12,15 +13,29 @@ function run(command: string, args: string[], env = process.env) {
 
 run("npx", ["prisma", "generate"]);
 
-if (process.env.VERCEL_ENV === "preview") {
+const target = process.env.VERCEL_ENV;
+if (target === "preview" || target === "production") {
   if (!process.env.DIRECT_URL)
     throw new Error(
-      "Preview build: DIRECT_URL is required to update the preview database",
+      `Vercel ${target} build: DIRECT_URL is required to update the database`,
     );
-  const env = { ...process.env, DATABASE_ENVIRONMENT: "preview" };
+  const env = {
+    ...process.env,
+    DATABASE_ENVIRONMENT: target,
+    ...(target === "production" ? { ALLOW_PRODUCTION_MIGRATION: "true" } : {}),
+  };
   run("npx", ["tsx", "scripts/migrate.mts", "deploy"], env);
   run("npx", ["tsx", "scripts/seed.mts"], env);
-  run("npx", ["tsx", "scripts/seed-synthetic.mts", "--if-empty"], env);
+  run(
+    "npx",
+    [
+      "tsx",
+      "scripts/seed-synthetic.mts",
+      "--if-empty",
+      ...(target === "production" ? ["--allow-production"] : []),
+    ],
+    env,
+  );
 }
 
 run("npx", ["next", "build"]);

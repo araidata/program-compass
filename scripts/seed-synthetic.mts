@@ -1,13 +1,19 @@
-// Synthetic assessment data for development and preview databases only.
-// Values are generated, labelled synthetic, and never organizational data.
-// Refuses to run against production.
+// Synthetic (demo) assessment data. Values are generated, labelled synthetic,
+// and never organizational data. Production requires --allow-production, which
+// only the Vercel production build passes, at the owner's request (C-07).
+// Remove it again with `npm run db:demo:clear`.
 import { database } from "./database";
 import { seedFoundation } from "./seed-foundation";
+import { DEMO_ACTION, DEMO_FUNCTIONS, DEMO_RATIONALE } from "./demo-data";
 
+const environment = process.env.DATABASE_ENVIRONMENT ?? "";
 if (
-  !["development", "preview"].includes(process.env.DATABASE_ENVIRONMENT ?? "")
+  !["development", "preview"].includes(environment) &&
+  !(environment === "production" && process.argv.includes("--allow-production"))
 )
-  throw new Error("Synthetic data is limited to development and preview");
+  throw new Error(
+    "Synthetic data is limited to development and preview unless --allow-production is passed",
+  );
 
 // Deterministic pseudo-random sequence so every run produces the same data.
 let state = 20261124;
@@ -18,10 +24,7 @@ const random = () => {
 const pick = <T,>(items: readonly T[]) =>
   items[Math.floor(random() * items.length)];
 
-const functions: Record<string, string[]> = {
-  secops: ["Security Monitoring", "Incident Response", "Threat Management"],
-  grc: ["Governance", "Risk & Compliance"],
-};
+const functions = DEMO_FUNCTIONS;
 const owners: Record<string, string> = {
   secops: "Security Monitoring",
   sae: "Engineering",
@@ -78,7 +81,7 @@ try {
           current == null ? null : pick(["low", "medium", "high"] as const),
         reviewState:
           current == null ? "draft" : months > 6 ? "reviewed" : "submitted",
-        rationale: current == null ? null : "Synthetic development rating.",
+        rationale: current == null ? null : DEMO_RATIONALE,
         assessedAt:
           current == null ? null : new Date(now - months * 30.4 * 86_400_000),
         assessedById: null,
@@ -126,6 +129,14 @@ try {
       });
     }
   }
+  await client.changeEvent.create({
+    data: {
+      action: DEMO_ACTION,
+      entityType: "Capability",
+      entityId: "catalogue",
+      details: { note: "Synthetic demo data; remove with db:demo:clear" },
+    },
+  });
   console.log(
     "Synthetic assessment data written to the",
     process.env.DATABASE_ENVIRONMENT,

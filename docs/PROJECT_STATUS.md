@@ -34,7 +34,8 @@ Main gained Aaron's temporary authentication suspension after this slice was wri
 - Owner is the accountable organizational function until person records exist (P-07). No planning cycles yet (P-03): one current assessment per topic, with history in ChangeEvent. Concurrent edits are last write wins.
 - Framework tables are empty: no NIST CSF 2.0 or CJIS 6.0 data, mappings or Framework Alignment screens yet.
 - **Preview database:** preview builds now migrate and seed the nonproduction database automatically (C-06). If tables are ever missing, Overview and Capabilities show "Database update pending" instead of failing.
-- **Production:** production builds do not touch the database. After merge the production database needs `migrate deploy` and `db:seed` (never the synthetic seed), either run once by an operator or by extending the build step to production with Aaron's approval.
+- **Production (C-07):** production builds migrate, seed the catalogue and, only into an empty database, load demo data. Remove demo data with `DATABASE_ENVIRONMENT=production ALLOW_PRODUCTION_MIGRATION=true DIRECT_URL=<production direct URL> npm run db:demo:clear`; topics edited in the application are kept.
+- **Small screens:** wide tables scroll inside their panels, so phones and narrow laptops no longer zoom out or scroll sideways.
 
 ## Next task
 

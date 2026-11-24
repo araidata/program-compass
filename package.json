@@ -19,7 +19,8 @@
     "db:admin": "tsx scripts/provision-admin.mts",
     "test": "tsx --test tests/unit/*.test.ts",
     "test:e2e": "playwright test",
-    "db:seed:synthetic": "tsx scripts/seed-synthetic.mts"
+    "db:seed:synthetic": "tsx scripts/seed-synthetic.mts",
+    "db:demo:clear": "tsx scripts/clear-demo.mts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
