@@ -38,3 +38,52 @@ export const listSchema = z.object({
   sort: z.enum(["name", "email", "createdAt"]).default("name"),
   direction: z.enum(["asc", "desc"]).default("asc"),
 });
+
+const level = z.number().int().min(1).max(5).nullable();
+const isoDate = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/)
+  .refine((value) => !Number.isNaN(Date.parse(`${value}T00:00:00Z`)));
+export const capabilityUpdateSchema = z
+  .object({
+    currentLevel: level,
+    targetLevel: level,
+    applicable: z.boolean(),
+    confidence: z.enum(["low", "medium", "high"]).nullable(),
+    rationale: z.string().trim().max(4000).nullable(),
+    description: z.string().trim().max(2000).nullable(),
+    reviewState: z.enum(["draft", "submitted", "reviewed"]),
+    targetDate: isoDate.nullable(),
+    accountableFunctionId: z.string().min(1).max(100).nullable(),
+    pillarKeys: z
+      .array(z.enum(["secops", "sae", "grc"]))
+      .min(1)
+      .max(3),
+  })
+  .partial()
+  .strict()
+  .refine((value) => Object.keys(value).length > 0);
+const measure = z.number().finite().min(-1e9).max(1e9);
+const indicatorFields = z
+  .object({
+    name: z.string().trim().min(1).max(120),
+    unit: z.string().trim().min(1).max(30),
+    direction: z.enum(["higher", "lower"]),
+    passThreshold: measure,
+    failThreshold: measure,
+    value: measure.nullable(),
+    measuredAt: isoDate.nullable(),
+  })
+  .strict();
+export const indicatorSchema = indicatorFields.refine(
+  (value) =>
+    value.direction === "higher"
+      ? value.passThreshold >= value.failThreshold
+      : value.passThreshold <= value.failThreshold,
+  { message: "Pass and fail boundaries are out of order" },
+);
+// Catalogue KPIs keep their name; boundary order is rechecked on the server.
+export const indicatorUpdateSchema = indicatorFields
+  .partial()
+  .strict()
+  .refine((value) => Object.keys(value).length > 0);

@@ -59,3 +59,11 @@ Details and rationale for each are in [UX_REVIEW.md](UX_REVIEW.md). Aaron approv
 - **Proposed — S-06:** R1–R3 deliver connected capability/context/direction/reporting baseline before R4–R5 resource/multiyear extensions. Methods, domain schema and each slice require approval. Retain useful analytical presentations alongside tables; no shell rewrite.
 
 P-10 covers indicative alignment, extended by the latest explicit framework assessment requirements; it does not authorize verified compliance claims or GRC lifecycle management. P-04 is a consistent layout default, not a prohibition on capability cards, org charts or timelines. Historical 2026-11-24 approval dates above are preserved as recorded; this review uses the client date 2026-11-23 and does not infer new approvals from those dates.
+
+## 2026-11-24 — First capability assessment slice (Claude Code)
+
+- **Accepted — C-01:** Aaron authorized a working Capabilities assessment on 2026-11-24 (thread decision card, then explicit instruction to continue backend and frontend). Scope is a partial R1 slice: catalogue, assessment, KPIs, analysis and Overview. Other R1 to R5 work, Framework Alignment screens and S-05 navigation changes remain unauthorized.
+- **Accepted — C-02:** Use the original 30 reference topics and 60 KPIs (REFERENCE_APPLICATION_REVIEW.md inventory) as catalogue version `reference-baseline-1`, preserving topic codes and per-KPI catalogue keys (for example GV.01-1). This replaced an initial NIST CSF 2.0 category catalogue at Aaron's direction. Reference display groups are not official CSF functions.
+- **Accepted — C-03:** A topic is assessed once. Framework, FrameworkRequirement and CapabilityRequirementMapping tables exist (empty) so NIST CSF 2.0 and CJIS 6.0 requirements map to topics without creating a second maturity value.
+- **Provisional — C-04:** 1 to 5 scale (Initial, Developing, Defined, Managed, Optimized; only the end names are evidenced by the reference review), unweighted means over assessed applicable topics, six/twelve month review cadence, deficiency at level 1 or 2, default pillar involvement per topic. Implemented as isolated, labelled constants pending approval.
+- **Accepted — C-05:** Accountable owner is an OrganizationalFunction until person records exist (P-07). History uses ChangeEvent until planning cycles exist (P-03).

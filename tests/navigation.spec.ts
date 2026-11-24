@@ -30,9 +30,13 @@ test("overview and all protected navigation modules work", async ({
     page.getByRole("heading", { name: "Overview", exact: true }),
   ).toBeVisible();
   await expect(
-    page.getByText("No organizational data is connected.", { exact: false }),
+    page
+      .getByRole("heading", { name: "No assessments recorded yet" })
+      .or(page.getByRole("heading", { name: "Maturity by group" })),
   ).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Pillars" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Planned modules" }),
+  ).toBeVisible();
   for (const [title, path] of modules) {
     if (testInfo.project.name === "mobile")
       await page.getByRole("button", { name: "Open navigation" }).click();
@@ -44,7 +48,7 @@ test("overview and all protected navigation modules work", async ({
     await expect(
       page.getByRole("heading", { name: title, exact: true }),
     ).toBeVisible();
-    if (path !== "/settings")
+    if (path !== "/settings" && path !== "/capabilities")
       await expect(
         page.getByRole("heading", { name: "Not available yet" }),
       ).toBeVisible();

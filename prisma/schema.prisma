@@ -15,18 +15,20 @@ enum Role {
 }
 
 model User {
-  id            String        @id @default(uuid())
-  name          String
-  email         String        @unique
-  emailVerified Boolean       @default(false)
-  image         String?
-  role          Role          @default(viewer)
-  active        Boolean       @default(true)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  sessions      Session[]
-  accounts      Account[]
-  changes       ChangeEvent[]
+  id               String                @id @default(uuid())
+  name             String
+  email            String                @unique
+  emailVerified    Boolean               @default(false)
+  image            String?
+  role             Role                  @default(viewer)
+  active           Boolean               @default(true)
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+  sessions         Session[]
+  accounts         Account[]
+  changes          ChangeEvent[]
+  assessments      Capability[]
+  indicatorUpdates CapabilityIndicator[]
 }
 
 model Session {
@@ -101,15 +103,17 @@ model Pillar {
   createdAt      DateTime                 @default(now())
   updatedAt      DateTime                 @updatedAt
   functions      OrganizationalFunction[]
+  capabilities   CapabilityPillar[]
 }
 
 model OrganizationalFunction {
-  id        String   @id @default(uuid())
-  name      String
-  pillarId  String
-  pillar    Pillar   @relation(fields: [pillarId], references: [id], onDelete: Restrict)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String       @id @default(uuid())
+  name           String
+  pillarId       String
+  pillar         Pillar       @relation(fields: [pillarId], references: [id], onDelete: Restrict)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  accountableFor Capability[]
 
   @@unique([pillarId, name])
 }
@@ -135,4 +139,139 @@ model ChangeEvent {
 
   @@index([createdAt, id])
   @@index([entityType, entityId])
+}
+
+enum ReviewState {
+  draft
+  submitted
+  reviewed
+}
+
+enum Confidence {
+  low
+  medium
+  high
+}
+
+enum IndicatorDirection {
+  higher
+  lower
+}
+
+// Capability catalogue entry plus its current assessment. The catalogue code and
+// framework function come from reference data; assessment fields are observations.
+// currentLevel/targetLevel null means unassessed or no target, never zero.
+model Capability {
+  id                    String                         @id @default(uuid())
+  catalogue             String                         @default("reference-baseline-1")
+  code                  String                         @unique
+  groupCode             String
+  name                  String
+  description           String?
+  sortOrder             Int                            @default(0)
+  applicable            Boolean                        @default(true)
+  currentLevel          Int?
+  targetLevel           Int?
+  scaleVersion          String                         @default("provisional-1")
+  confidence            Confidence?
+  rationale             String?
+  reviewState           ReviewState                    @default(draft)
+  targetDate            DateTime?                      @db.Date
+  accountableFunctionId String?
+  accountableFunction   OrganizationalFunction?        @relation(fields: [accountableFunctionId], references: [id], onDelete: SetNull)
+  assessedAt            DateTime?
+  assessedById          String?
+  assessedBy            User?                          @relation(fields: [assessedById], references: [id], onDelete: SetNull)
+  createdAt             DateTime                       @default(now())
+  updatedAt             DateTime                       @updatedAt
+  pillars               CapabilityPillar[]
+  indicators            CapabilityIndicator[]
+  requirements          CapabilityRequirementMapping[]
+
+  @@index([groupCode, sortOrder])
+}
+
+// Capabilities may span pillars; no exclusive pillar ownership.
+model CapabilityPillar {
+  capabilityId String
+  capability   Capability @relation(fields: [capabilityId], references: [id], onDelete: Cascade)
+  pillarId     String
+  pillar       Pillar     @relation(fields: [pillarId], references: [id], onDelete: Restrict)
+
+  @@id([capabilityId, pillarId])
+  @@index([pillarId])
+}
+
+// Operational KPI for one capability. Boundaries follow the reference
+// baseline: higher is better passes at >= passThreshold and fails below
+// failThreshold; lower is better passes at <= passThreshold and fails above
+// failThreshold; values between are at risk. value null means no data.
+model CapabilityIndicator {
+  id            String             @id @default(uuid())
+  capabilityId  String
+  capability    Capability         @relation(fields: [capabilityId], references: [id], onDelete: Cascade)
+  // Stable catalogue identifier (for example GV.01-1); null for local KPIs.
+  catalogueKey  String?            @unique
+  sortOrder     Int                @default(0)
+  name          String
+  unit          String             @default("%")
+  direction     IndicatorDirection @default(higher)
+  passThreshold Decimal            @db.Decimal(14, 4)
+  failThreshold Decimal            @db.Decimal(14, 4)
+  value         Decimal?           @db.Decimal(14, 4)
+  measuredAt    DateTime?          @db.Date
+  updatedById   String?
+  updatedBy     User?              @relation(fields: [updatedById], references: [id], onDelete: SetNull)
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  @@unique([capabilityId, name])
+}
+
+// Versioned external framework reference (for example NIST CSF 2.0 or the
+// CJIS Security Policy 6.0). Reference data only; loaded from authoritative
+// sources in a later slice. Organizational assessments stay on Capability.
+model Framework {
+  id           String                 @id @default(uuid())
+  key          String
+  name         String
+  version      String
+  sourceUrl    String?
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+  requirements FrameworkRequirement[]
+
+  @@unique([key, version])
+}
+
+// Official requirement, function, category or control, with its hierarchy.
+model FrameworkRequirement {
+  id          String                         @id @default(uuid())
+  frameworkId String
+  framework   Framework                      @relation(fields: [frameworkId], references: [id], onDelete: Restrict)
+  identifier  String
+  title       String
+  parentId    String?
+  parent      FrameworkRequirement?          @relation("RequirementHierarchy", fields: [parentId], references: [id], onDelete: Restrict)
+  children    FrameworkRequirement[]         @relation("RequirementHierarchy")
+  sortOrder   Int                            @default(0)
+  createdAt   DateTime                       @default(now())
+  updatedAt   DateTime                       @updatedAt
+  mappings    CapabilityRequirementMapping[]
+
+  @@unique([frameworkId, identifier])
+}
+
+// A capability is assessed once and mapped to many requirements; a mapping
+// never creates a second maturity value.
+model CapabilityRequirementMapping {
+  capabilityId  String
+  capability    Capability           @relation(fields: [capabilityId], references: [id], onDelete: Cascade)
+  requirementId String
+  requirement   FrameworkRequirement @relation(fields: [requirementId], references: [id], onDelete: Restrict)
+  rationale     String?
+  createdAt     DateTime             @default(now())
+
+  @@id([capabilityId, requirementId])
+  @@index([requirementId])
 }
