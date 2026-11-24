@@ -11,15 +11,15 @@ Updated 2026-11-24 (America/Chicago). **The site is not complete.** This checkpo
 
 ## Release operation — owner instruction 2026-11-24
 
-Aaron explicitly requested **Push to main** after the preceding local checkpoint. The release process is in progress: revalidate without credentials, review staged changes/secrets, create a normal commit and fast-forward push to remote main, then verify the native Vercel production build and read-only public workflows. PROJECT_STATUS.md records the final outcome. The repository/deployment notes below describe the pre-release checkpoint until that outcome is recorded. Full remaining site completion is still unfinished.
+Aaron explicitly requested **Push to main**. Application commit `c9ee854` was pushed and its native Vercel production deployment `dpl_HGyNE6idwadxo3oNWa4HjsgkX1Vz` reached READY. Both migrations applied successfully; seed preserved existing assessments/configuration and wrote no synthetic data. The stable production URL serves the new continuation features. Anonymous desktop verification passed all ten routes, migrated APIs, editor open/cancel and strict invalid-body rejection without creating production fixtures. Authentication remains suspended; no browser page errors. Error-level log scan showed only the known pg SSL-mode deprecation warning. This documentation follow-up records the release and is also being pushed to main; PROJECT_STATUS.md has details. Full remaining site completion is still unfinished.
 
 ## Repository / concurrent chat
 
 - Workspace: `C:/Users/Aaron/Projects/program-compass`.
-- Existing checkout: `codex/reference-alignment-review`, HEAD `a205439` (authentication access-gate fix), with continuation changes uncommitted and unstaged. No new worktree, commit or deployment was made in this continuation. Check git status before editing; include untracked source/migrations when reviewing changes.
+- Existing checkout: `codex/reference-alignment-review`. Application release `c9ee854` was pushed to main; this file is part of the release-documentation follow-up. No new worktree was created. Check git status and fetch origin/main before continuing; preserve any newer work.
 - Codex chat **Remove site authentication**, ID `01a20bee-a6a0-7081-9152-74e9ae41b564`, completed successfully. Its final response reports the access/save fix deployed with 22 active browser checks passing under the former desktop/mobile configuration. Its public changes are already in HEAD.
 - Auth login/role gates remain suspended. The shared API save guard skips Origin restrictions only while authenticationDisabled is true; JSON/strict-field validation and transactions remain. Do not undo this. Stable production URL: https://program-compass.vercel.app . Deployment-specific URLs remain immutable old builds.
-- New continuation features below exist locally and in Development schema only; they are not on the public site yet. Production remains the deployed capability/authentication slice.
+- The continuation features below are now on the public site along with the preserved capability/authentication slice. The two additive migrations are applied in Development and Production.
 
 ## Completed code in this continuation
 
@@ -51,7 +51,7 @@ Aaron explicitly requested **Push to main** after the preceding local checkpoint
 
 - New source: `src/lib/domain/{workforce,context,csv}.ts`; `src/lib/server/{workforce,context}.ts`; `src/components/workforce`, `src/components/context`, `src/components/planning/record-editor.tsx`, `src/components/use-url-filters.ts`; capability `cycle-control.tsx` and `context-links.tsx`; dedicated protected Workforce/Context pages; APIs under `/api/workforce`, `/api/context`, `/api/cycles`.
 - Modified capability server/domain/validation/views/panel/workspace/page for ownership/snapshots/reciprocal context. Overview no longer calls Context/Workforce wholly unavailable. Placeholder route static-parameter list excludes their dedicated pages. Added print styles in globals.css. New unit/browser tests; desktop navigation assertions updated.
-- Additive migrations `202611240002_people_cycles` and `202611240003_business_context` applied successfully to the configured isolated **Development** Neon database. Four migrations total; db:status reports up to date. No production schema change performed here. Do not edit applied migrations; use a new one for further schema changes.
+- Additive migrations `202611240002_people_cycles` and `202611240003_business_context` applied successfully to the configured isolated **Development** Neon database. Four migrations total; db:status reports up to date. Production application of both migrations was subsequently confirmed in the native release build logs. Do not edit applied migrations; use a new one for further schema changes.
 - Seed reliability fix: `scripts/seed-foundation.ts` now preloads existing catalogue rows/KPI keys in two lookups instead of 90 sequential reads, with a bounded 30-second transaction (10-second max wait). The final run had exposed an existing five-second seed-transaction expiry before tests started; rerun passed after this fix. Existing values/identity/idempotency are preserved.
 - No new dependencies, lockfile edits, env values, credentials or infrastructure replacements. Ignored .env.local was safely restored after credential-free checks; do not print it. It identifies Development.
 

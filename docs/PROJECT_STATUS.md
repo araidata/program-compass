@@ -2,6 +2,14 @@
 
 Last updated: 2026-11-24 (America/Chicago).
 
+## Main release verified — 2026-11-24
+
+Pushed application commit `c9ee854` normally to remote main at Aaron's explicit instruction. Vercel native production deployment `dpl_HGyNE6idwadxo3oNWa4HjsgkX1Vz` (`program-compass-rc9as2fxc-araidatas-projects.vercel.app`) reached READY in 58 seconds and the stable URL https://program-compass.vercel.app resolves to that deployment. This documentation follow-up records the verified release; earlier local-only/uncommitted statements below are historical checkpoints.
+
+Production build logs confirm both additive migrations applied, foundation/catalogue seed preserved configuration, and synthetic seeding skipped because assessment/demo history already existed. No new production test records were created. Live anonymous desktop checks: all ten navigation routes return 200 without horizontal page overflow; workforce/context/cycles APIs return 200 with migrated data shapes; personnel and objective editors open/cancel; invalid create bodies return 400 without inserting records; login redirects to Overview, sign-out remains absent and auth session endpoint returns 404. Zero browser page errors. Production error-level logs contained eight instances of the known pg SSL-mode deprecation warning written to stderr; no application exceptions were observed in that scan.
+
+Before push: lint, typecheck, format:check, db:validate, 19 unit tests and build passed without database credentials/local environment files. Previous desktop integration results remain 15 passed/six deliberately skipped for suspended authentication, plus focused print/workflow checks 3/3. Staged review covered all 55 files with no secret-pattern matches or environment files; no dependency/lockfile or authentication-switch changes. Remaining modules/method-settings work is unchanged and documented in CONTINUATION.md. Site completion is still partial; this release makes the implemented continuation available in production.
+
 ## Main release authorized — 2026-11-24
 
 Aaron explicitly requested **Push to main** for the completed continuation work and documentation. Release includes the desktop-only rule, personnel/positions/capability ownership, immutable capability snapshots, Business Context, seed reliability correction and provisional-assumption approval record; it does not represent completion of the remaining modules. Remote main was verified at `a205439` with no intervening changes. Native GitHub/Vercel production target confirmed: araidata/program-compass, branch main, project program-compass under araidatas-projects, Node 24/npm ci/npm run build. The connector returned its documented 404; authenticated CLI inspection confirmed the correct existing target.
