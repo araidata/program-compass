@@ -7,4 +7,6 @@
 5. **Phase 4 — Strategy and findings:** strategic plans, risk tracking, and prioritization.
 6. **Phase 5 — Reporting and hardening:** reporting, accessibility, operational monitoring, and release validation.
 
+Before substantive frontend work begins, the IA and UI/UX proposals in [UX_REVIEW.md](UX_REVIEW.md) need approval. Status is tracked in [PROJECT_STATUS.md](PROJECT_STATUS.md) and decisions in [DECISION_LOG.md](DECISION_LOG.md).
+
 Each phase requires separately approved scope and meaningful validation. Follow [ARCHITECTURE.md](ARCHITECTURE.md).

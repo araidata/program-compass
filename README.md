@@ -37,7 +37,7 @@ npm start
 - `src/lib/` — navigation definitions and utilities.
 - `prisma/` and `prisma.config.ts` — PostgreSQL schema foundation and Prisma CLI configuration.
 - `tests/` — production browser navigation checks.
-- `docs/` — architecture, scope, phased plan, and deployment guidance.
+- `docs/` — architecture, scope, phased plan, deployment guidance, project status, decision log, and the IA and UI/UX review.
 
 ## Shared project requirements
 
