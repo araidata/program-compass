@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { cn } from "@/lib/utils";
 import { pillars, withScope, type Pillar } from "@/lib/pillars";
@@ -24,6 +24,8 @@ const options: ReadonlyArray<{
 
 function Switcher({ current }: { current: Pillar | null }) {
   const pathname = usePathname();
+  const params = useSearchParams();
+  const href = params.size ? `${pathname}?${params}` : pathname;
   const router = useRouter();
   const currentId = current?.id ?? "enterprise";
   return (
@@ -37,7 +39,7 @@ function Switcher({ current }: { current: Pillar | null }) {
           return (
             <Link
               key={option.id}
-              href={withScope(pathname, option.pillar)}
+              href={withScope(href, option.pillar)}
               title={option.name}
               aria-current={active ? "true" : undefined}
               className={cn(
@@ -57,7 +59,7 @@ function Switcher({ current }: { current: Pillar | null }) {
           value={currentId}
           onChange={(event) => {
             const option = options.find((o) => o.id === event.target.value);
-            router.push(withScope(pathname, option?.pillar ?? null));
+            router.push(withScope(href, option?.pillar ?? null));
           }}
           className="h-8 rounded-md border bg-card px-2 text-xs font-medium"
         >

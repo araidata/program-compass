@@ -1,8 +1,20 @@
 # Project status
 
-Last updated: 2026-11-24.
+Last updated: 2026-11-24 (America/Chicago).
 
-## Current authorization and delivery
+## Current review and production rollup - 2026-11-23
+
+The owner authorized review, fixes, updates and production rollup of the merged application. Synced main through `82a44ce` (capability slice PR #3). Authentication remains disabled until explicitly requested otherwise. This supersedes the older no-production-rollout statement for this release; other business slices and navigation changes remain deferred.
+
+Completed fixes: portable build tool invocation with explicit spawn errors; fresh Prisma types during typecheck; ordered autosaves with stale-response protection and confirmed-value rollback; strict calendar dates and unique pillars; target-only edits preserve assessment age/assessor; month-end review arithmetic; URL-preserving pillar switches; URL KPI status/order shared with CSV; local KPIs included in topic exports; visible demo provenance on dashboards/exports; transactional demo loading/cleanup with persistent clear markers and positively identified demo functions. Demo data and account infrastructure are preserved. Legacy demo function creation cannot be proven, so cleanup retains those functions. Test history cleanup is restricted to the fixture's topic.
+
+Affected files: package.json; scripts/build.mts, demo-data.ts, seed-synthetic.mts, clear-demo.mts, clear-demo-data.ts; Overview/Capabilities pages; capability workspace/performance view, scope switcher, demo notice; domain calculations, pillar helper, server capabilities and validation; capability/demo browser tests and unit tests; README and architecture/decision/deployment/testing/status docs. Formatting normalized locally; Git records substantive changes only. No schema, lockfile, environment or credential changes.
+
+Validation: required lint, typecheck, format:check, db:validate and build pass with local environment files and database credentials absent. Thirteen unit tests pass. Browser/database suite against isolated Development: 20 passed, 14 deliberately skipped (12 authentication-enforcement cases while suspended; two desktop-only keyboard cases on mobile). Runtime dependency audit: zero vulnerabilities. Mobile overview screenshot inspected; all navigation routes, drawer behavior and page overflow checks pass. No pending development migrations. Final checks and native production deployment verification follow before completion.
+
+Remaining limits: provisional scale/aggregation/cadence and function-based ownership remain as documented; Framework Alignment and other business modules are still placeholders. Cross-user edits remain last-write-wins. No new production configuration or migration is needed; production retains existing C-06/C-07 preparation. Next task after this release: methodology decisions and a separately authorized next slice, or explicit authentication restoration.
+
+## Prior capability-slice authorization and delivery
 
 Aaron authorized the first capability slice on 2026-11-24 in the project thread: build a working Capabilities assessment (decision card, then "continue your current implementation, including the backend and frontend", using the 30 reference topics, 60 KPIs and maturity scale from the reference review, and supporting future NIST CSF and CJIS mappings). This is a partial R1 slice. It does not authorize other R1 to R5 work, Framework Alignment screens, framework data import, navigation changes (S-05) or production rollout. Branch `claude/project-thread-jdje86` merges Codex's documentation branch `codex/reference-alignment-review` (908402c) so the implementation sits on the reconciled documents.
 

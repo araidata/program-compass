@@ -55,7 +55,13 @@ export function gap(capability: CapabilityView): number | null {
 
 function addMonths(date: Date, months: number): Date {
   const result = new Date(date);
+  const day = result.getUTCDate();
+  result.setUTCDate(1);
   result.setUTCMonth(result.getUTCMonth() + months);
+  const lastDay = new Date(
+    Date.UTC(result.getUTCFullYear(), result.getUTCMonth() + 1, 0),
+  ).getUTCDate();
+  result.setUTCDate(Math.min(day, lastDay));
   return result;
 }
 
@@ -370,4 +376,34 @@ export function matchesFilter(
 
 export function formatLevel(value: number | null, digits = 1): string {
   return value == null ? "—" : value.toFixed(digits);
+}
+
+export function performanceRows(
+  items: readonly CapabilityView[],
+  status: "all" | IndicatorStatus,
+  worstFirst: boolean,
+) {
+  const severity: Record<IndicatorStatus, number> = {
+    fail: 0,
+    "at-risk": 1,
+    missing: 2,
+    pass: 3,
+  };
+  const rows = items
+    .filter((item) => item.applicable)
+    .flatMap((item) =>
+      item.indicators.map((kpi) => ({
+        item,
+        kpi,
+        status: indicatorStatus(kpi),
+      })),
+    )
+    .filter((row) => status === "all" || row.status === status);
+  if (worstFirst)
+    rows.sort(
+      (a, b) =>
+        severity[a.status] - severity[b.status] ||
+        a.item.code.localeCompare(b.item.code),
+    );
+  return rows;
 }

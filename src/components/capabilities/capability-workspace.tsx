@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import {
   Check,
   Download,
@@ -20,6 +20,8 @@ import {
   summarize,
   type CapabilityView,
   type IndicatorView,
+  performanceRows,
+  type IndicatorStatus,
   type QuickFilter,
 } from "@/lib/domain/capabilities";
 import { displayGroups } from "@/lib/domain/catalogue";
@@ -101,11 +103,13 @@ function csvCell(value: unknown) {
 
 export function CapabilityWorkspace({
   initial,
+  synthetic,
   functions,
   canEdit,
   now: nowIso,
 }: {
   initial: CapabilityView[];
+  synthetic: boolean;
   functions: FunctionGroup[];
   canEdit: boolean;
   now: string;
@@ -117,6 +121,40 @@ export function CapabilityWorkspace({
   const scope = useScope();
   const [items, setItems] = useState(initial);
   const [save, setSave] = useState<SaveState>({ state: "idle" });
+  const queue = useRef(Promise.resolve());
+  const pending = useRef(0);
+  const versions = useRef(new Map<string, number>());
+  const confirmed = useRef(new Map(initial.map((item) => [item.id, item])));
+  const confirmedIndicators = useRef(
+    new Map(
+      initial.flatMap((item) =>
+        item.indicators.map((kpi) => [kpi.id, kpi] as const),
+      ),
+    ),
+  );
+  const enqueueRequest = useCallback(
+    <T,>(url: string, method: string, body?: unknown) => {
+      pending.current += 1;
+      const next = queue.current.then(() => request<T>(url, method, body));
+      queue.current = next.then(
+        () => undefined,
+        () => undefined,
+      );
+      return next.finally(() => {
+        pending.current -= 1;
+      });
+    },
+    [],
+  );
+  const saved = useCallback(() => {
+    setSave((state) =>
+      state.state === "error"
+        ? state
+        : pending.current > 0
+          ? { state: "saving" }
+          : { state: "saved", at: new Date() },
+    );
+  }, []);
 
   const view = (views.find((entry) => entry.id === params.get("view"))?.id ??
     "assessment") as ViewId;
@@ -126,6 +164,14 @@ export function CapabilityWorkspace({
   const group = params.get("group") ?? "";
   const query = params.get("q") ?? "";
   const selectedId = params.get("topic");
+  const kpiStatus = (
+    ["fail", "at-risk", "missing", "pass"].includes(
+      params.get("kpiStatus") ?? "",
+    )
+      ? params.get("kpiStatus")
+      : "all"
+  ) as "all" | IndicatorStatus;
+  const worstFirst = params.get("worst") === "1";
 
   const setParams = useCallback(
     (updates: Record<string, string | null>) => {
@@ -184,30 +230,38 @@ export function CapabilityWorkspace({
 
   const update = useCallback(
     async (id: string, patch: CapabilityPatch) => {
-      const before = items.find((item) => item.id === id);
-      if (!before) return;
+      if (!items.some((item) => item.id === id)) return;
+      const version = (versions.current.get(id) ?? 0) + 1;
+      versions.current.set(id, version);
       setItems((list) =>
         list.map((item) => (item.id === id ? { ...item, ...patch } : item)),
       );
       setSave({ state: "saving" });
-      const result = await request<CapabilityView>(
+      const result = await enqueueRequest<CapabilityView>(
         `/api/capabilities/${id}`,
         "PATCH",
         patch,
       );
       if (result.ok) {
+        confirmed.current.set(id, result.data);
+        if (versions.current.get(id) !== version) return;
         setItems((list) =>
           list.map((item) => (item.id === id ? result.data : item)),
         );
-        setSave({ state: "saved", at: new Date() });
+        saved();
       } else {
-        setItems((list) =>
-          list.map((item) => (item.id === id ? before : item)),
-        );
+        if (versions.current.get(id) === version)
+          setItems((list) =>
+            list.map((item) =>
+              item.id === id
+                ? { ...confirmed.current.get(id)!, indicators: item.indicators }
+                : item,
+            ),
+          );
         handleFailure(result);
       }
     },
-    [items, handleFailure],
+    [items, handleFailure, enqueueRequest, saved],
   );
 
   const replaceIndicator = useCallback(
@@ -231,31 +285,40 @@ export function CapabilityWorkspace({
       const owner = items.find((item) => item.id === capabilityId);
       const before = owner?.indicators.find((kpi) => kpi.id === indicatorId);
       if (!before) return false;
+      const version = (versions.current.get(indicatorId) ?? 0) + 1;
+      versions.current.set(indicatorId, version);
       replaceIndicator(capabilityId, (list) =>
         list.map((kpi) =>
           kpi.id === indicatorId ? { ...kpi, ...patch } : kpi,
         ),
       );
       setSave({ state: "saving" });
-      const result = await request<IndicatorView>(
+      const result = await enqueueRequest<IndicatorView>(
         `/api/indicators/${indicatorId}`,
         "PATCH",
         patch,
       );
       if (result.ok) {
+        confirmedIndicators.current.set(indicatorId, result.data);
+        if (versions.current.get(indicatorId) !== version) return true;
         replaceIndicator(capabilityId, (list) =>
           list.map((kpi) => (kpi.id === indicatorId ? result.data : kpi)),
         );
-        setSave({ state: "saved", at: new Date() });
+        saved();
         return true;
       }
-      replaceIndicator(capabilityId, (list) =>
-        list.map((kpi) => (kpi.id === indicatorId ? before : kpi)),
-      );
+      if (versions.current.get(indicatorId) === version)
+        replaceIndicator(capabilityId, (list) =>
+          list.map((kpi) =>
+            kpi.id === indicatorId
+              ? confirmedIndicators.current.get(indicatorId)!
+              : kpi,
+          ),
+        );
       handleFailure(result);
       return false;
     },
-    [items, replaceIndicator, handleFailure],
+    [items, replaceIndicator, handleFailure, enqueueRequest, saved],
   );
 
   const createIndicator = useCallback(
@@ -264,26 +327,27 @@ export function CapabilityWorkspace({
       body: Omit<IndicatorView, "id" | "catalogueKey">,
     ) => {
       setSave({ state: "saving" });
-      const result = await request<IndicatorView>(
+      const result = await enqueueRequest<IndicatorView>(
         `/api/capabilities/${capabilityId}/indicators`,
         "POST",
         body,
       );
       if (result.ok) {
+        confirmedIndicators.current.set(result.data.id, result.data);
         replaceIndicator(capabilityId, (list) => [...list, result.data]);
-        setSave({ state: "saved", at: new Date() });
+        saved();
         return true;
       }
       handleFailure(result);
       return false;
     },
-    [replaceIndicator, handleFailure],
+    [replaceIndicator, handleFailure, enqueueRequest, saved],
   );
 
   const deleteIndicator = useCallback(
     async (capabilityId: string, indicatorId: string) => {
       setSave({ state: "saving" });
-      const result = await request<{ id: string }>(
+      const result = await enqueueRequest<{ id: string }>(
         `/api/indicators/${indicatorId}`,
         "DELETE",
         {},
@@ -292,14 +356,14 @@ export function CapabilityWorkspace({
         replaceIndicator(capabilityId, (list) =>
           list.filter((kpi) => kpi.id !== indicatorId),
         );
-        setSave({ state: "saved", at: new Date() });
+        saved();
       } else handleFailure(result);
     },
-    [replaceIndicator, handleFailure],
+    [replaceIndicator, handleFailure, enqueueRequest, saved],
   );
 
   function exportCsv() {
-    const header = [
+    let header = [
       "Code",
       "Topic",
       "Group",
@@ -314,12 +378,15 @@ export function CapabilityWorkspace({
       "Last assessed",
       "Target date",
       "Accountable function",
-      "KPI 1",
-      "KPI 1 value",
-      "KPI 2",
-      "KPI 2 value",
+      "Data source",
+      ...Array.from(
+        {
+          length: Math.max(0, ...visible.map((item) => item.indicators.length)),
+        },
+        (_, index) => [`KPI ${index + 1}`, `KPI ${index + 1} value`],
+      ).flat(),
     ];
-    const rows = visible.map((item) => [
+    let rows: unknown[][] = visible.map((item) => [
       item.code,
       item.name,
       displayGroups.find((entry) => entry.code === item.groupCode)?.name,
@@ -334,11 +401,42 @@ export function CapabilityWorkspace({
       item.assessedAt?.slice(0, 10),
       item.targetDate,
       item.accountableFunctionName,
-      item.indicators[0]?.name,
-      item.indicators[0]?.value,
-      item.indicators[1]?.name,
-      item.indicators[1]?.value,
+      synthetic ? "Contains synthetic demo data" : "Recorded assessments",
+      ...Array.from({ length: (header.length - 15) / 2 }, (_, index) => [
+        item.indicators[index]?.name,
+        item.indicators[index]?.value,
+      ]).flat(),
     ]);
+    if (view === "performance") {
+      header = [
+        "Code",
+        "Topic",
+        "KPI",
+        "Value",
+        "Unit",
+        "Direction",
+        "Pass boundary",
+        "Fail boundary",
+        "Status",
+        "Measured",
+        "Data source",
+      ];
+      rows = performanceRows(visible, kpiStatus, worstFirst).map(
+        ({ item, kpi, status }) => [
+          item.code,
+          item.name,
+          kpi.name,
+          kpi.value,
+          kpi.unit,
+          kpi.direction,
+          kpi.passThreshold,
+          kpi.failThreshold,
+          status,
+          kpi.measuredAt,
+          synthetic ? "Contains synthetic demo data" : "Recorded assessments",
+        ],
+      );
+    }
     const csv = [header, ...rows]
       .map((row) => row.map(csvCell).join(","))
       .join("\r\n");
@@ -576,6 +674,12 @@ export function CapabilityWorkspace({
           canEdit={canEdit}
           onOpen={open}
           onUpdate={updateIndicator}
+          status={kpiStatus}
+          worstFirst={worstFirst}
+          onStatus={(status) =>
+            setParams({ kpiStatus: status === "all" ? null : status })
+          }
+          onWorstFirst={(worst) => setParams({ worst: worst ? "1" : null })}
         />
       ) : null}
       {view === "analysis" ? (

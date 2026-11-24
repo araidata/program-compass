@@ -1,6 +1,6 @@
 # Deployment and operator setup
 
-Existing private GitHub repository: https://github.com/araidata/program-compass. Vercel project: https://vercel.com/araidatas-projects/program-compass (prj_iPiolnA0tpGsLKIswoR4sqCKuz10). Native Git integration uses main for production and branch previews. Node 24.x, npm ci, npm run build; no migrations in builds.
+Existing private GitHub repository: https://github.com/araidata/program-compass. Vercel project: https://vercel.com/araidatas-projects/program-compass (prj_iPiolnA0tpGsLKIswoR4sqCKuz10). Native Git integration uses main for production and branch previews. Node 24.x, npm ci, npm run build. Local and CI builds never access the database. Under the owner-approved C-06/C-07 exception, Vercel Preview and Production builds apply committed migrations and idempotent seeds before compiling.
 
 ## Configured Neon resources
 
@@ -34,3 +34,11 @@ Password self-change is supported by authenticated POST /api/auth/change-passwor
 ## Release
 
 Push the delivery branch, review its PR, inspect the native Vercel preview and merge through the existing workflow. Environment changes apply on the next deployment. Production application rollout remains tied to merging main; do not promote unreviewed previews. Run the checks in TESTING.md before delivery.
+
+## Current authentication and demo lifecycle
+
+Authentication remains disabled by explicit owner instruction. `/login` redirects to the overview; all pages and APIs allow anonymous administrative access. Account/session infrastructure remains intact for restoration using `src/lib/auth-mode.ts`. Origin and input validation remain active. Restore login only at the owner's request.
+
+`scripts/build.mts` invokes installed tools through Node on Windows and Linux. On Vercel it runs migrate deploy, the catalogue seed and synthetic seed with `--if-empty` (production also passes `--allow-production`). A failed preparation/build leaves the previous application deployment serving, although database changes already applied persist. Only additive migrations belong in this sequence.
+
+Automatic demo loading skips databases with recorded assessments, targets, KPI values, user change history or demo lifecycle events. Seeding is transactional and serialized with demo cleanup. To remove demo values, run `npm run db:demo:clear` with the selected database's operator environment; production requires `DATABASE_ENVIRONMENT=production ALLOW_PRODUCTION_MIGRATION=true`. Cleanup preserves edited topics and unmarked records, records `demo.cleared` so deployments do not repopulate the demo, and only deletes unused functions whose IDs were recorded as demo-created. Older demos lack those function IDs: their functions are retained. Never run the cleanup against a database selected only by a copied connection string or reset the database. Existing demo data is preserved by this release.

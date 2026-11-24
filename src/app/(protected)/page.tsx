@@ -1,3 +1,4 @@
+import { DemoNotice } from "@/components/demo-notice";
 import Link from "next/link";
 import { navigationGroups, settingsItem, type NavItem } from "@/lib/navigation";
 import { parsePillar, pillars, withScope, PILLAR_PARAM } from "@/lib/pillars";
@@ -10,7 +11,7 @@ import {
 } from "@/components/analytics/capability-charts";
 import { StatusBadge } from "@/components/analytics/stat";
 import { requirePage } from "@/lib/server/access";
-import { loadCapabilities } from "@/lib/server/capabilities";
+import { hasDemoData, loadCapabilities } from "@/lib/server/capabilities";
 import { SchemaPending } from "@/components/schema-pending";
 import {
   byGroup,
@@ -48,8 +49,12 @@ function attention(items: CapabilityView[], now: Date): Attention[] {
         reason: `Level ${item.currentLevel}, ${itemGap} below target`,
         tone: "bad",
       });
-    else if (failing === 2)
-      list.push({ item, reason: "Both KPIs failing", tone: "bad" });
+    else if (failing > 0)
+      list.push({
+        item,
+        reason: `${failing} KPI${failing === 1 ? "" : "s"} failing`,
+        tone: "bad",
+      });
     else if (review === "overdue")
       list.push({ item, reason: "Review overdue", tone: "bad" });
     else if (item.currentLevel == null)
@@ -73,6 +78,7 @@ export default async function Overview({
   const scope = parsePillar(typeof raw === "string" ? raw : null);
   const now = new Date();
   const loaded = await loadCapabilities();
+  const synthetic = loaded != null && (await hasDemoData());
   const all = loaded ?? [];
   const items = scope
     ? all.filter((item) => item.pillarKeys.includes(scope.id))
@@ -92,6 +98,7 @@ export default async function Overview({
         description="Program position for the selected scope, built from recorded assessments and KPI measurements."
       />
 
+      {synthetic ? <DemoNotice /> : null}
       {loaded == null ? (
         <SchemaPending />
       ) : summary.assessed === 0 ? (

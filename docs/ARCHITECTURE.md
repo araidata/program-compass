@@ -77,4 +77,14 @@ The proposed IA relabels Compliance as a dedicated Framework Alignment section, 
 
 Explicit owner instruction supersedes the earlier preservation requirement for authentication only. `src/lib/auth-mode.ts` disables page/API login and role gates until the owner requests restoration. Login redirects to `/`, sign-out is hidden, and auth endpoints return 404. All visitors have administrative access; administrative changes retain validation, origin checks, transaction serialization and last-administrator protection, with null actor IDs rather than impersonating an account. Account/session/schema infrastructure is preserved; no migration is required. Restore by changing the shared constant to false and verifying the security suite. Business slices remain unauthorized.
 
-- Exception (DECISION_LOG C-06, C-07): `npm run build` runs `scripts/build.mts`. When `VERCEL_ENV` is `preview` or `production` it applies migrations, the catalogue seed and (only into a database with no ratings) removable demo data before building; it fails the build if that step fails, so the previous deployment keeps serving. Local and CI builds generate the client and build without any database access.
+- Exception (DECISION_LOG C-06, C-07): `npm run build` runs `scripts/build.mts`. When `VERCEL_ENV` is `preview` or `production` it applies migrations, the catalogue seed and (only into a database without assessment activity or demo lifecycle history) removable demo data before building; it fails the build if that step fails, so the previous deployment keeps serving. Local and CI builds generate the client and build without any database access.
+
+## Review fixes and production rollup - 2026-11-23
+
+The owner authorized review, corrective changes and production delivery of the merged capability slice. This does not expand the business scope. Strategic objectives are accurate capability assessment and performance measurement; the supported planning decision is identifying which maturity gaps and KPI deficiencies need attention.
+
+- Client mutations are queued in order; versioned responses cannot overwrite newer optimistic values. Failed saves restore the last confirmed value, and the saved status waits for outstanding requests.
+- Target-only edits do not refresh assessment date/assessor. Review-month arithmetic clamps to the last day of the destination month. Calendar dates must round-trip exactly; pillar keys must be unique.
+- KPI filters and ordering are URL state shared by the table and CSV exporter. Topic CSV exports include every local KPI. Scope changes preserve other URL filters.
+- Synthetic data is identified in Overview, Capabilities and CSV. Automatic demo seeding and cleanup share a transaction lock and persistent lifecycle markers; clearing cannot cause automatic reseeding. Cleanup preserves edited topics and deletes only positively identified demo-created functions.
+- Build and typecheck regenerate installed Prisma code; build tools run through Node rather than OS-specific `npx` launchers. The C-06/C-07 Vercel migration/seed exception remains; local/CI builds do not connect to a database.

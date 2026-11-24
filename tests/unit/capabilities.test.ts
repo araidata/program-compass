@@ -311,3 +311,40 @@ test("assessment and KPI inputs are strictly validated", () => {
     }).success,
   );
 });
+
+test("dates reject impossible days and pillar lists reject duplicates", () => {
+  for (const targetDate of [
+    "2027-02-30",
+    "2027-02-29",
+    "2026-04-31",
+    "2026-13-01",
+  ])
+    assert.equal(
+      capabilityUpdateSchema.safeParse({ targetDate }).success,
+      false,
+    );
+  assert.ok(
+    capabilityUpdateSchema.safeParse({ targetDate: "2028-02-29" }).success,
+  );
+  assert.equal(
+    capabilityUpdateSchema.safeParse({ pillarKeys: ["grc", "grc"] }).success,
+    false,
+  );
+});
+
+test("review cadence clamps month-end dates to the last calendar day", () => {
+  assert.equal(
+    reviewStatus(
+      { assessedAt: "2026-08-31T12:00:00Z" },
+      new Date("2027-02-28T11:59:59Z"),
+    ),
+    "current",
+  );
+  assert.equal(
+    reviewStatus(
+      { assessedAt: "2026-08-31T12:00:00Z" },
+      new Date("2027-02-28T12:00:00Z"),
+    ),
+    "due",
+  );
+});

@@ -4,14 +4,26 @@
 // pending migrations, the idempotent catalogue seed, and demo data only when no
 // topic has a rating yet. Demo data is removed with `npm run db:demo:clear`.
 import { spawnSync } from "node:child_process";
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
 
 function run(command: string, args: string[], env = process.env) {
   console.log(`\n> ${command} ${args.join(" ")}`);
-  const result = spawnSync(command, args, { stdio: "inherit", env });
+  const executable =
+    command === "prisma"
+      ? require.resolve("prisma/build/index.js")
+      : command === "tsx"
+        ? require.resolve("tsx/cli")
+        : require.resolve("next/dist/bin/next");
+  const result = spawnSync(process.execPath, [executable, ...args], {
+    stdio: "inherit",
+    env,
+  });
+  if (result.error) throw result.error;
   if (result.status !== 0) process.exit(result.status ?? 1);
 }
 
-run("npx", ["prisma", "generate"]);
+run("prisma", ["generate"]);
 
 const target = process.env.VERCEL_ENV;
 if (target === "preview" || target === "production") {
@@ -24,12 +36,11 @@ if (target === "preview" || target === "production") {
     DATABASE_ENVIRONMENT: target,
     ...(target === "production" ? { ALLOW_PRODUCTION_MIGRATION: "true" } : {}),
   };
-  run("npx", ["tsx", "scripts/migrate.mts", "deploy"], env);
-  run("npx", ["tsx", "scripts/seed.mts"], env);
+  run("tsx", ["scripts/migrate.mts", "deploy"], env);
+  run("tsx", ["scripts/seed.mts"], env);
   run(
-    "npx",
+    "tsx",
     [
-      "tsx",
       "scripts/seed-synthetic.mts",
       "--if-empty",
       ...(target === "production" ? ["--allow-production"] : []),
@@ -38,4 +49,4 @@ if (target === "preview" || target === "production") {
   );
 }
 
-run("npx", ["next", "build"]);
+run("next", ["build"]);

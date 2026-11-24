@@ -28,5 +28,8 @@ export function parsePillar(value: string | null | undefined): Pillar | null {
 
 /** Appends the current pillar scope to an internal href. */
 export function withScope(href: string, pillar: Pillar | null): string {
-  return pillar ? `${href}?${PILLAR_PARAM}=${pillar.id}` : href;
+  const url = new URL(href, "https://program-compass.invalid");
+  if (pillar) url.searchParams.set(PILLAR_PARAM, pillar.id);
+  else url.searchParams.delete(PILLAR_PARAM);
+  return `${url.pathname}${url.search}${url.hash}`;
 }

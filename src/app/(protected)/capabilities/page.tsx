@@ -1,3 +1,4 @@
+import { DemoNotice } from "@/components/demo-notice";
 import { Suspense } from "react";
 import { PageHeader } from "@/components/page-header";
 import { CapabilityWorkspace } from "@/components/capabilities/capability-workspace";
@@ -5,6 +6,7 @@ import { requirePage } from "@/lib/server/access";
 import {
   listFunctionOptions,
   loadCapabilities,
+  hasDemoData,
 } from "@/lib/server/capabilities";
 import { SchemaPending } from "@/components/schema-pending";
 import { permits } from "@/lib/permissions";
@@ -17,12 +19,14 @@ export default async function CapabilitiesPage() {
     loadCapabilities(),
     listFunctionOptions(),
   ]);
+  const synthetic = capabilities != null && (await hasDemoData());
   return (
     <div className="space-y-4">
       <PageHeader
         title="Capabilities"
         description="Current and target maturity, operational KPIs and gaps for each security topic."
       />
+      {synthetic ? <DemoNotice /> : null}
       {capabilities == null ? (
         <SchemaPending />
       ) : capabilities.length === 0 ? (
@@ -37,6 +41,7 @@ export default async function CapabilitiesPage() {
         <Suspense>
           <CapabilityWorkspace
             initial={capabilities}
+            synthetic={synthetic}
             functions={functions}
             canEdit={permits(user.role, "write")}
             now={new Date().toISOString()}

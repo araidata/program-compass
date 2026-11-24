@@ -43,7 +43,12 @@ const level = z.number().int().min(1).max(5).nullable();
 const isoDate = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/)
-  .refine((value) => !Number.isNaN(Date.parse(`${value}T00:00:00Z`)));
+  .refine((value) => {
+    const date = new Date(`${value}T00:00:00Z`);
+    return (
+      !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value
+    );
+  });
 export const capabilityUpdateSchema = z
   .object({
     currentLevel: level,
@@ -58,7 +63,8 @@ export const capabilityUpdateSchema = z
     pillarKeys: z
       .array(z.enum(["secops", "sae", "grc"]))
       .min(1)
-      .max(3),
+      .max(3)
+      .refine((keys) => new Set(keys).size === keys.length),
   })
   .partial()
   .strict()

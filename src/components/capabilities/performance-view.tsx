@@ -4,7 +4,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { KpiBand } from "@/components/analytics/kpi-band";
 import {
-  indicatorStatus,
+  performanceRows,
   type CapabilityView,
   type IndicatorStatus,
   type IndicatorView,
@@ -19,13 +19,6 @@ const statusFilters: { id: "all" | IndicatorStatus; label: string }[] = [
   { id: "missing", label: "No data" },
   { id: "pass", label: "Passing" },
 ];
-const severity: Record<IndicatorStatus, number> = {
-  fail: 0,
-  "at-risk": 1,
-  missing: 2,
-  pass: 3,
-};
-
 export function today() {
   return new Date().toISOString().slice(0, 10);
 }
@@ -86,7 +79,15 @@ export function PerformanceView({
   canEdit,
   onOpen,
   onUpdate,
+  status,
+  worstFirst,
+  onStatus,
+  onWorstFirst,
 }: {
+  status: "all" | IndicatorStatus;
+  worstFirst: boolean;
+  onStatus: (value: "all" | IndicatorStatus) => void;
+  onWorstFirst: (value: boolean) => void;
   items: CapabilityView[];
   canEdit: boolean;
   onOpen: (id: string) => void;
@@ -96,24 +97,7 @@ export function PerformanceView({
     patch: IndicatorPatch,
   ) => Promise<boolean>;
 }) {
-  const [status, setStatus] = useState<"all" | IndicatorStatus>("all");
-  const [worstFirst, setWorstFirst] = useState(false);
-  const rows = items
-    .filter((item) => item.applicable)
-    .flatMap((item) =>
-      item.indicators.map((kpi) => ({
-        item,
-        kpi,
-        status: indicatorStatus(kpi),
-      })),
-    )
-    .filter((row) => status === "all" || row.status === status);
-  if (worstFirst)
-    rows.sort(
-      (a, b) =>
-        severity[a.status] - severity[b.status] ||
-        a.item.code.localeCompare(b.item.code),
-    );
+  const rows = performanceRows(items, status, worstFirst);
   return (
     <div className="relative overflow-x-auto rounded-md border bg-card">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b px-3 py-2">
@@ -123,7 +107,7 @@ export function PerformanceView({
               key={entry.id}
               type="button"
               aria-pressed={status === entry.id}
-              onClick={() => setStatus(entry.id)}
+              onClick={() => onStatus(entry.id)}
               className={cn(
                 "h-7 rounded-full border px-2.5 text-xs font-medium",
                 status === entry.id
@@ -139,7 +123,7 @@ export function PerformanceView({
           <input
             type="checkbox"
             checked={worstFirst}
-            onChange={(event) => setWorstFirst(event.target.checked)}
+            onChange={(event) => onWorstFirst(event.target.checked)}
           />
           Worst first
         </label>

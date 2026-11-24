@@ -133,12 +133,7 @@ export async function capabilityHistory(id: string): Promise<HistoryEntry[]> {
   }));
 }
 
-const ratingFields = [
-  "currentLevel",
-  "targetLevel",
-  "confidence",
-  "reviewState",
-] as const;
+const ratingFields = ["currentLevel", "confidence", "reviewState"] as const;
 
 export async function updateCapability(
   actorId: string | null,
@@ -312,4 +307,19 @@ export async function deleteIndicator(actorId: string | null, id: string) {
     });
     return { id };
   });
+}
+
+/** Keep generated demo values visibly separate from organizational assessments. */
+export async function hasDemoData() {
+  if (
+    await db().capability.count({
+      where: { rationale: "Synthetic development rating." },
+    })
+  )
+    return true;
+  const latest = await db().changeEvent.findFirst({
+    where: { action: { in: ["demo.seeded", "demo.cleared"] } },
+    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+  });
+  return latest?.action === "demo.seeded";
 }
