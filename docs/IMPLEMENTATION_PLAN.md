@@ -7,4 +7,6 @@
 5. **Phase 4 — Strategy and findings:** strategic plans, risk tracking, and prioritization.
 6. **Phase 5 — Reporting and hardening:** reporting, accessibility, operational monitoring, and release validation.
 
+The IA and UI/UX direction in [UX_REVIEW.md](UX_REVIEW.md) was approved on 2026-11-24 and the Phase 0 shell was rebuilt to it. Status is tracked in [PROJECT_STATUS.md](PROJECT_STATUS.md) and decisions in [DECISION_LOG.md](DECISION_LOG.md).
+
 Each phase requires separately approved scope and meaningful validation. Follow [ARCHITECTURE.md](ARCHITECTURE.md).

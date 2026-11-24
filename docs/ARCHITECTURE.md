@@ -10,6 +10,17 @@ This file is the single architectural source of truth for both Codex and Claude 
 - No hard-coded credentials, committed secrets, authoritative browser local storage, temporary production SQLite, unnecessary microservices, or fabricated organizational metrics. Use synthetic development data only.
 - Preserve three cybersecurity pillars: Security Operations; Security Architecture & Engineering; Governance, Risk & Compliance.
 
+## Application shell and UI conventions
+
+Approved 2026-11-24 (DECISION_LOG P-01 to P-08, P-12, P-13); rationale in UX_REVIEW.md.
+
+- Navigation is grouped: Overview; Assess (Capabilities, Compliance, Risks & Findings); Plan (Business Context, Roadmap); Resources (Workforce, Technology); Reports; Settings pinned last. Navigation is defined once in src/lib/navigation.ts. Active state matches the route prefix so nested pages keep their module highlighted.
+- The organizational pillar is a global scope (Enterprise, Security Operations, Security Architecture & Engineering, Governance, Risk & Compliance) chosen in the header, held in the `pillar` URL search parameter, and kept across navigation. Pillar views are filters on shared pages, never separate page copies.
+- A planning cycle selector sits beside the scope control once cycles exist in the Phase 1 schema.
+- Every module uses one layout: one-line page header with at most one primary action; summary strip; view tabs; filters held in the URL; dense table; side panel for detail and editing. Modals are for confirmations only. Owners are chosen from person records, never typed.
+- Visual system: light collapsible sidebar, 48 px header, Inter via next/font with tabular numerals for figures, neutral palette with a single accent, status colours used only for status and always labelled, a separate reserved colour per pillar. All colours are design tokens in src/app/globals.css; components do not hard-code palette utilities. Borders over shadows, compact spacing, full-width content. No taglines, logos, hero banners, decorative graphics, or promotional copy.
+- Full functionality from 1280 px wide; smaller screens prioritize reading. Text contrast meets WCAG AA, every grid has a keyboard path, and colour never carries meaning alone.
+
 ## Code boundaries
 
 src/app contains route entry points and metadata; src/components contains the application shell and reusable UI; src/lib contains shared navigation and utilities. Future business modules should keep domain logic separate from presentation. Server-only database access and authorization belong behind server boundaries, never in client components.
