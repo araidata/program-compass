@@ -115,7 +115,7 @@ export function PerformanceView({
         a.item.code.localeCompare(b.item.code),
     );
   return (
-    <div className="overflow-x-auto rounded-md border bg-card">
+    <div className="relative overflow-x-auto rounded-md border bg-card">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b px-3 py-2">
         <div role="group" aria-label="KPI status" className="flex gap-1">
           {statusFilters.map((entry) => (

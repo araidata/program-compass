@@ -78,7 +78,7 @@ export function GapsView({
   const [sort, setSort] = useState<SortId>("gap");
   const sorted = sortItems(items, sort, now);
   return (
-    <div className="overflow-x-auto rounded-md border bg-card">
+    <div className="relative overflow-x-auto rounded-md border bg-card">
       <div className="flex items-center justify-between gap-3 border-b px-3 py-2">
         <p className="text-xs text-muted-foreground">
           Dot is the assessed level, the dark tick is the target, hatching is

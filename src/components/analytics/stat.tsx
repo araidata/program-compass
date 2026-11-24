@@ -162,7 +162,8 @@ export function Panel({
           <div className="flex shrink-0 items-center gap-2">{actions}</div>
         ) : null}
       </header>
-      {children}
+      {/* Wide tables scroll inside the panel instead of overflowing it. */}
+      <div className="relative overflow-x-auto">{children}</div>
     </section>
   );
 }

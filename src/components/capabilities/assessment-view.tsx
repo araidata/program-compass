@@ -35,7 +35,7 @@ export function AssessmentView({
   );
   let row = 0;
   return (
-    <div className="overflow-x-auto rounded-md border bg-card">
+    <div className="relative overflow-x-auto rounded-md border bg-card">
       <table className="w-full min-w-[980px] text-left text-[13px]">
         <thead className="border-b bg-muted/70 text-xs text-muted-foreground">
           <tr>

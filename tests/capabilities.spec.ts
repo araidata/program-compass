@@ -4,7 +4,7 @@ import { database } from "../scripts/database";
 import { authenticationDisabled } from "../src/lib/auth-mode";
 
 const login = async (page: Parameters<typeof loginPage>[0]) => {
-  if (!authenticationDisabled) await login(page);
+  if (!authenticationDisabled) await loginPage(page);
 };
 
 const origin = { Origin: "http://127.0.0.1:3100" };

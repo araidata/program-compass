@@ -463,7 +463,7 @@ export function CapabilityWorkspace({
         <div
           role="tablist"
           aria-label="Capability views"
-          className="flex gap-5 overflow-x-auto"
+          className="relative flex gap-5 overflow-x-auto"
         >
           {views.map((entry) => (
             <button
