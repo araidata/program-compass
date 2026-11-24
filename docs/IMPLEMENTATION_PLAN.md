@@ -21,4 +21,4 @@ Each phase requires separately approved scope and meaningful validation. Follow 
 - Strategy: verify unified three/five-year plan, scenario isolation, recurring costs, dependency sequencing, deadlines and deferral.
 - Reporting/hardening: reproduce calculations, validate access control, accessibility and reports. AI assistance requires separate approval.
 
-Stop at Phase 0 (initial Phase 1 in the supplied request). Schema, datasets and workload assumptions remain pending review.
+The 2026-11-23 request titled Phase 4 authorizes the repository Phase 1 secure persistence foundation only. Stop after authentication, organizational configuration and backend delivery. Assessment, compliance, resources and strategy remain unauthorized. Planning cycles and person ownership are designed now and implemented with their future modules.

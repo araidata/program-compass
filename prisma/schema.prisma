@@ -1,10 +1,138 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
-// Domain models and migrations are intentionally deferred to Phase 1.
+enum Role {
+  admin
+  editor
+  viewer
+}
+
+model User {
+  id            String        @id @default(uuid())
+  name          String
+  email         String        @unique
+  emailVerified Boolean       @default(false)
+  image         String?
+  role          Role          @default(viewer)
+  active        Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+  changes       ChangeEvent[]
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Account {
+  id                    String    @id @default(uuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+}
+
+model Verification {
+  id         String   @id @default(uuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+}
+
+model RateLimit {
+  id          String @id @default(uuid())
+  key         String @unique
+  count       Int
+  lastRequest BigInt
+}
+
+// One internal organization. The migration constrains id to 'organization'.
+model Organization {
+  id        String   @id @default("organization")
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  pillars   Pillar[]
+}
+
+model Pillar {
+  id             String                   @id @default(uuid())
+  key            String                   @unique
+  name           String
+  sortOrder      Int                      @default(0)
+  organizationId String                   @default("organization")
+  organization   Organization             @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
+  functions      OrganizationalFunction[]
+}
+
+model OrganizationalFunction {
+  id        String   @id @default(uuid())
+  name      String
+  pillarId  String
+  pillar    Pillar   @relation(fields: [pillarId], references: [id], onDelete: Restrict)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([pillarId, name])
+}
+
+model ApplicationSettings {
+  id         String   @id @default("application")
+  // Explicit safe setting; never store secrets in application settings.
+  dateFormat String   @default("YYYY-MM-DD")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model ChangeEvent {
+  id         String   @id @default(uuid())
+  actorId    String?
+  actor      User?    @relation(fields: [actorId], references: [id], onDelete: Restrict)
+  action     String
+  entityType String
+  entityId   String
+  // Only allowlisted administrative fields; never passwords or tokens.
+  details    Json
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt, id])
+  @@index([entityType, entityId])
+}

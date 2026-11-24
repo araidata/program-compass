@@ -1,4 +1,9 @@
 import { expect, test } from "@playwright/test";
+import { loginPage } from "./helpers";
+
+test.beforeEach(async ({ page }) => {
+  await loginPage(page);
+});
 
 const modules = [
   ["Capabilities", "/capabilities"],
@@ -12,7 +17,7 @@ const modules = [
   ["Settings", "/settings"],
 ];
 
-test("overview and all navigation modules work without a database", async ({
+test("overview and all protected navigation modules work", async ({
   page,
 }, testInfo) => {
   const errors: string[] = [];
@@ -39,9 +44,10 @@ test("overview and all navigation modules work without a database", async ({
     await expect(
       page.getByRole("heading", { name: title, exact: true }),
     ).toBeVisible();
-    await expect(
-      page.getByRole("heading", { name: "Not available yet" }),
-    ).toBeVisible();
+    if (path !== "/settings")
+      await expect(
+        page.getByRole("heading", { name: "Not available yet" }),
+      ).toBeVisible();
     if (testInfo.project.name === "mobile")
       await expect(page.getByRole("dialog")).not.toBeVisible();
     expect(
@@ -50,7 +56,7 @@ test("overview and all navigation modules work without a database", async ({
       ),
     ).toBe(true);
   }
-  await page.getByRole("link", { name: "Back to Overview" }).click();
+  await page.goto("/");
   await expect(
     page.getByRole("heading", { name: "Overview", exact: true }),
   ).toBeVisible();

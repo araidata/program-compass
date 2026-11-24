@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/sheet";
 import { ScopeSwitcher } from "@/components/scope-switcher";
 import { useScope } from "@/components/use-scope";
+import { LogoutButton } from "@/components/auth-controls";
 
 // Per-viewer layout preference only; never application data.
 const COLLAPSE_KEY = "pc.sidebar.collapsed";
@@ -256,7 +257,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <span className="font-medium">{item?.title ?? "Not found"}</span>
             </p>
           </div>
-          <ScopeSwitcher />
+          <div className="flex min-w-0 items-center gap-1">
+            <ScopeSwitcher />
+            <LogoutButton />
+          </div>
         </header>
         <main
           id="main-content"

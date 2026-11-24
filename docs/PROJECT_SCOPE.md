@@ -29,3 +29,7 @@ MVP: organization profile/business context; configurable pillars/functions/respo
 Subsequent: richer performance analysis, comparative scenarios and AI-assisted narrative/reporting with human validation. Optional: additional frameworks and advanced analytical views after a defensible core plan.
 
 Excluded: marketing/branding, subscriptions, public registration, external SSO, enterprise GRC/evidence/audit/acceptance platforms, HR/project-management replacements, unsupported benchmark claims and automated compliance claims. No restricted or actual organizational data in development.
+
+## Current authorization — secure persistence
+
+The user’s 2026-11-23 Phase 4 request authorizes database/authentication/backend foundation (repository Phase 1), including login/logout, three roles, administrator-managed accounts, basic organization settings, pillars/functions and change history. The user explicitly authorized new dedicated Neon resources after confirming none of the existing team databases were suitable. No assessment, framework import, workforce calculations, technology inventory or strategic planning is authorized.
