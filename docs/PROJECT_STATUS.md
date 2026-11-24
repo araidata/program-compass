@@ -4,28 +4,36 @@ Last updated: 2026-11-24.
 
 ## Current phase
 
-**Phase 0 — Foundation: complete.** A deployable Next.js shell with a dashboard and nine module placeholders, tooling, Prisma configuration without domain models, and deployment documentation. No authentication, persistence, organizational data, or business workflows exist.
+**Phase 0 — Foundation: complete, with the shell rebuilt to the approved IA.** A deployable Next.js application shell, an Overview page and nine module placeholders, tooling, Prisma configuration without domain models, and deployment documentation. No authentication, persistence, organizational data or business workflows exist.
 
-**Current activity: information architecture and UI/UX review (documentation only).** Started 2026-11-24 before substantive frontend work. Findings and proposals are in [UX_REVIEW.md](UX_REVIEW.md); decisions awaiting approval are in [DECISION_LOG.md](DECISION_LOG.md) as P-01 to P-13. No code, schema, calculation, or requirement changes were made.
+**IA and UI/UX review: approved 2026-11-24.** Findings are in [UX_REVIEW.md](UX_REVIEW.md). Aaron accepted all thirteen proposals ([DECISION_LOG.md](DECISION_LOG.md) P-01 to P-13), and the resulting conventions are in [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Implementation state
 
-| Area                  | State                                                                                                        |
-| --------------------- | ------------------------------------------------------------------------------------------------------------ |
-| Application shell     | Phase 0 version in place. Review recommends replacing its layout and visual design (P-01, P-02, P-05, P-06). |
-| Dashboard and modules | Static placeholders only.                                                                                    |
-| Database              | Prisma configured, no models or migrations, Neon not provisioned.                                            |
-| Authentication        | Not implemented (required before organizational data, Phase 1).                                              |
-| Tests                 | Playwright navigation tests for all routes at desktop and mobile widths.                                     |
-| Deployment            | Vercel project exists; deploys without database variables.                                                   |
+| Area                  | State                                                                                                                                                                                                               |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Application shell     | Rebuilt to P-01, P-02, P-05, P-06 and P-08: grouped navigation, a sidebar that collapses, a 48 px header, a pillar scope switch held in `?pillar=`, Inter, and token-only colours. Taglines and decoration removed. |
+| Overview and modules  | Overview lists modules, planned views and phases, plus the pillars. Each module placeholder uses the standard page header with its scope and planned views. No data or workflows.                                   |
+| Planning cycle (P-03) | Not built. It waits for cycles in the Phase 1 schema.                                                                                                                                                               |
+| Database              | Prisma is configured. There are no models or migrations, and Neon is not provisioned.                                                                                                                               |
+| Authentication        | Not implemented. Required before organizational data arrives in Phase 1.                                                                                                                                            |
+| Tests                 | Playwright covers navigation of every route, the pillar scope kept across modules, and the 404 page, at desktop and mobile widths.                                                                                  |
+| Deployment            | The Vercel project exists and deploys without database variables.                                                                                                                                                   |
+
+## Open decisions
+
+These are listed in DECISION_LOG.md and UX_REVIEW.md section 8:
+
+- Capability catalogue and maturity scale.
+- Workforce granularity and how demand is calculated.
+- The rule for deriving compliance status.
+- The review cadence.
+- Concurrent editing.
+
+None of them block Phase 0. The catalogue and scale are needed before Phase 2.
 
 ## Next steps
 
-1. Aaron reviews UX_REVIEW.md and accepts, changes, or rejects P-01 to P-13, and answers the open questions in section 8 of UX_REVIEW.md.
-2. Accepted architectural items are written into ARCHITECTURE.md; scope items into PROJECT_SCOPE.md.
-3. If authorized, rebuild the shell and placeholder pages to the accepted IA and visual direction (no data or workflows), and update the navigation tests.
-4. Proposals marked as affecting the Phase 1 schema (P-03, P-07) feed into the Phase 1 schema design.
-
-## Known issues in the Phase 0 shell
-
-Listed in UX_REVIEW.md section 2. Highlights: conflicting taglines, decorative hero and graphics, low information density, colour tokens defined twice with hard-coded utility colours, pillars absent outside the dashboard, and exact-match active navigation.
+1. Review and merge the shell rebuild.
+2. Answer the open decisions above.
+3. Phase 1 (secure persistence) when authorized. Its schema design takes in P-03 and P-07.

@@ -1,8 +1,6 @@
 # Program Compass
 
-**Cybersecurity strategy and resource planning**
-
-An enterprise application foundation for cybersecurity strategic planning, capability assessment, and resource planning. Phase 0 includes a responsive application shell, initialization dashboard, and nine module placeholders. No authentication, database-backed functionality, organizational data, or business workflows are implemented.
+An enterprise application foundation for cybersecurity strategic planning, capability assessment, and resource planning. Phase 0 includes a responsive application shell with grouped navigation and a global pillar scope, an Overview page, and nine module placeholders. No authentication, database-backed functionality, organizational data, or business workflows are implemented.
 
 ## Local development
 
@@ -28,13 +26,13 @@ npm run test:e2e
 npm start
 ```
 
-`npm run format` formats source and documentation. The production build generates the Prisma client without database connectivity and never executes migrations. The schema intentionally contains no domain models. Browser tests exercise all navigation entries at desktop and mobile widths, initialization text, drawer behavior, overflow, browser errors, and unknown-route handling.
+`npm run format` formats source and documentation. The production build generates the Prisma client without database connectivity and never executes migrations. The schema intentionally contains no domain models. Browser tests exercise all navigation entries at desktop and mobile widths, the pillar scope in the URL, drawer behavior, overflow, browser errors, and unknown-route handling.
 
 ## Structure
 
-- `src/app/` — App Router layout, dashboard, and statically generated module placeholders.
+- `src/app/` — App Router layout, design tokens (`globals.css`), Overview, and statically generated module placeholders.
 - `src/components/` — shared application shell and shadcn/ui components.
-- `src/lib/` — navigation definitions and utilities.
+- `src/lib/` — navigation groups, pillar definitions and scope helpers, and utilities.
 - `prisma/` and `prisma.config.ts` — PostgreSQL schema foundation and Prisma CLI configuration.
 - `tests/` — production browser navigation checks.
 - `docs/` — architecture, scope, phased plan, deployment guidance, project status, decision log, and the IA and UI/UX review.

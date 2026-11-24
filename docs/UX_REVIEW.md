@@ -1,6 +1,6 @@
 # Information architecture and UI/UX review
 
-Status: **proposed, awaiting approval.** Nothing in this document changes code, database schemas, calculation methods, or business requirements. Items that need a decision are tracked as _Proposed_ in [DECISION_LOG.md](DECISION_LOG.md). Once approved, accepted architectural items move into [ARCHITECTURE.md](ARCHITECTURE.md), which remains the single authoritative source.
+Status: **approved by Aaron on 2026-11-24** (DECISION_LOG P-01 to P-13). The accepted conventions are in [ARCHITECTURE.md](ARCHITECTURE.md), which remains the single authoritative source; this document keeps the findings and rationale. Specifics listed as still open in DECISION_LOG.md, and the questions in section 8, still need decisions.
 
 Review date: 2026-11-24. Inputs: CLAUDE.md, AGENTS.md, every file in `docs/`, the Phase 0 shell (`src/components/app-shell.tsx`, `src/lib/navigation.ts`, `src/app/`), and the reference application at spm.threat-modeling.com, used as a functional reference only.
 

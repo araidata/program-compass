@@ -4,7 +4,7 @@
 
 1. In the intended Vercel account/team, choose **Add New → Project** and import the existing private repository https://github.com/araidata/program-compass. Grant the Vercel GitHub app access to that repository if needed; do not create another repository.
 2. Use the Next.js framework preset, repository root (`.`), npm, Node.js 24.x, install command `npm ci`, build command `npm run build`, and the default output directory. Select `main` as the production branch.
-3. Leave database variables unset for the initial deployment. The foundation neither connects to a database nor requires authentication configuration. Deploy and verify the dashboard plus all nine placeholder modules at desktop and mobile widths.
+3. Leave database variables unset for the initial deployment. The foundation neither connects to a database nor requires authentication configuration. Deploy and verify the Overview page plus all nine placeholder modules at desktop and mobile widths.
 4. Future pushes to main use Vercel Git deployment; branches receive previews. Configure branch protection and deployment checks according to the team's release policy.
 
 ## Connect Neon after import (separate configuration step)
