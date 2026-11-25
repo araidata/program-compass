@@ -89,7 +89,8 @@ function NavLink({
       aria-current={active ? "page" : undefined}
       title={collapsed ? item.title : undefined}
       className={cn(
-        "flex h-8 items-center gap-2.5 rounded-md px-2 text-[13px] font-medium text-sidebar-foreground transition-colors hover:bg-sidebar-accent/60",
+        "flex min-h-8 items-center gap-2.5 rounded-md px-2 py-1.5 text-[13px] leading-4 font-medium text-sidebar-foreground transition-colors hover:bg-sidebar-accent/60",
+        item.nested && !collapsed && "ml-3 border-l pl-3",
         active && "bg-sidebar-accent text-sidebar-accent-foreground",
         collapsed && "justify-center px-0",
       )}

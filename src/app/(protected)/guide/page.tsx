@@ -12,16 +12,17 @@ export default function GuidePage() {
       <section className="rounded-lg border bg-card p-5">
         <h2>Your first pass</h2>
         <p className="mt-2 max-w-4xl text-sm">
-          Start with one objective and one capability. Record the current and
-          target maturity, describe the gap, and propose one initiative. Add
-          workforce, technology, and costs as you learn what the work needs. You
-          can return to any step; this is an iterative planning process.
+          Start by assessing one capability: record current maturity and set a
+          target. Use business objectives and framework requirements to
+          prioritize the gap, then propose an initiative. Add workforce,
+          technology, and costs as you learn what the work needs. You can return
+          to any step; this is an iterative planning process.
         </p>
         <ScopedLink
-          href="/context"
+          href="/capabilities"
           className="mt-3 inline-block rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
         >
-          Start with Business Context →
+          Assess capabilities →
         </ScopedLink>
         <div className="mt-5 grid grid-cols-3 gap-5 border-t pt-4 text-sm">
           <p>
@@ -110,14 +111,14 @@ export default function GuidePage() {
         </p>
         <ol className="mt-4 list-decimal space-y-3 pl-5 text-sm">
           <li>
-            <strong>Business Context:</strong> record an objective such as
-            “Restore critical services promptly after an incident” and link the
-            relevant capability.
-          </li>
-          <li>
             <strong>Capabilities:</strong> after assessing your actual
             practices, you might record current level 2 and target level 3, with
             a rationale. The gap is one maturity level.
+          </li>
+          <li>
+            <strong>Business Context:</strong> record an objective such as
+            “Restore critical services promptly after an incident” and link the
+            relevant capability.
           </li>
           <li>
             <strong>Planning issues and responsibilities:</strong> describe

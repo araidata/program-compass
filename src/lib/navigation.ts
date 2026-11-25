@@ -9,6 +9,10 @@ import {
   FileText,
   Settings,
   BookOpen,
+  ClipboardList,
+  Calculator,
+  CalendarRange,
+  DatabaseBackup,
   type LucideIcon,
 } from "lucide-react";
 
@@ -21,6 +25,8 @@ export type NavItem = {
   phase: number;
   /** Planned views, shown as the module's tabs once implemented. */
   views: readonly string[];
+  /** Indent a directly accessible workspace beneath its related module. */
+  nested?: boolean;
 };
 
 export type NavGroup = {
@@ -53,7 +59,7 @@ export const navigationGroups: readonly NavGroup[] = [
     ],
   },
   {
-    label: "Assess",
+    label: "1. Assess",
     items: [
       {
         title: "Capabilities",
@@ -76,7 +82,7 @@ export const navigationGroups: readonly NavGroup[] = [
     ],
   },
   {
-    label: "Plan",
+    label: "2. Prioritize",
     items: [
       {
         title: "Business Context",
@@ -88,6 +94,53 @@ export const navigationGroups: readonly NavGroup[] = [
         views: ["Objectives", "Threats", "Dependencies"],
       },
       {
+        title: "Responsibilities & issues",
+        href: "/capabilities/planning",
+        icon: ClipboardList,
+        description:
+          "Assign ongoing responsibilities and track capability planning deficiencies.",
+        phase: 4,
+        views: ["Responsibilities", "Planning issues"],
+      },
+    ],
+  },
+  {
+    label: "3. Resources",
+    items: [
+      {
+        title: "Workforce",
+        href: "/workforce",
+        icon: Users,
+        description:
+          "People, positions, reporting relationships, and ownership.",
+        phase: 3,
+        views: ["People", "Positions"],
+      },
+      {
+        title: "Workload & capacity",
+        href: "/workforce/planning",
+        icon: Calculator,
+        description:
+          "Work demand, productive capacity, skills, and position justifications.",
+        phase: 3,
+        views: ["Workload", "Assignments", "Justifications"],
+        nested: true,
+      },
+      {
+        title: "Technology",
+        href: "/technology",
+        icon: Server,
+        description:
+          "Security tools, costs, lifecycle, and coverage alternatives.",
+        phase: 3,
+        views: ["Portfolio", "Coverage", "Lifecycle"],
+      },
+    ],
+  },
+  {
+    label: "4. Plan & fund",
+    items: [
+      {
         title: "Roadmap",
         href: "/roadmap",
         icon: GanttChart,
@@ -96,33 +149,20 @@ export const navigationGroups: readonly NavGroup[] = [
         phase: 4,
         views: ["Timeline", "List", "Coverage"],
       },
-    ],
-  },
-  {
-    label: "Resources",
-    items: [
       {
-        title: "Workforce",
-        href: "/workforce",
-        icon: Users,
+        title: "Five-year plan & funding",
+        href: "/roadmap/plan",
+        icon: CalendarRange,
         description:
-          "People and positions, FTE allocation, supply versus demand by pillar, and skills.",
-        phase: 3,
-        views: ["Roster", "Allocation", "Supply and demand", "Skills"],
-      },
-      {
-        title: "Technology",
-        href: "/technology",
-        icon: Server,
-        description:
-          "Security tools, cost, lifecycle, and the capabilities they support.",
-        phase: 3,
-        views: ["Portfolio", "Coverage", "Lifecycle"],
+          "Compare scenarios, annual targets, budgets, costs, and funding constraints.",
+        phase: 5,
+        views: ["Plan", "Resources", "Costs", "Constraints"],
+        nested: true,
       },
     ],
   },
   {
-    label: null,
+    label: "5. Report & review",
     items: [
       {
         title: "Reports",
@@ -132,6 +172,15 @@ export const navigationGroups: readonly NavGroup[] = [
           "Board, management, and pillar review packs for a chosen scope.",
         phase: 5,
         views: ["Packs", "Exports"],
+      },
+      {
+        title: "Data export & restore",
+        href: "/reports/data",
+        icon: DatabaseBackup,
+        description: "Export business data and preview a validated restore.",
+        phase: 5,
+        views: ["Export", "Import"],
+        nested: true,
       },
     ],
   },
@@ -155,11 +204,13 @@ export const navigation: readonly NavItem[] = [
 
 export function findNavItem(pathname: string): NavItem | undefined {
   if (pathname === "/") return navigation[0];
-  return navigation.find(
-    (item) =>
-      item.href !== "/" &&
-      (pathname === item.href || pathname.startsWith(`${item.href}/`)),
-  );
+  return [...navigation]
+    .sort((a, b) => b.href.length - a.href.length)
+    .find(
+      (item) =>
+        item.href !== "/" &&
+        (pathname === item.href || pathname.startsWith(`${item.href}/`)),
+    );
 }
 
 export function findNavGroupLabel(item: NavItem): string | null {

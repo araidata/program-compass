@@ -12,12 +12,13 @@ export function PlanningStart() {
             Build your security program plan
           </p>
           <h2 id="planning-start" className="mt-1 text-xl">
-            Start with one business need. Follow it through to a funded plan.
+            Start by assessing your capabilities.
           </h2>
           <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
-            You do not need to fill in every module at once. Choose the task
-            that matches where you are; the summaries below reflect what has
-            already been recorded.
+            Assess current maturity, set targets, then follow the numbered
+            sidebar groups to prioritize gaps, identify resources, and fund the
+            work. Business Context helps explain priorities; you can add it
+            later.
           </p>
         </div>
         <ScopedLink
@@ -32,9 +33,9 @@ export function PlanningStart() {
           [
             "1",
             "I’m starting a plan",
-            "Write one objective, then assess the capabilities it needs.",
-            "/context",
-            "Start with Business Context",
+            "Rate current maturity and set targets to see what needs improvement.",
+            "/capabilities",
+            "Assess capabilities",
           ],
           [
             "2",

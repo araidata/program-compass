@@ -1,21 +1,6 @@
 /** Shared, task-oriented instructions. Guidance never creates or assesses records. */
 export const planningSteps = [
   {
-    id: "context",
-    title: "Explain what the business needs",
-    area: "Business Context",
-    href: "/context",
-    first: "Add one business objective and select the capabilities it needs.",
-    steps: [
-      "Describe the outcome you need to protect or enable, and why it matters.",
-      "Choose the required capabilities. Add a business owner once that person is in Workforce.",
-      "Add relevant threats only where they explain a planning priority.",
-    ],
-    result: "A business reason for improving specific capabilities.",
-    next: "/capabilities",
-    nextLabel: "Assess those capabilities",
-  },
-  {
     id: "assessment",
     title: "Record where you are and where you need to be",
     area: "Capabilities",
@@ -28,8 +13,23 @@ export const planningSteps = [
       "Record KPI measurements separately. Use Gaps to find the difference between current and target.",
     ],
     result: "An assessed gap you can explain and prioritize.",
-    next: "/capabilities/planning?view=issue",
-    nextLabel: "Describe the planning issue",
+    next: "/context",
+    nextLabel: "Explain which gaps matter to the business",
+  },
+  {
+    id: "context",
+    title: "Explain what the business needs",
+    area: "Business Context",
+    href: "/context",
+    first: "Add one business objective and select the capabilities it needs.",
+    steps: [
+      "Describe the outcome you need to protect or enable, and why it matters.",
+      "Choose the required capabilities. Add a business owner once that person is in Workforce.",
+      "Add relevant threats only where they explain a planning priority.",
+    ],
+    result: "A business reason for improving specific capabilities.",
+    next: "/compliance",
+    nextLabel: "Review requirement drivers",
   },
   {
     id: "alignment",
