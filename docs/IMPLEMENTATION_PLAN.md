@@ -1,3 +1,7 @@
+## Full eight-milestone owner execution plan — current
+
+The owner explicitly approved Complete Program Compass, covering configurable methods/full history; responsibilities/issues; operational initiatives; official independent Framework Alignment; sourced workforce/position justification; technology decisions; five-year scenarios/Decimal finances; reports/atomic relational exchange/final navigation. All were implemented under that authorization. Local integrated acceptance passed22 desktop workflows and41 units; production delivery is being verified separately. See COMPLETION_CHECKLIST for requirement-to-test evidence and CONTINUATION/PROJECT_STATUS for actual release state. Earlier R0–R5 estimates/gates below are historical planning evidence, not a restriction to a partial implementation or a claim of completion by milestone commit.
+
 # Corrective implementation plan — active continuation
 
 > Current authorization (owner instruction 2026-11-24): complete the remaining strategic-planning site and tools, preserving existing infrastructure and scope exclusions. Earlier documentation-only and slice-approval gates are historical and superseded by this instruction. Desktop-only support: 1280 px and above; no mobile work. See CONTINUATION.md and PROJECT_STATUS.md for actual completion state.

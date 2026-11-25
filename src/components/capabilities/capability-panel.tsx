@@ -17,12 +17,15 @@ import {
 } from "@/components/analytics/maturity";
 import { pillars } from "@/lib/pillars";
 import { groupName } from "@/lib/domain/catalogue";
-import { levelName } from "@/lib/domain/maturity";
+import { levelName as defaultLevelName } from "@/lib/domain/maturity";
+import { useHistorical } from "@/components/planning/historical-provider";
+import { useMethods } from "@/components/planning/method-provider";
 import {
   gap,
   type CapabilityView,
   type IndicatorView,
 } from "@/lib/domain/capabilities";
+import { PlanningLinks } from "./planning-links";
 import { ContextLinks } from "./context-links";
 import { RatingInput } from "./rating-input";
 import {
@@ -63,7 +66,7 @@ const fieldLabels: Record<string, string> = {
   pillarKeys: "pillars",
 };
 
-function describe(entry: HistoryEntry): string {
+function describe(entry: HistoryEntry, levelName = defaultLevelName): string {
   const d = entry.details;
   if (entry.action === "catalogue.seeded")
     return `Added from catalogue ${String(d.catalogue ?? "")}`;
@@ -246,6 +249,8 @@ function PanelBody({
   ) => Promise<boolean>;
   onDeleteIndicator: (id: string) => void;
 }) {
+  const historical = useHistorical();
+  const { levelName } = useMethods();
   const [history, setHistory] = useState<HistoryEntry[] | null>(null);
   const [showLegend, setShowLegend] = useState(false);
   const version = JSON.stringify([
@@ -262,6 +267,7 @@ function PanelBody({
     item.targetLevel,
   ]);
   useEffect(() => {
+    if (historical) return;
     let active = true;
     fetch(`/api/capabilities/${item.id}/history`)
       .then((response) => (response.ok ? response.json() : null))
@@ -272,8 +278,38 @@ function PanelBody({
     return () => {
       active = false;
     };
-  }, [item.id, version]);
+  }, [item.id, version, historical]);
 
+  const visibleHistory: HistoryEntry[] | null = historical
+    ? (historical.dataset?.history ?? [])
+        .filter(
+          (e) =>
+            (e as { entityType: string; entityId: string }).entityType ===
+              "Capability" && (e as { entityId: string }).entityId === item.id,
+        )
+        .map((e) => {
+          const v = e as {
+            id: string;
+            createdAt: string;
+            action: string;
+            details: Record<string, unknown>;
+            actor: { name: string } | null;
+          };
+          return {
+            id: v.id,
+            at: v.createdAt,
+            action: v.action,
+            details: v.details,
+            actor:
+              v.actor?.name ??
+              (typeof v.details.exportedActorName === "string"
+                ? v.details.exportedActorName
+                : null),
+          };
+        })
+        .reverse()
+        .slice(0, 30)
+    : history;
   const disabled = !canEdit;
   return (
     <div className="flex min-h-full flex-col">
@@ -423,6 +459,7 @@ function PanelBody({
       </Section>
 
       <ContextLinks capabilityId={item.id} />
+      <PlanningLinks capabilityId={item.id} />
       <Section title="Direction and ownership">
         <div className="grid grid-cols-2 gap-x-4 gap-y-3">
           <Field label="Accountable person">
@@ -549,14 +586,16 @@ function PanelBody({
         </p>
       </Section>
 
-      <Section title="Live record history">
-        {history == null ? (
+      <Section
+        title={historical ? "Captured record history" : "Live record history"}
+      >
+        {visibleHistory == null ? (
           <p className="text-xs text-muted-foreground">Loading history…</p>
-        ) : history.length === 0 ? (
+        ) : visibleHistory.length === 0 ? (
           <p className="text-xs text-muted-foreground">No changes recorded.</p>
         ) : (
           <ol className="space-y-2">
-            {history.map((entry) => (
+            {visibleHistory.map((entry) => (
               <li
                 key={entry.id}
                 className="grid grid-cols-[88px_1fr] gap-3 text-xs"
@@ -568,7 +607,7 @@ function PanelBody({
                   {entry.at.slice(0, 10)}
                 </time>
                 <span>
-                  {describe(entry)}
+                  {describe(entry, levelName)}
                   <span className="text-muted-foreground">
                     {" "}
                     · {entry.actor ?? "System"}

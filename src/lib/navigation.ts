@@ -2,7 +2,6 @@ import {
   LayoutGrid,
   Gauge,
   ListChecks,
-  TriangleAlert,
   Target,
   GanttChart,
   Users,
@@ -56,22 +55,13 @@ export const navigationGroups: readonly NavGroup[] = [
         views: ["Matrix", "Targets", "Assessment history"],
       },
       {
-        title: "Compliance",
+        title: "Framework Alignment",
         href: "/compliance",
         icon: ListChecks,
         description:
           "Framework requirements, their mapping to capabilities, and coverage status.",
         phase: 2,
         views: ["Coverage", "Requirements", "Mappings"],
-      },
-      {
-        title: "Risks & Findings",
-        href: "/risks",
-        icon: TriangleAlert,
-        description:
-          "Risk and finding registers with inherent and residual views and ageing.",
-        phase: 4,
-        views: ["Heat map", "Register", "Ageing"],
       },
     ],
   },

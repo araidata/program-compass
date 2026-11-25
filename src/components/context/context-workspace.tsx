@@ -1,4 +1,6 @@
 "use client";
+import { useMethods } from "@/components/planning/method-provider";
+import { ScopedLink } from "@/components/scoped-link";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -41,6 +43,9 @@ export function ContextWorkspace({
   canEdit: boolean;
   synthetic: boolean;
 }) {
+  const methods = useMethods();
+  const ready = (ids: string[], items: CapabilityView[]) =>
+    readiness(ids, items, methods.values);
   const [data, setData] = useState(initial);
   const [draft, setDraft] = useState<RecordDraft | null>(null);
   const [status, setStatus] = useState("");
@@ -251,7 +256,7 @@ export function ContextWorkspace({
         ...row,
         scope?.name ?? "Enterprise",
         at,
-        "reference-readiness-1 (provisional)",
+        `${methods.id} (${methods.provisional ? "provisional" : "organization approved"})`,
         synthetic
           ? "Contains synthetic demo assessments"
           : "Recorded assessments",
@@ -292,7 +297,7 @@ export function ContextWorkspace({
           "Missing",
         ],
         ...threats.map((t) => {
-          const r = readiness(t.capabilityIds, capabilities);
+          const r = ready(t.capabilityIds, capabilities);
           return [
             t.id,
             t.title,
@@ -323,7 +328,7 @@ export function ContextWorkspace({
         ],
         ...objectives.map((o) => {
           const ids = objectiveCapabilities(o, data.threats);
-          const r = readiness(ids, capabilities);
+          const r = ready(ids, capabilities);
           return [
             o.id,
             o.title,
@@ -353,7 +358,7 @@ export function ContextWorkspace({
             "Objectives needing attention",
             objectives.filter(
               (o) =>
-                readiness(objectiveCapabilities(o, data.threats), capabilities)
+                ready(objectiveCapabilities(o, data.threats), capabilities)
                   .state !== "Defended (indicative)",
             ).length,
           ],
@@ -455,12 +460,24 @@ export function ContextWorkspace({
         <div className="grid grid-cols-2 gap-4">
           {objectives.map((o) => {
             const ids = objectiveCapabilities(o, data.threats);
-            const r = readiness(ids, capabilities);
+            const r = ready(ids, capabilities);
             return (
               <section
                 className="space-y-3 rounded-md border bg-card p-4"
                 key={o.id}
               >
+                <div className="flex flex-wrap gap-3 text-xs">
+                  {ids.map((id) => (
+                    <ScopedLink
+                      key={id}
+                      href={`/capabilities/planning?view=issue&capability=${id}`}
+                      className="text-link underline"
+                    >
+                      {capabilities.find((c) => c.id === id)?.code ?? id}{" "}
+                      planning deficiencies / responsibilities
+                    </ScopedLink>
+                  ))}
+                </div>
                 <header className="flex justify-between gap-3">
                   <h2>
                     {o.title}
@@ -524,7 +541,7 @@ export function ContextWorkspace({
             </thead>
             <tbody>
               {threats.map((t) => {
-                const r = readiness(t.capabilityIds, capabilities);
+                const r = ready(t.capabilityIds, capabilities);
                 return (
                   <tr className="border-b last:border-0" key={t.id}>
                     <td className="max-w-72 px-4 py-3">
@@ -610,11 +627,12 @@ export function ContextWorkspace({
       )}
       {view !== "profile" && (
         <p className="text-xs text-muted-foreground">
-          Provisional readiness method reference-readiness-1: unique applicable
-          mapped capabilities, weakest score 3+ indicates defended, 2 partly
-          defended, lower exposed. Any missing assessment is incomplete. This is
-          planning context, not measured threat probability or verified
-          compliance. Inactive threats do not contribute to objective readiness.
+          Provisional readiness method {methods.id}: unique applicable mapped
+          capabilities, weakest score {methods.values.readinessDefended}+
+          indicates defended, {methods.values.readinessPartial} partly defended,
+          lower exposed. Any missing assessment is incomplete. This is planning
+          context, not measured threat probability or verified compliance.
+          Inactive threats do not contribute to objective readiness.
         </p>
       )}
       {draft && (

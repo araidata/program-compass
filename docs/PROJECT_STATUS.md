@@ -1,6 +1,54 @@
+<!-- Final pre-push verification: lint, typecheck, format:check, db:validate,41 units and build passed without database credentials/local env files. Full desktop22 passed/6 intentional auth skips; final report/import/history rerun3 passed after print-summary polish. -->
+
+## 2026-11-24 — Local integrated acceptance passed; main release in progress
+
+All eight milestone workflows passed local acceptance. Final desktop suite:22 passed,6 intentional authentication skips;41 units pass. Labelled complete business→resource→investment→plan→report fixture includes exact isolated relational restore/rollback. Chunked browser import/stale/atomic apply preserves accounts/assessments. Reports reconcile to database aggregates;48-page management PDF inspected. COMPLETION_CHECKLIST records evidence. Final-tree print-summary/history refinements are under required credential-free checks before commit/push; Production still prior784f0e1 release at this checkpoint. Development migrations004–011 applied and replayed in isolated schema. No auth restoration, no mobile work, no secret/dependency/infrastructure replacement. Next: normal main push, exact Vercel READY/migration/runtime verification, then final release evidence. CONTINUATION has exact sessions and files.
+
+## 2026-11-24 — Integrated candidate, full desktop verification in progress
+
+All eight milestone workspaces now have implementations; completion is **not declared** until final acceptance and release checks pass. Isolated relational restore/rollback/version/reference/source-preservation passed; chunked browser import/stale/apply and corrected navigation passed. Versioned projection methods, topic guides, structured technology options/lifecycle, compact cycle trends, real Overview, reports and scoped risks redirect added. Development-only migrations004–011 applied. Latest required checks passed with41 units; full28-test desktop suite now running, including labelled context→investment→report→isolated-restore fixture. Six auth tests intentionally skip because authentication remains disabled. No new commit/push/Production deployment yet. See latest CONTINUATION checkpoint for exact sessions/files/failure fixes/next actions. Desktop-only1280+ remains permanent.
+
+## 2026-11-24 — Scenario workflow verified; reports/interchange under development
+
+Focused capacity/finance/methods desktop integration passed3/3; 36 unit tests passed before the latest report/interchange additions. Shared editor accessible labels and client-only URL tab preservation fixed. Executive/management report domain/UI/API written. Chunked relational export/import with rollback preview, pinned reference/schema/identity validation and stale atomic apply written but not yet integration-tested. Development-only additive migrations009/010 applied; no Production changes or new commits/push. Exact files, limits, pending tests and next step are at top of CONTINUATION.md. Full site remains incomplete pending interchange/print/final navigation and acceptance reconciliation. Authentication remains disabled, desktop only.
+
+## 2026-11-24 — Workforce verified; scenarios/finance under verification
+
+Workforce browser workflow passed with persisted workload/capacity/skills/justification, stale/duplicate/overlap rejection and frozen history; desktop1280/1440 screenshots inspected. Required credential-free checks passed at that checkpoint. Scenario/Decimal finance models/API/UI and immutable capture are now written; migration008 applied Development only. 36 unit tests pass. Latest required checks/build and finance browser workflow are running/pending; no new commit/push/deployment. Full eight-milestone project remains incomplete, particularly reports/relational data exchange and integrated acceptance/release. Exact next action and model/method limitations are at top of CONTINUATION.md.
+
+## 2026-11-24 — Resumed implementation after Claude verification
+
+Reviewed and retained Claude's cycle response-size fix and prior passing checkpoint (27 unit/18 desktop, 6 intentional auth skips). No new remote commits; origin/main and local baseline remain 784f0e1. Continuing the full owner-approved plan, not replacing Claude work.
+
+Workforce calculation/assignment/skills/coverage/NICE/organization-chart/position-justification code now written; migration `202611240007_workforce_capacity` applied to Development only. APIs and immutable captures include the new domain. 31 unit tests pass. Credential-free required checks/build and new capacity desktop workflow are pending/running. CONTINUATION.md records exact formulas, files, tests, remaining verification and next steps. No production migration/push yet. Scenarios/finance and reports/import/export still require implementation; site is incomplete.
+
+<!-- Current checkpoint supersedes historical release notes below. -->
+
+## 2026-11-24 — Codex checkpoint verified (Claude Code)
+
+Codex's uncommitted methods/snapshots, connected planning and framework alignment work was verified on branch `claude/project-thread-qfyx55` from baseline `784f0e1`. Migrations `202611240004`–`006` are purely additive (new tables, nullable or defaulted columns, FKs only on new tables) and safe for production deploy. Checks: typecheck, lint, format, credential-free build, 27 unit tests and 18 browser tests pass against isolated Development (6 security tests skipped while authentication is suspended). The earlier SSR cycle-navigation fix is confirmed by the methods test.
+
+Fix: `GET /api/cycles`, `POST /api/cycles` and the capabilities cycle list no longer return the captured `dataset` (about 2 MB per cycle, mostly alignment and reference catalogues). Previously the list returned every cycle's full snapshot on each navigation and the capture test timed out. Open issue: the Compliance page still loads up to 30 full datasets to compute trends, and each capture duplicates the pinned reference catalogues; consider storing summaries per cycle. Remaining scope (workforce calculations, scenarios/finance, reports/import-export) is unchanged and not started. `data/references/` must stay committed because Vercel builds run the reference seed.
+
+## 2026-11-24 — Active eight-milestone implementation checkpoint
+
+Full plan is owner-approved and remains incomplete. Branch `codex/reference-alignment-review`, baseline `784f0e1`, uncommitted implementation. Methods/snapshot, connected planning and framework alignment code written; migrations `202611240004`–`006` applied only to isolated Development. Foundation plus pinned CSF/CJIS/NICE reference seed succeeded without replacing existing organizational values. Production remains prior release; no new push/deploy. See CONTINUATION.md for exact files, source counts/formulas, tests and next actions; COMPLETION_CHECKLIST.md remains the acceptance authority.
+
+Current verification: typecheck passed; 27 unit tests passed. Credential-free release checks/build and methods/alignment desktop rechecks are pending/running. Earlier planning workflow passed; earlier methods test assertion and SSR cycle navigation were corrected but must be rerun. Workforce calculations, scenario finances, full reports/import-export and final integrated release remain untouched. Authentication stays disabled; desktop 1280+ only. Do not call the project complete.
+
 # Project status
 
 Last updated: 2026-11-24 (America/Chicago).
+
+## Active methods and connected-planning implementation checkpoint — 2026-11-24
+
+Written and applied to Development: migrations 202611240004_methods_and_snapshots and 202611240005_connected_planning. Added immutable method versions/settings; method-aware calculations; full currently implemented-domain cycle capture/read-only views; cards/comparison; responsibilities/issues, initiative dependencies/uplift/timeline/gaps and technology portfolio/coverage with transactional validated APIs, FK links and history. This is in-progress implementation, not whole-project completion. No new production release yet.
+
+Lint/typecheck and credential-free format/schema/build passed; 21 prior/new method unit tests passed. Browser run confirms the connected planning workflow passes; a new historical-navigation test found an SSR fallback losing cycle context before hydration. Disabled fallback links now address that bug; rebuild/rerun still required. Exact files, source-download details, remaining tasks and failure are recorded at top of CONTINUATION.md. Official reference datasets are downloaded into ignored .vercel but not imported; Framework Alignment, workforce calculations/NICE, scenarios/finance and reports/import-export remain outstanding. Architectural/model/calculation documentation must be reconciled at the verified checkpoint before commit. No secrets/environment files changed.
+
+## Full approved-plan implementation active — 2026-11-24
+
+Aaron explicitly instructed implementation of the complete eight-milestone plan. Scope is all remaining strategic-planning requirements, including editable provisional methods, complete historical cycles, responsibilities/issues, roadmap, authoritative Framework Alignment, workforce/technology justification, multiyear scenarios/finance, reports/data exchange and verified release. See COMPLETION_CHECKLIST.md for acceptance. Starting checkout is clean at 784f0e1. No new feature is complete merely because this continuation begins. Current task: persistent versioned methods and historical data boundary, followed by connected planning domains. Desktop-only and suspended authentication remain mandatory.
 
 ## Main release verified — 2026-11-24
 

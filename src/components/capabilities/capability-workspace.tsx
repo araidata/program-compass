@@ -25,15 +25,17 @@ import {
   type QuickFilter,
 } from "@/lib/domain/capabilities";
 import { displayGroups } from "@/lib/domain/catalogue";
-import { levelName } from "@/lib/domain/maturity";
+import { useMethods } from "@/components/planning/method-provider";
 import { AssessmentView } from "./assessment-view";
 import { GapsView } from "./gaps-view";
 import { PerformanceView } from "./performance-view";
 import { AnalysisView } from "./analysis-view";
+import { CardsView } from "./cards-view";
 import { CapabilityPanel, type FunctionGroup } from "./capability-panel";
 
 export const views = [
   { id: "assessment", label: "Assessment" },
+  { id: "cards", label: "Cards" },
   { id: "gaps", label: "Targets and gaps" },
   { id: "performance", label: "KPI performance" },
   { id: "analysis", label: "Analysis" },
@@ -117,6 +119,7 @@ export function CapabilityWorkspace({
   canEdit: boolean;
   now: string;
 }) {
+  const { levelName, id: methodId } = useMethods();
   const now = useMemo(() => new Date(nowIso), [nowIso]);
   const router = useRouter();
   const pathname = usePathname();
@@ -463,6 +466,20 @@ export function CapabilityWorkspace({
 
   return (
     <div className="space-y-4">
+      {items.some(
+        (c) =>
+          c.currentLevel !== null &&
+          c.scaleVersion &&
+          c.scaleVersion !== methodId,
+      ) && (
+        <p className="rounded border p-3 text-xs text-muted-foreground">
+          Some observations retain an earlier method version. Current configured
+          labels do not re-assess those records; compare definitions in Settings
+          / Saved assumption and scale versions before interpreting ordinal
+          aggregates across versions. Captured cycles retain their own labels
+          and definitions.
+        </p>
+      )}
       <StatStrip>
         <Stat
           label="Assessed"
@@ -661,7 +678,9 @@ export function CapabilityWorkspace({
         </div>
       ) : null}
 
-      {view === "assessment" ? (
+      {view === "cards" ? (
+        <CardsView items={visible} onOpen={(id) => setParams({ topic: id })} />
+      ) : view === "assessment" ? (
         <AssessmentView
           items={visible}
           canEdit={canEdit}

@@ -1,3 +1,4 @@
+import { defaultMethodValues, type MethodValues } from "./methods";
 import { z } from "zod";
 import type { CapabilityView } from "./capabilities";
 const text = z.string().trim().max(4000);
@@ -83,6 +84,7 @@ export type ContextData = {
 export function readiness(
   capabilityIds: string[],
   capabilities: CapabilityView[],
+  methods: MethodValues = defaultMethodValues,
 ) {
   const ids = new Set(capabilityIds);
   const mapped = capabilities.filter((c) => ids.has(c.id));
@@ -101,9 +103,9 @@ export function readiness(
       ? "Not applicable"
       : missing
         ? "Incomplete"
-        : minimum !== null && minimum >= 3
+        : minimum !== null && minimum >= methods.readinessDefended
           ? "Defended (indicative)"
-          : minimum !== null && minimum >= 2
+          : minimum !== null && minimum >= methods.readinessPartial
             ? "Partly defended"
             : "Exposed";
   return { state, minimum, mean, missing, total: applicable.length };

@@ -12,6 +12,11 @@ const implemented = new Set([
   "/capabilities",
   "/settings",
   "/workforce",
+  "/roadmap",
+  "/compliance",
+  "/reports",
+  "/risks",
+  "/technology",
   "/context",
 ]);
 

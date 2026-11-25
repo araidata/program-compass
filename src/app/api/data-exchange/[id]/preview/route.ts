@@ -1,0 +1,11 @@
+import { api, json } from "@/lib/server/api";
+import { previewUpload } from "@/lib/server/exchange";
+export const maxDuration = 300;
+export async function POST(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  return api(request, "administer", async () =>
+    json(await previewUpload((await params).id)),
+  );
+}

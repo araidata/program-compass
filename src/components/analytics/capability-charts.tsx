@@ -4,11 +4,11 @@ import {
   DistributionBar,
   LevelChip,
   MaturityTrack,
-  levelFill,
 } from "@/components/analytics/maturity";
 import { PillarTag } from "@/components/pillar-tag";
 import { parsePillar } from "@/lib/pillars";
-import { levelName } from "@/lib/domain/maturity";
+import { ConfiguredLevelName } from "@/components/planning/method-provider";
+import { levelFill } from "@/lib/domain/maturity";
 import {
   gap,
   type CapabilityView,
@@ -190,7 +190,7 @@ export function DistributionChart({
                 key={level}
                 scope="col"
                 className="py-1 text-right font-medium"
-                title={levelName(level)}
+                title={`Level ${level}`}
               >
                 <span className="inline-flex items-center gap-1">
                   <span
@@ -198,7 +198,10 @@ export function DistributionChart({
                     className={cn("size-2 rounded-sm", levelFill[level])}
                   />
                   {level}
-                  <span className="sr-only"> {levelName(level)}</span>
+                  <span className="sr-only">
+                    {" "}
+                    <ConfiguredLevelName level={level} />
+                  </span>
                 </span>
               </th>
             ))}

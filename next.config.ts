@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  outputFileTracingIncludes: {
+    "/api/data-exchange/**": ["./data/references/*.json"],
+  },
   async headers() {
     return [
       {

@@ -1,3 +1,4 @@
+import { defaultMethods } from "../src/lib/domain/methods";
 import type { PrismaClient } from "../src/generated/prisma/client";
 import {
   CATALOGUE_VERSION,
@@ -52,6 +53,18 @@ export async function seedFoundation(client: PrismaClient) {
           },
         });
       }
+      await tx.planningMethodVersion.upsert({
+        where: { id: defaultMethods.id },
+        create: {
+          id: defaultMethods.id,
+          values: defaultMethods.values,
+          basis: defaultMethods.basis,
+          effectiveDate: new Date(`${defaultMethods.effectiveDate}T00:00:00Z`),
+          provisional: true,
+          createdAt: new Date(defaultMethods.createdAt),
+        },
+        update: {},
+      });
       await seedCapabilityCatalogue(tx);
     },
     { timeout: 30_000, maxWait: 10_000 },

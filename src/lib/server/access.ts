@@ -6,14 +6,8 @@ import { auth } from "./auth";
 import { db } from "./db";
 import { permits, type Permission } from "@/lib/permissions";
 
-export class HttpError extends Error {
-  constructor(
-    public status: number,
-    message: string,
-  ) {
-    super(message);
-  }
-}
+import { HttpError } from "./errors";
+export { HttpError } from "./errors";
 
 export async function currentUser(requestHeaders: Headers) {
   if (authenticationDisabled)

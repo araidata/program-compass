@@ -1,6 +1,8 @@
 import "server-only";
+import { allocationExceeded } from "@/lib/domain/capacity";
+import type { Prisma } from "@/generated/prisma/client";
 import { db } from "./db";
-import { HttpError } from "./access";
+import { HttpError } from "./errors";
 import {
   reportingCycle,
   type WorkforceData,
@@ -8,13 +10,15 @@ import {
 } from "@/lib/domain/workforce";
 import type { z } from "zod";
 
-export async function loadWorkforce(): Promise<WorkforceData | null> {
+export async function loadWorkforce(
+  client: Prisma.TransactionClient = db(),
+): Promise<WorkforceData | null> {
   try {
     const [people, positions, pillars, capabilities] = await Promise.all([
-      db().person.findMany({ orderBy: [{ name: "asc" }, { id: "asc" }] }),
-      db().position.findMany({ orderBy: [{ title: "asc" }, { id: "asc" }] }),
-      db().pillar.findMany({ orderBy: { sortOrder: "asc" } }),
-      db().capability.findMany({
+      client.person.findMany({ orderBy: [{ name: "asc" }, { id: "asc" }] }),
+      client.position.findMany({ orderBy: [{ title: "asc" }, { id: "asc" }] }),
+      client.pillar.findMany({ orderBy: { sortOrder: "asc" } }),
+      client.capability.findMany({
         include: { pillars: { include: { pillar: true } } },
         orderBy: { sortOrder: "asc" },
       }),
@@ -115,6 +119,26 @@ export async function saveWorkforce(
           throw new HttpError(
             400,
             "A person's total authorized allocation cannot exceed 1 FTE",
+          );
+      }
+      if (id) {
+        const assignments = await tx.capacityAssignment.findMany({
+          where: { positionId: id },
+        });
+        if (
+          allocationExceeded(
+            assignments.map((a) => ({
+              ...a,
+              startDate: a.startDate.toISOString().slice(0, 10),
+              endDate: a.endDate?.toISOString().slice(0, 10) ?? null,
+              allocatedFte: Number(a.allocatedFte),
+            })),
+            values.fte,
+          )
+        )
+          throw new HttpError(
+            400,
+            "Position FTE cannot fall below overlapping responsibility assignments",
           );
       }
       record = id

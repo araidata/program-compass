@@ -8,8 +8,7 @@ test.beforeEach(async ({ page }) => {
 
 const modules = [
   ["Capabilities", "/capabilities"],
-  ["Compliance", "/compliance"],
-  ["Risks & Findings", "/risks"],
+  ["Framework Alignment", "/compliance"],
   ["Business Context", "/context"],
   ["Roadmap", "/roadmap"],
   ["Workforce", "/workforce"],
@@ -36,7 +35,7 @@ test("overview and all protected navigation modules work", async ({
       .or(page.getByRole("heading", { name: "Maturity by group" })),
   ).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "Planned modules" }),
+    page.getByRole("heading", { name: "Planning workflow" }),
   ).toBeVisible();
   for (const [title, path] of modules) {
     if (testInfo.project.name === "mobile")
@@ -47,13 +46,20 @@ test("overview and all protected navigation modules work", async ({
       .click();
     await expect(page).toHaveURL(path);
     await expect(
-      page.getByRole("heading", { name: title, exact: true }),
+      page.getByRole("heading", {
+        name: title === "Reports" ? "Leadership reports" : title,
+        exact: true,
+      }),
     ).toBeVisible();
     if (
       path !== "/settings" &&
       path !== "/capabilities" &&
       path !== "/workforce" &&
-      path !== "/context"
+      path !== "/context" &&
+      path !== "/roadmap" &&
+      path !== "/technology" &&
+      path !== "/compliance" &&
+      path !== "/reports"
     )
       await expect(
         page.getByRole("heading", { name: "Not available yet" }),

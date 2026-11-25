@@ -33,3 +33,16 @@ export function withScope(href: string, pillar: Pillar | null): string {
   else url.searchParams.delete(PILLAR_PARAM);
   return `${url.pathname}${url.search}${url.hash}`;
 }
+
+/** Carry a selected immutable cycle across business routes; Settings always edits live configuration. */
+export function withCycle(href: string, cycle: string | null) {
+  if (
+    !cycle ||
+    href.startsWith("/settings") ||
+    href.startsWith("/reports/data")
+  )
+    return href;
+  const url = new URL(href, "http://local.invalid");
+  url.searchParams.set("cycle", cycle);
+  return `${url.pathname}${url.search}${url.hash}`;
+}

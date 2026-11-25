@@ -6,6 +6,7 @@
  * PROVISIONAL: weights are an open methodology decision. Unassessed values are
  * excluded and reported as counts, never treated as zero.
  */
+import type { Methods } from "./methods";
 import { displayGroups } from "./catalogue";
 import { REVIEW_DUE_MONTHS, REVIEW_OVERDUE_MONTHS } from "./maturity";
 
@@ -26,6 +27,7 @@ export type CapabilityView = {
   code: string;
   catalogue?: string;
   scaleVersion?: string;
+  methods?: Methods;
   groupCode: string;
   name: string;
   description: string | null;
@@ -70,13 +72,25 @@ function addMonths(date: Date, months: number): Date {
 }
 
 export function reviewStatus(
-  capability: Pick<CapabilityView, "assessedAt">,
+  capability: Pick<CapabilityView, "assessedAt" | "methods">,
   now: Date,
 ): ReviewStatus {
   if (!capability.assessedAt) return "never";
   const assessed = new Date(capability.assessedAt);
-  if (addMonths(assessed, REVIEW_OVERDUE_MONTHS) <= now) return "overdue";
-  if (addMonths(assessed, REVIEW_DUE_MONTHS) <= now) return "due";
+  if (
+    addMonths(
+      assessed,
+      capability.methods?.values.reviewOverdueMonths ?? REVIEW_OVERDUE_MONTHS,
+    ) <= now
+  )
+    return "overdue";
+  if (
+    addMonths(
+      assessed,
+      capability.methods?.values.reviewDueMonths ?? REVIEW_DUE_MONTHS,
+    ) <= now
+  )
+    return "due";
   return "current";
 }
 

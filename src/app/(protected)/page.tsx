@@ -1,6 +1,10 @@
+import { OverviewPlanning } from "@/components/planning/overview-planning";
+import { db } from "@/lib/server/db";
+import { captureDataset } from "@/lib/server/snapshots";
+import { readPageCycle } from "@/lib/server/snapshots";
+import { MethodProvider } from "@/components/planning/method-provider";
 import { DemoNotice } from "@/components/demo-notice";
 import Link from "next/link";
-import { navigationGroups, settingsItem, type NavItem } from "@/lib/navigation";
 import { parsePillar, pillars, withScope, PILLAR_PARAM } from "@/lib/pillars";
 import { PageHeader } from "@/components/page-header";
 import { Meter, Panel, Stat, StatStrip } from "@/components/analytics/stat";
@@ -26,16 +30,6 @@ import {
   weaknesses,
   type CapabilityView,
 } from "@/lib/domain/capabilities";
-
-const planned: NavItem[] = [
-  ...navigationGroups.flatMap((group) => group.items),
-  settingsItem,
-].filter(
-  (item) =>
-    !["/", "/capabilities", "/settings", "/workforce", "/context"].includes(
-      item.href,
-    ),
-);
 
 type Attention = { item: CapabilityView; reason: string; tone: "bad" | "warn" };
 
@@ -79,24 +73,44 @@ export default async function Overview({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   await requirePage();
-  const raw = (await searchParams)[PILLAR_PARAM];
+  const search = await searchParams;
+  const cycle = await readPageCycle(
+    typeof search.cycle === "string" ? search.cycle : undefined,
+  );
+  const raw = search[PILLAR_PARAM];
   const scope = parsePillar(typeof raw === "string" ? raw : null);
-  const now = new Date();
-  const loaded = await loadCapabilities();
-  const synthetic = loaded != null && (await hasDemoData());
+  const now = cycle ? cycle.createdAt : new Date();
+  const loaded = cycle ? cycle.capabilities : await loadCapabilities();
+  const synthetic = cycle
+    ? cycle.capabilities.some(
+        (c) => c.rationale === "Synthetic development rating.",
+      )
+    : loaded != null && (await hasDemoData());
+  const planningData = cycle
+    ? cycle.dataset
+    : loaded
+      ? await db().$transaction((tx) => captureDataset(tx), {
+          isolationLevel: "RepeatableRead",
+          timeout: 60000,
+          maxWait: 10000,
+        })
+      : null;
   const all = loaded ?? [];
   const items = scope
     ? all.filter((item) => item.pillarKeys.includes(scope.id))
     : all;
   const summary = summarize(items, now);
-  const base = withScope("/capabilities", scope);
+  const base = withScope(
+    cycle ? `/capabilities?cycle=${cycle.id}` : "/capabilities",
+    scope,
+  );
   const join = base.includes("?") ? "&" : "?";
   const to = (query: string) => `${base}${join}${query}`;
   const link = { href: (item: CapabilityView) => to(`topic=${item.id}`) };
   const deficient = deficiencies(items);
   const watch = attention(items, now);
 
-  return (
+  const content = (
     <div className="space-y-4">
       <PageHeader
         title="Overview"
@@ -299,32 +313,16 @@ export default async function Overview({
         </>
       )}
 
-      <section
-        aria-labelledby="planned-title"
-        className="rounded-md border bg-card"
-      >
-        <header className="border-b px-4 py-2.5">
-          <h2 id="planned-title">Planned modules</h2>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            Not yet available. Each will link into the capability topics above.
-          </p>
-        </header>
-        <ul className="grid divide-y sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4">
-          {planned.map((item) => (
-            <li key={item.href} className="px-4 py-2.5">
-              <Link
-                href={withScope(item.href, scope)}
-                className="text-[13px] font-medium hover:underline"
-              >
-                {item.title}
-              </Link>
-              <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
-                {item.description}
-              </p>
-            </li>
-          ))}
-        </ul>
-      </section>
+      <OverviewPlanning
+        data={planningData}
+        scope={scope}
+        cycleId={cycle?.id ?? null}
+      />
     </div>
+  );
+  return cycle ? (
+    <MethodProvider methods={cycle.methods}>{content}</MethodProvider>
+  ) : (
+    content
   );
 }

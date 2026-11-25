@@ -2,6 +2,7 @@ import { randomBytes, randomUUID } from "node:crypto";
 import { hashPassword } from "better-auth/crypto";
 import { database } from "../scripts/database";
 import { seedFoundation } from "../scripts/seed-foundation";
+import { seedReferences } from "../scripts/seed-references";
 
 export default async function setup() {
   if (
@@ -18,6 +19,7 @@ export default async function setup() {
   const users: Record<string, { id: string; email: string }> = {};
   try {
     await seedFoundation(client);
+    await seedReferences(client);
     for (const role of ["admin", "editor", "viewer"] as const) {
       const id = randomUUID();
       const email = `${role}-${run}@example.invalid`;

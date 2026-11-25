@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { cn } from "@/lib/utils";
-import { levelName, maturityLevels } from "@/lib/domain/maturity";
+import { useMethods } from "@/components/planning/method-provider";
 import { levelFill, levelInk } from "@/components/analytics/maturity";
 
 /**
@@ -29,6 +29,7 @@ export function RatingInput({
   disabled?: boolean;
   size?: "sm" | "md";
 }) {
+  const { levelName, levels: maturityLevels } = useMethods();
   const group = useRef<HTMLDivElement>(null);
 
   function focusLevel(level: number) {

@@ -1,3 +1,4 @@
+import { ScopedLink } from "@/components/scoped-link";
 import { DemoNotice } from "@/components/demo-notice";
 import { Suspense } from "react";
 import { PageHeader } from "@/components/page-header";
@@ -12,8 +13,10 @@ import { SchemaPending } from "@/components/schema-pending";
 import { db } from "@/lib/server/db";
 import { loadWorkforce } from "@/lib/server/workforce";
 import { CycleControl } from "@/components/capabilities/cycle-control";
-import type { CapabilityView } from "@/lib/domain/capabilities";
-import { notFound } from "next/navigation";
+import { readPageCycle } from "@/lib/server/snapshots";
+import { MethodProvider } from "@/components/planning/method-provider";
+import { HistoricalProvider } from "@/components/planning/historical-provider";
+import { CycleComparison } from "@/components/capabilities/cycle-comparison";
 import { permits } from "@/lib/permissions";
 
 export const metadata = { title: "Capabilities" };
@@ -32,33 +35,34 @@ export default async function CapabilitiesPage({
   ]);
   const cycles = workforce
     ? await db().planningCycle.findMany({
+        omit: { dataset: true },
         orderBy: [{ createdAt: "desc" }, { id: "desc" }],
         take: 100,
       })
     : [];
-  const cycle =
-    cycleId && workforce
-      ? await db().planningCycle.findUnique({
-          where: { id: cycleId },
-          include: { snapshots: true },
-        })
-      : null;
-  if (cycleId && !cycle) notFound();
-  const capabilities = cycle
-    ? cycle.snapshots.map((s) => s.assessment as unknown as CapabilityView)
-    : live;
+  const cycle = await readPageCycle(cycleId);
+  const capabilities = cycle?.capabilities ?? live;
   const synthetic = cycle
     ? (capabilities?.some(
         (c) => c.rationale === "Synthetic development rating.",
       ) ?? false)
     : capabilities != null && (await hasDemoData());
-  return (
+  const content = (
     <div className="space-y-4">
       <PageHeader
         title="Capabilities"
         description="Current and target maturity, operational KPIs and gaps for each security topic."
       />
+      <ScopedLink
+        href="/capabilities/planning"
+        className="inline-block text-sm text-link hover:underline"
+      >
+        Responsibilities and planning issues
+      </ScopedLink>
       {synthetic ? <DemoNotice /> : null}
+      {cycle && live && (
+        <CycleComparison captured={cycle.capabilities} current={live} />
+      )}
       {workforce && (
         <Suspense>
           <CycleControl
@@ -88,13 +92,28 @@ export default async function CapabilitiesPage({
             key={cycleId ?? "live"}
             initial={capabilities}
             synthetic={synthetic}
-            functions={functions}
-            people={workforce?.people ?? []}
+            functions={
+              cycle ? (cycle.dataset?.functionOptions ?? []) : functions
+            }
+            people={
+              cycle
+                ? (cycle.dataset?.workforce?.people ?? [])
+                : (workforce?.people ?? [])
+            }
             canEdit={!cycleId && permits(user.role, "write")}
             now={cycle?.createdAt.toISOString() ?? new Date().toISOString()}
           />
         </Suspense>
       )}
     </div>
+  );
+  return cycle ? (
+    <MethodProvider methods={cycle.methods}>
+      <HistoricalProvider cycleId={cycle.id} dataset={cycle.dataset}>
+        {content}
+      </HistoricalProvider>
+    </MethodProvider>
+  ) : (
+    content
   );
 }

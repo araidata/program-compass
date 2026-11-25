@@ -286,3 +286,22 @@
     text-decoration: none;
   }
 }
+
+@media print {
+  .report-section {
+    overflow: visible !important;
+    border: 0;
+    padding: 0;
+    margin-top: 8mm;
+  }
+  .report-heading {
+    break-after: avoid;
+  }
+  .report-section table {
+    table-layout: fixed;
+  }
+  .report-section th,
+  .report-section td {
+    overflow-wrap: anywhere;
+  }
+}

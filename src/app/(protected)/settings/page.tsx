@@ -1,3 +1,5 @@
+import { MethodSettings } from "@/components/planning/method-settings";
+import { loadMethods } from "@/lib/server/methods";
 import { requirePage } from "@/lib/server/access";
 import { db } from "@/lib/server/db";
 import { SettingsForms } from "@/components/settings-forms";
@@ -26,6 +28,7 @@ export default async function SettingsPage() {
         dateFormat={settings?.dateFormat ?? "YYYY-MM-DD"}
         pillars={organization?.pillars ?? []}
       />
+      <MethodSettings initial={await loadMethods()} />
       <UserAdministration />
     </div>
   );

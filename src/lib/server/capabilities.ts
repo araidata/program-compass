@@ -1,4 +1,6 @@
 import "server-only";
+import { loadMethods } from "./methods";
+import { defaultMethods, type Methods } from "@/lib/domain/methods";
 import { db } from "./db";
 import { HttpError } from "./access";
 import type { Prisma } from "@/generated/prisma/client";
@@ -40,8 +42,12 @@ function toIndicator(record: IndicatorRecord): IndicatorView {
   };
 }
 
-export function toView(record: CapabilityRecord): CapabilityView {
+export function toView(
+  record: CapabilityRecord,
+  methods: Methods = defaultMethods,
+): CapabilityView {
   return {
+    methods,
     id: record.id,
     code: record.code,
     catalogue: record.catalogue,
@@ -61,7 +67,7 @@ export function toView(record: CapabilityRecord): CapabilityView {
     accountableFunctionId: record.accountableFunctionId,
     accountableFunctionName: record.accountableFunction?.name ?? null,
     assessedAt: record.assessedAt?.toISOString() ?? null,
-    assessedByName: record.assessedBy?.name ?? null,
+    assessedByName: record.assessedBy?.name ?? record.assessorLabel ?? null,
     pillarKeys: record.pillars
       .map((entry) => entry.pillar)
       .sort((a, b) => a.sortOrder - b.sortOrder)
@@ -82,7 +88,8 @@ export async function listCapabilities(): Promise<CapabilityView[]> {
       include: capabilityInclude,
       orderBy: [{ sortOrder: "asc" }, { code: "asc" }],
     });
-    return records.map(toView);
+    const methods = await loadMethods();
+    return records.map((record) => toView(record, methods));
   } catch (error) {
     if (isMissingTable(error)) throw new SchemaPendingError();
     throw error;
@@ -132,7 +139,12 @@ export async function capabilityHistory(id: string): Promise<HistoryEntry[]> {
   return events.map((event) => ({
     id: event.id,
     at: event.createdAt.toISOString(),
-    actor: event.actor?.name ?? null,
+    actor:
+      event.actor?.name ??
+      (typeof (event.details as Record<string, unknown> | null)
+        ?.exportedActorName === "string"
+        ? String((event.details as Record<string, unknown>).exportedActorName)
+        : null),
     action: event.action,
     details: (event.details ?? {}) as Record<string, unknown>,
   }));
@@ -145,6 +157,7 @@ export async function updateCapability(
   id: string,
   input: z.infer<typeof capabilityUpdateSchema>,
 ): Promise<CapabilityView> {
+  const methods = await loadMethods();
   return db().$transaction(async (tx) => {
     const before = await tx.capability.findUnique({ where: { id } });
     if (!before) throw new HttpError(404, "Capability not found");
@@ -167,6 +180,7 @@ export async function updateCapability(
       data.targetDate = targetDate ? new Date(`${targetDate}T00:00:00Z`) : null;
     const rated = ratingFields.some((field) => field in input);
     if (rated) {
+      data.scaleVersion = methods.id;
       const current =
         input.currentLevel !== undefined
           ? input.currentLevel
@@ -207,6 +221,7 @@ export async function updateCapability(
         where: { id },
         include: capabilityInclude,
       }),
+      methods,
     );
   });
 }

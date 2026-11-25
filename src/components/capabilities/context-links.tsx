@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { ContextData } from "@/lib/domain/context";
 import { useScope } from "@/components/use-scope";
-import { withScope } from "@/lib/pillars";
+import { useHistorical } from "@/components/planning/historical-provider";
+import { withScope, withCycle } from "@/lib/pillars";
 export function ContextLinks({ capabilityId }: { capabilityId: string }) {
   const [state, setState] = useState<{
     data: ContextData | null;
@@ -11,7 +12,9 @@ export function ContextLinks({ capabilityId }: { capabilityId: string }) {
     loaded: boolean;
   }>({ data: null, error: false, loaded: false });
   const scope = useScope();
+  const historical = useHistorical();
   useEffect(() => {
+    if (historical) return;
     const controller = new AbortController();
     fetch("/api/context", { signal: controller.signal, cache: "no-store" })
       .then(async (r) => {
@@ -24,13 +27,16 @@ export function ContextLinks({ capabilityId }: { capabilityId: string }) {
           setState({ data: null, error: true, loaded: true });
       });
     return () => controller.abort();
-  }, [capabilityId]);
+  }, [capabilityId, historical]);
+  const effective = historical
+    ? { data: historical.dataset?.context ?? null, error: false, loaded: true }
+    : state;
   const threats =
-    state.data?.threats.filter(
+    effective.data?.threats.filter(
       (t) => t.active && t.capabilityIds.includes(capabilityId),
     ) ?? [];
   const objectives =
-    state.data?.objectives.filter(
+    effective.data?.objectives.filter(
       (o) =>
         o.active &&
         (o.capabilityIds.includes(capabilityId) ||
@@ -41,9 +47,9 @@ export function ContextLinks({ capabilityId }: { capabilityId: string }) {
       <h3 className="text-xs font-semibold text-muted-foreground">
         Business context
       </h3>
-      {!state.loaded ? (
+      {!effective.loaded ? (
         <p className="text-xs">Loading relationships…</p>
-      ) : state.error ? (
+      ) : effective.error ? (
         <p className="text-xs">
           Context unavailable. Reopen this panel to retry.
         </p>
@@ -57,9 +63,12 @@ export function ContextLinks({ capabilityId }: { capabilityId: string }) {
               <li key={o.id}>
                 <Link
                   className="text-link hover:underline"
-                  href={withScope(
-                    `/context?view=objectives&search=${encodeURIComponent(o.title)}`,
-                    scope,
+                  href={withCycle(
+                    withScope(
+                      `/context?view=objectives&search=${encodeURIComponent(o.title)}`,
+                      scope,
+                    ),
+                    historical?.cycleId ?? null,
                   )}
                 >
                   {o.title}
@@ -70,9 +79,12 @@ export function ContextLinks({ capabilityId }: { capabilityId: string }) {
               <li key={t.id}>
                 <Link
                   className="text-link hover:underline"
-                  href={withScope(
-                    `/context?view=threats&search=${encodeURIComponent(t.title)}`,
-                    scope,
+                  href={withCycle(
+                    withScope(
+                      `/context?view=threats&search=${encodeURIComponent(t.title)}`,
+                      scope,
+                    ),
+                    historical?.cycleId ?? null,
                   )}
                 >
                   {t.title}
@@ -82,7 +94,10 @@ export function ContextLinks({ capabilityId }: { capabilityId: string }) {
           </ul>
           <Link
             className="text-xs text-link hover:underline"
-            href={withScope("/context", scope)}
+            href={withCycle(
+              withScope("/context", scope),
+              historical?.cycleId ?? null,
+            )}
           >
             Manage business context
           </Link>

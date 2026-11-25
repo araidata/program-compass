@@ -1,21 +1,24 @@
 import "server-only";
+import type { Prisma } from "@/generated/prisma/client";
 import { db } from "./db";
-import { HttpError } from "./access";
+import { HttpError } from "./errors";
 import type { contextInput, ContextData } from "@/lib/domain/context";
 import type { z } from "zod";
-export async function loadContext(): Promise<ContextData | null> {
+export async function loadContext(
+  client: Prisma.TransactionClient = db(),
+): Promise<ContextData | null> {
   try {
     const [profile, objectives, threats, people] = await Promise.all([
-      db().organizationProfile.findUnique({ where: { id: "organization" } }),
-      db().businessObjective.findMany({
+      client.organizationProfile.findUnique({ where: { id: "organization" } }),
+      client.businessObjective.findMany({
         include: { capabilities: true },
         orderBy: [{ priority: "desc" }, { title: "asc" }, { id: "asc" }],
       }),
-      db().businessThreat.findMany({
+      client.businessThreat.findMany({
         include: { capabilities: true, objectives: true },
         orderBy: [{ title: "asc" }, { id: "asc" }],
       }),
-      db().person.findMany({
+      client.person.findMany({
         select: { id: true, name: true },
         orderBy: { name: "asc" },
       }),

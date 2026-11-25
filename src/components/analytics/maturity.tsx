@@ -1,22 +1,8 @@
+"use client";
 import { cn } from "@/lib/utils";
-import { levelName, maturityLevels } from "@/lib/domain/maturity";
-
-export const levelFill: Record<number, string> = {
-  1: "bg-level-1",
-  2: "bg-level-2",
-  3: "bg-level-3",
-  4: "bg-level-4",
-  5: "bg-level-5",
-};
-
-/** Ink that keeps AA contrast on each level fill. */
-export const levelInk: Record<number, string> = {
-  1: "text-foreground",
-  2: "text-foreground",
-  3: "text-white",
-  4: "text-white",
-  5: "text-white",
-};
+import { levelFill, levelInk } from "@/lib/domain/maturity";
+import { useMethods } from "@/components/planning/method-provider";
+export { levelFill, levelInk } from "@/lib/domain/maturity";
 
 const position = (level: number) => ((level - 1) / 4) * 100;
 const show = (value: number) =>
@@ -38,6 +24,7 @@ export function MaturityTrack({
   className?: string;
   showScale?: boolean;
 }) {
+  const { levelName } = useMethods();
   const label =
     current == null
       ? `Not assessed${target != null ? `, target ${target}` : ""}`
@@ -117,6 +104,7 @@ export function LevelChip({
   level: number | null;
   withName?: boolean;
 }) {
+  const { levelName } = useMethods();
   if (level == null)
     return (
       <span className="inline-flex items-center gap-1.5 text-muted-foreground">
@@ -143,6 +131,7 @@ export function LevelChip({
 }
 
 export function MaturityLegend({ className }: { className?: string }) {
+  const { levels: maturityLevels } = useMethods();
   return (
     <dl className={cn("grid gap-2 sm:grid-cols-5", className)}>
       {maturityLevels.map((entry) => (
@@ -172,6 +161,7 @@ export function DistributionBar({
   unassessed: number;
   label: string;
 }) {
+  const { levelName } = useMethods();
   const total = counts.reduce((sum, value) => sum + value, 0) + unassessed;
   const segments = [
     ...counts.map((count, index) => ({

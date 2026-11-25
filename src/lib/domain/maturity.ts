@@ -62,3 +62,20 @@ export function isLevel(value: unknown): value is Level {
  */
 export const REVIEW_DUE_MONTHS = 6;
 export const REVIEW_OVERDUE_MONTHS = 12;
+
+export const levelFill: Record<number, string> = {
+  1: "bg-level-1",
+  2: "bg-level-2",
+  3: "bg-level-3",
+  4: "bg-level-4",
+  5: "bg-level-5",
+};
+
+/** Ink that keeps AA contrast on each level fill. */
+export const levelInk: Record<number, string> = {
+  1: "text-foreground",
+  2: "text-foreground",
+  3: "text-white",
+  4: "text-white",
+  5: "text-white",
+};

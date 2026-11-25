@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -11,7 +11,8 @@ export type FieldValue = string | number | boolean | null | string[];
 export type FieldSpec = {
   key: string;
   label: string;
-  type?: "text" | "textarea" | "number" | "select" | "multi" | "checkbox";
+  type?:
+    "text" | "textarea" | "number" | "select" | "multi" | "checkbox" | "date";
   required?: boolean;
   min?: number;
   max?: number;
@@ -32,6 +33,8 @@ export function RecordEditor({
   endpoint,
   onClose,
   onSaved,
+  children,
+  readOnly = false,
 }: {
   draft: RecordDraft;
   fields: FieldSpec[];
@@ -39,7 +42,10 @@ export function RecordEditor({
   endpoint: string;
   onClose: () => void;
   onSaved: () => void;
+  children?: React.ReactNode;
+  readOnly?: boolean;
 }) {
+  const fieldPrefix = useId();
   const [values, setValues] = useState(draft.values);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -84,6 +90,7 @@ export function RecordEditor({
           Maintain planning facts and relationships. Save changes to the shared
           workspace.
         </SheetDescription>
+        {children}
         <form
           className="space-y-4"
           onSubmit={(e) => {
@@ -91,113 +98,144 @@ export function RecordEditor({
             void save();
           }}
         >
-          {fields.map((f) =>
-            f.type === "multi" ? (
-              <fieldset key={f.key}>
-                <legend>{f.label}</legend>
-                <div className="mt-1 max-h-52 space-y-1 overflow-y-auto rounded-md border p-2">
-                  {f.options?.map((o) => (
-                    <label
-                      className="flex items-start gap-2 text-sm"
-                      key={o.id}
-                    >
+          <fieldset disabled={readOnly || busy} className="min-w-0 space-y-4">
+            {fields.map((f) =>
+              f.type === "multi" ? (
+                <fieldset key={f.key}>
+                  <legend>{f.label}</legend>
+                  <div className="mt-1 max-h-52 space-y-1 overflow-y-auto rounded-md border p-2">
+                    {f.options?.map((o) => (
+                      <label
+                        className="flex items-start gap-2 text-sm"
+                        key={o.id}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={((values[f.key] as string[]) ?? []).includes(
+                            o.id,
+                          )}
+                          onChange={(e) => {
+                            const before = (values[f.key] as string[]) ?? [];
+                            set(
+                              f.key,
+                              e.target.checked
+                                ? [...before, o.id]
+                                : before.filter((id) => id !== o.id),
+                            );
+                          }}
+                        />
+                        {o.label}
+                      </label>
+                    ))}
+                  </div>
+                  {f.help && (
+                    <p className="text-xs text-muted-foreground">{f.help}</p>
+                  )}
+                </fieldset>
+              ) : (
+                <label className="block" key={f.key}>
+                  {f.type === "checkbox" ? (
+                    <span className="flex gap-2">
                       <input
                         type="checkbox"
-                        checked={((values[f.key] as string[]) ?? []).includes(
-                          o.id,
-                        )}
-                        onChange={(e) => {
-                          const before = (values[f.key] as string[]) ?? [];
-                          set(
-                            f.key,
-                            e.target.checked
-                              ? [...before, o.id]
-                              : before.filter((id) => id !== o.id),
-                          );
-                        }}
-                      />
-                      {o.label}
-                    </label>
-                  ))}
-                </div>
-                {f.help && (
-                  <p className="text-xs text-muted-foreground">{f.help}</p>
-                )}
-              </fieldset>
-            ) : (
-              <label className="block" key={f.key}>
-                {f.type === "checkbox" ? (
-                  <span className="flex gap-2">
-                    <input
-                      type="checkbox"
-                      checked={!!values[f.key]}
-                      onChange={(e) => set(f.key, e.target.checked)}
-                    />
-                    {f.label}
-                  </span>
-                ) : (
-                  <>
-                    {f.label}
-                    {f.type === "textarea" ? (
-                      <textarea
-                        className="form-input mt-1"
-                        required={f.required}
-                        maxLength={4000}
-                        rows={4}
-                        value={String(values[f.key] ?? "")}
-                        onChange={(e) => set(f.key, e.target.value || null)}
-                      />
-                    ) : f.type === "select" ? (
-                      <select
-                        className="form-input mt-1"
-                        required={f.required}
-                        value={String(values[f.key] ?? "")}
-                        onChange={(e) => set(f.key, e.target.value || null)}
-                      >
-                        <option value="">Unspecified</option>
-                        {f.options?.map((o) => (
-                          <option key={o.id} value={o.id}>
-                            {o.label}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      <input
-                        className="form-input mt-1"
-                        type={f.type === "number" ? "number" : "text"}
-                        required={f.required}
-                        min={f.min}
-                        max={f.max}
-                        step={f.step ?? 1}
-                        maxLength={f.type === "number" ? undefined : 150}
-                        value={String(values[f.key] ?? "")}
-                        onChange={(e) =>
-                          set(
-                            f.key,
-                            f.type === "number"
-                              ? e.target.value === ""
-                                ? null
-                                : Number(e.target.value)
-                              : e.target.value,
-                          )
+                        aria-label={f.label}
+                        aria-describedby={
+                          f.help ? `${fieldPrefix}-${f.key}-help` : undefined
                         }
+                        checked={!!values[f.key]}
+                        onChange={(e) => set(f.key, e.target.checked)}
                       />
-                    )}
-                  </>
-                )}
-                {f.help && (
-                  <span className="mt-1 block text-xs text-muted-foreground">
-                    {f.help}
-                  </span>
-                )}
-              </label>
-            ),
-          )}
+                      {f.label}
+                    </span>
+                  ) : (
+                    <>
+                      {f.label}
+                      {f.type === "textarea" ? (
+                        <textarea
+                          className="form-input mt-1"
+                          aria-label={f.label}
+                          aria-describedby={
+                            f.help ? `${fieldPrefix}-${f.key}-help` : undefined
+                          }
+                          required={f.required}
+                          maxLength={4000}
+                          rows={4}
+                          value={String(values[f.key] ?? "")}
+                          onChange={(e) => set(f.key, e.target.value || null)}
+                        />
+                      ) : f.type === "select" ? (
+                        <select
+                          className="form-input mt-1"
+                          aria-label={f.label}
+                          aria-describedby={
+                            f.help ? `${fieldPrefix}-${f.key}-help` : undefined
+                          }
+                          required={f.required}
+                          value={String(values[f.key] ?? "")}
+                          onChange={(e) => set(f.key, e.target.value || null)}
+                        >
+                          <option value="">Unspecified</option>
+                          {f.options?.map((o) => (
+                            <option key={o.id} value={o.id}>
+                              {o.label}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          className="form-input mt-1"
+                          aria-label={f.label}
+                          aria-describedby={
+                            f.help ? `${fieldPrefix}-${f.key}-help` : undefined
+                          }
+                          type={
+                            f.type === "number"
+                              ? "number"
+                              : f.type === "date"
+                                ? "date"
+                                : "text"
+                          }
+                          required={f.required}
+                          min={f.min}
+                          max={f.max}
+                          step={f.step ?? 1}
+                          maxLength={f.type === "number" ? undefined : 150}
+                          value={String(values[f.key] ?? "")}
+                          onChange={(e) =>
+                            set(
+                              f.key,
+                              f.type === "number"
+                                ? e.target.value === ""
+                                  ? null
+                                  : Number(e.target.value)
+                                : f.type === "date" && !e.target.value
+                                  ? null
+                                  : e.target.value,
+                            )
+                          }
+                        />
+                      )}
+                    </>
+                  )}
+                  {f.help && (
+                    <span
+                      id={`${fieldPrefix}-${f.key}-help`}
+                      className="mt-1 block text-xs text-muted-foreground"
+                    >
+                      {f.help}
+                    </span>
+                  )}
+                </label>
+              ),
+            )}
+          </fieldset>
           {error && <p role="alert">{error}</p>}
           <div className="flex gap-2">
-            <Button type="submit" disabled={busy}>
-              {busy ? "Saving…" : "Save"}
-            </Button>
+            {!readOnly && (
+              <Button type="submit" disabled={busy}>
+                {busy ? "Saving…" : "Save"}
+              </Button>
+            )}
             <Button
               type="button"
               variant="outline"

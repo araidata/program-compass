@@ -20,7 +20,8 @@
     "test": "tsx --test tests/unit/*.test.ts",
     "test:e2e": "playwright test",
     "db:seed:synthetic": "tsx scripts/seed-synthetic.mts",
-    "db:demo:clear": "tsx scripts/clear-demo.mts"
+    "db:demo:clear": "tsx scripts/clear-demo.mts",
+    "test:restore": "node --conditions=react-server --import tsx tests/relational-restore.mts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

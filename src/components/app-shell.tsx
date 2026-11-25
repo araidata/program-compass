@@ -1,7 +1,8 @@
 "use client";
+import { GlobalCycleControl } from "@/components/planning/global-cycle-control";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Suspense, useState, useSyncExternalStore } from "react";
 import {
@@ -11,7 +12,7 @@ import {
   settingsItem,
   type NavItem,
 } from "@/lib/navigation";
-import { withScope, type Pillar } from "@/lib/pillars";
+import { withScope, withCycle, type Pillar } from "@/lib/pillars";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -55,20 +56,35 @@ function subscribeCollapsed(listener: () => void) {
 function NavLink({
   item,
   pillar,
+  cycle,
+  ready = true,
   active,
   collapsed,
   onNavigate,
 }: {
   item: NavItem;
   pillar: Pillar | null;
+  cycle?: string | null;
+  ready?: boolean;
   active: boolean;
   collapsed: boolean;
   onNavigate?: () => void;
 }) {
   const Icon = item.icon;
+  if (!ready)
+    return (
+      <span
+        role="link"
+        aria-disabled="true"
+        className="flex h-8 items-center gap-2.5 rounded-md px-2 text-[13px] text-muted-foreground"
+      >
+        <Icon className="size-4 shrink-0" aria-hidden="true" />
+        {!collapsed && item.title}
+      </span>
+    );
   return (
     <Link
-      href={withScope(item.href, pillar)}
+      href={withCycle(withScope(item.href, pillar), cycle ?? null)}
       onClick={onNavigate}
       aria-current={active ? "page" : undefined}
       title={collapsed ? item.title : undefined}
@@ -86,10 +102,14 @@ function NavLink({
 
 function Navigation({
   pillar,
+  cycle,
+  ready = true,
   collapsed = false,
   onNavigate,
 }: {
   pillar: Pillar | null;
+  cycle?: string | null;
+  ready?: boolean;
   collapsed?: boolean;
   onNavigate?: () => void;
 }) {
@@ -117,6 +137,8 @@ function Navigation({
               key={item.href}
               item={item}
               pillar={pillar}
+              cycle={cycle}
+              ready={ready}
               active={active === item}
               collapsed={collapsed}
               onNavigate={onNavigate}
@@ -127,6 +149,7 @@ function Navigation({
       <div className="mt-auto border-t pt-3">
         <NavLink
           item={settingsItem}
+          ready={ready}
           pillar={pillar}
           active={active === settingsItem}
           collapsed={collapsed}
@@ -141,7 +164,13 @@ function ScopedNavigation(props: {
   collapsed?: boolean;
   onNavigate?: () => void;
 }) {
-  return <Navigation pillar={useScope()} {...props} />;
+  return (
+    <Navigation
+      pillar={useScope()}
+      cycle={useSearchParams().get("cycle")}
+      {...props}
+    />
+  );
 }
 
 function MainNavigation(props: {
@@ -149,7 +178,7 @@ function MainNavigation(props: {
   onNavigate?: () => void;
 }) {
   return (
-    <Suspense fallback={<Navigation pillar={null} {...props} />}>
+    <Suspense fallback={<Navigation pillar={null} ready={false} {...props} />}>
       <ScopedNavigation {...props} />
     </Suspense>
   );
@@ -268,6 +297,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           tabIndex={-1}
           className="px-4 py-5 outline-none sm:px-6"
         >
+          <Suspense>
+            <GlobalCycleControl />
+          </Suspense>
           {children}
         </main>
       </div>

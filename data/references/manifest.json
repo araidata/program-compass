@@ -1,0 +1,23 @@
+{
+  "normalizerVersion": 1,
+  "sources": [
+    {
+      "file": "nist-csf-2.0.json",
+      "sourceUrl": "https://csrc.nist.gov/extensions/nudp/services/json/csf/elements",
+      "sourceSha256": "ac6af89f9d9d553698462d66d58f79e18b6abbed6d7d913d74f2dfb112b5ddfb",
+      "normalizedSha256": "29d263f70b8a0a6911158f3cdd771d5427d3f5c50f23a18b1295df98174352be"
+    },
+    {
+      "file": "cjis-6.0.json",
+      "sourceUrl": "https://le.fbi.gov/file-repository/cjis_security_policy_v6-0_20241227.pdf",
+      "sourceSha256": "fb580d9d110fd9ac512c026eb881eb900c4f0a43d93d481628ba9bbae45b9c77",
+      "normalizedSha256": "520ee054f2ba1d7951a94260f8944ea5d0d9f2cdfd09137202d350447a5e717b"
+    },
+    {
+      "file": "nice-2.2.0.json",
+      "sourceUrl": "https://csrc.nist.gov/csrc/media/Projects/cprt/documents/nice/v2-2-0_nf_components.json",
+      "sourceSha256": "3ad1d9d7e0d6b32895cb569f86c3bc05af2937a68e96eab4d1c9b3d9fa6e575e",
+      "normalizedSha256": "b7742d39d117d08e6eb496fafb9d8c1a1ff6c6c8f8d5f9a09ec019564f8ce76a"
+    }
+  ]
+}

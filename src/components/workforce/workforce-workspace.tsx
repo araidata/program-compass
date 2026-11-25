@@ -1,4 +1,5 @@
 "use client";
+import { ScopedLink } from "@/components/scoped-link";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -401,6 +402,12 @@ export function WorkforceWorkspace({
                         >
                           {p.name}
                         </button>
+                        <ScopedLink
+                          className="mt-1 block text-xs text-link underline"
+                          href={`/capabilities/planning?view=responsibility&owner=${p.id}`}
+                        >
+                          Responsibilities and planning issues
+                        </ScopedLink>
                       </td>
                       <td>{p.title}</td>
                       <td>
