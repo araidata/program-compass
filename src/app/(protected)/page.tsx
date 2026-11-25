@@ -1,4 +1,5 @@
 import { OverviewPlanning } from "@/components/planning/overview-planning";
+import { PlanningStart } from "@/components/planning/planning-start";
 import { db } from "@/lib/server/db";
 import { captureDataset } from "@/lib/server/snapshots";
 import { readPageCycle } from "@/lib/server/snapshots";
@@ -117,6 +118,7 @@ export default async function Overview({
         description="Program position for the selected scope, built from recorded assessments and KPI measurements."
       />
 
+      <PlanningStart />
       {synthetic ? <DemoNotice /> : null}
       {loaded == null ? (
         <SchemaPending />

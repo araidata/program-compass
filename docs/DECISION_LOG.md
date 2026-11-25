@@ -125,3 +125,7 @@ Keep scenario membership/timing and annual targets/budgets independent from shar
 ## 2026-11-24 — Reports and atomic relational interchange
 
 Use one deterministic calculation path across modules, reports/CSV/print/projections. Preserve immutable cycles and source references; cache only derived trend summaries. Interchange exports business rows/joins with exact Decimal strings and schema fingerprint, excluding login records/credentials/sessions while retaining display provenance. Validate pinned reference data and all domain relationships in rollback preview; apply only the reviewed unchanged payload against the same workspace hash, atomically and with history. Preserve unrelated business records; replace current imported relationships explicitly. Use chunked upload/streamed export within declared limits. Keep the existing Git/Vercel migration/seed release process, disabled authentication and desktop-only scope.
+
+## 2026-11-24 — Explain the workflow inside the product
+
+Owner reported difficulty understanding how to use the site. Provide task-based entry points, visible first-action guidance, expandable page instructions, record-purpose descriptions, a linked full workflow, a clearly illustrative worked example, and a plain-language glossary. Reuse instructional content between page guidance and the guide to reduce contradictory instructions. Preserve analytical workspaces, entered data, disabled authentication and desktop-only scope. This is product usability work, not a new planning method or business-data workflow.

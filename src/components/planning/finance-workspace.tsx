@@ -281,7 +281,7 @@ export function FinanceWorkspace({
               capability deficiencies: {report.remainingDeficiencies.length}.
             </p>
           </section>
-          <div className="print-hidden flex gap-2">
+          <div className="print-hidden flex flex-wrap gap-2">
             {["plan", "resources", "targets", "costs", "constraints"].map(
               (v) => (
                 <Button

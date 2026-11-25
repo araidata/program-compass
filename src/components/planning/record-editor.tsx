@@ -26,6 +26,32 @@ export type RecordDraft = {
   revision?: string;
   values: Record<string, FieldValue>;
 };
+const editorHelp: Record<string, string> = {
+  responsibility:
+    "Describe ongoing work and who is accountable. Link the capability and requirement drivers so the same responsibility can support multiple planning decisions.",
+  issue:
+    "Describe a specific capability or investment gap, why it matters, and what happens if it is deferred. Assign an owner and due date so it appears in planning worklists.",
+  initiative:
+    "Describe a dated effort to improve the program. Link the gaps and resources it addresses. Investment approval and execution status are separate; completion does not change assessed maturity.",
+  technology:
+    "Record an existing tool or a proposed option. Link its capability coverage and explain whether the need is missing technology, underutilization, staffing, or process. Use sourced costs.",
+  activity:
+    "Record one unique work activity using sourced estimates. Volume, frequency, and effort determine annual demand; map it to a responsibility without entering the same work again for each framework.",
+  assignment:
+    "Allocate productive time from an actual person to a responsibility for a defined date range. Use sourced paid and productive hours; vacant positions supply no actual capacity.",
+  constraint:
+    "Record a coverage, continuity, expertise, or separation requirement. Explain its source. These constraints are evaluated separately from workload-derived staffing demand.",
+  skill:
+    "Record a person's assessed knowledge or skill and its source. NICE mappings describe work and expertise; they do not prescribe a headcount.",
+  scenario:
+    "Create one funding alternative. After saving, use Include / defer resource to choose shared initiatives, positions, and technology with scenario-specific timing.",
+  item: "Choose a shared initiative or resource for this scenario and set its inclusion and timing. This changes this scenario's plan, not the shared baseline record.",
+  target:
+    "Set the intended capability maturity for one year in this scenario. A planning target does not change the current assessment.",
+  budget:
+    "Enter the sourced funding limit for one scenario year. Costs above it remain visible as a funding constraint.",
+  cost: "Add a distinct sourced cost or savings line. Reuse one cost identity for one expense; do not duplicate a position or technology cost already included through a resource.",
+};
 export function RecordEditor({
   draft,
   fields,
@@ -87,8 +113,8 @@ export function RecordEditor({
       <SheetContent className="overflow-y-auto p-5 data-[side=right]:w-[580px] data-[side=right]:sm:max-w-[580px]">
         <SheetTitle>{title}</SheetTitle>
         <SheetDescription>
-          Maintain planning facts and relationships. Save changes to the shared
-          workspace.
+          {editorHelp[draft.kind] ??
+            "Maintain planning facts and relationships. Save changes to the shared workspace."}
         </SheetDescription>
         {children}
         <form

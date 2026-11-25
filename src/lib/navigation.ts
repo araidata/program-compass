@@ -8,6 +8,7 @@ import {
   Server,
   FileText,
   Settings,
+  BookOpen,
   type LucideIcon,
 } from "lucide-react";
 
@@ -39,6 +40,15 @@ export const navigationGroups: readonly NavGroup[] = [
           "Program position for the selected scope: gaps, coverage, capacity, and items needing attention.",
         phase: 2,
         views: ["Summary", "Attention"],
+      },
+      {
+        title: "How to use",
+        href: "/guide",
+        icon: BookOpen,
+        description:
+          "Where to start, how the workflow connects, and what the planning numbers mean.",
+        phase: 5,
+        views: ["Workflow", "Worked example", "Definitions"],
       },
     ],
   },
